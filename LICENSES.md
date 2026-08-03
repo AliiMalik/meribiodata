@@ -5,26 +5,66 @@ This file is updated in the same commit as any dependency change.
 
 ## Fonts
 
-| Font | License | Source | Used for |
-|---|---|---|---|
-| Noto Nastaliq Urdu | SIL OFL 1.1 | [notofonts/nastaliq](https://github.com/notofonts/notofonts.github.io) | Urdu, Punjabi (Shahmukhi), Saraiki, Hindko, Kashmiri |
-| Noto Naskh Arabic | SIL OFL 1.1 | [notofonts/arabic](https://github.com/notofonts/notofonts.github.io) | Sindhi, Pashto, Balochi, Brahui, Arabic; fallback for glyphs Nastaliq lacks |
+Bundled in `assets/fonts/`. Total bundled weight: **1.87 MB** (see NFR-8 note below).
 
-Full OFL text: `spike/nastaliq_spike/assets/fonts/OFL.txt` (moves to `assets/fonts/OFL.txt` at M1).
+| Font | Weights | Size | License | Source |
+|---|---|---|---|---|
+| Inter | Regular, SemiBold, Bold | 1252 KB | SIL OFL 1.1 | [rsms/inter](https://github.com/rsms/inter) v4.1 |
+| Noto Nastaliq Urdu | Regular, Bold | 508 KB | SIL OFL 1.1 | [notofonts](https://github.com/notofonts/notofonts.github.io) |
+| Noto Naskh Arabic | Regular, Bold | 527 KB | SIL OFL 1.1 | [notofonts](https://github.com/notofonts/notofonts.github.io) |
+
+License texts ship alongside the fonts: `assets/fonts/Inter-OFL.txt`, `assets/fonts/Noto-OFL.txt`.
+
+Usage: Inter for Latin UI chrome; Noto Nastaliq Urdu for Urdu, Punjabi (Shahmukhi), Saraiki,
+Hindko and Kashmiri; Noto Naskh Arabic for Sindhi, Pashto, Balochi, Brahui and Arabic, and as the
+fallback for any glyph Nastaliq lacks.
 
 Jameel Noori Nastaleeq and similar popular-but-unclearly-licensed Urdu fonts are **deliberately
 not bundled**, per the build prompt's license hygiene rule.
 
-Still to add at M1: **Inter** (UI, OFL) and **Lora** or **Noto Serif** (English document body, OFL).
+**Still to add:** Lora or Noto Serif (OFL) for the English document body at M3.
+
+**NFR-8 note.** Inter's static weights are ~420 KB each because they carry Greek and Cyrillic we
+never use; Inter Medium was dropped for this reason. Subsetting all three families to the
+codepoints we actually render is an M6 task and should cut this figure substantially. If the
+bundle still looks heavy after subsetting, downloadable per-language font packs are the
+next lever (§4) — but they trade against the offline-first promise, so that is a discussion, not
+a default.
 
 ## Dart / Flutter packages
 
-Current set is the M0 spike only; this table is rewritten when the M1 dependency set is fixed.
+### Runtime
 
 | Package | Version | License |
 |---|---|---|
-| pdf | 3.13.0 | Apache-2.0 |
-| printing | 5.15.0 | Apache-2.0 |
+| flutter_secure_storage | 10.3.1 | BSD-3-Clause |
+| freezed_annotation | 3.1.0 | MIT |
+| go_router | 17.3.0 | BSD-3-Clause |
+| hive_ce | 2.19.3 | Apache-2.0 |
+| hive_ce_flutter | 2.3.4 | Apache-2.0 |
+| intl | (resolved by flutter_localizations) | BSD-3-Clause |
+| json_annotation | 4.12.0 | BSD-3-Clause |
 | path_provider | 2.1.6 | BSD-3-Clause |
-| arabic_reshaper | 0.0.1 | MIT — evaluated in M0, **not carried forward** (see `docs/spike-nastaliq.md`) |
-| flutter_lints | 6.0.0 | BSD-3-Clause |
+| provider | 6.1.5+1 | MIT |
+| uuid | 4.6.0 | MIT |
+
+### Build-time only (not shipped in the APK)
+
+| Package | Version | License |
+|---|---|---|
+| build_runner | 2.15.1 | BSD-3-Clause |
+| freezed | 3.2.5 | MIT |
+| json_serializable | 6.14.1 | BSD-3-Clause |
+| very_good_analysis | 10.3.0 | MIT |
+
+### Evaluated and rejected
+
+| Package | Outcome |
+|---|---|
+| arabic_reshaper (MIT) | Evaluated in M0. Not carried forward — the presentation-forms approach it implements is unusable for Nastaliq. See `docs/spike-nastaliq.md`. |
+| hive_ce_generator (Apache-2.0) | Dropped. Its analyzer constraint forces a prerelease `freezed`, and storing JSON documents is a better fit for a schema-driven field engine. See `docs/decisions.md` D2. |
+
+### Expected later
+
+`pdf` and `printing` (both Apache-2.0) return at M3 for the export pipelines;
+`google_mobile_ads` at M4; image, sharing and crypto packages at M5.

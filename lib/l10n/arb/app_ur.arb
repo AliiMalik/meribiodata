@@ -1,0 +1,45 @@
+{
+  "@@locale": "ur",
+
+  "appName": "MeriBiodata",
+
+  "navHome": "میرے بایوڈیٹا",
+  "navSettings": "ترتیبات",
+
+  "onboardingWelcomeTitle": "خوبصورت بایوڈیٹا، آپ کی اپنی زبان میں",
+  "onboardingWelcomeBody": "ایک آسان فارم بھریں اور صاف ستھرا، پرنٹ کے قابل شادی کا بایوڈیٹا پی ڈی ایف یا تصویر کی صورت میں حاصل کریں۔",
+
+  "onboardingPrivacyTitle": "آپ کی معلومات اسی فون میں رہتی ہیں",
+  "onboardingPrivacyBody": "اس ایپ میں نہ کوئی اکاؤنٹ ہے نہ کوئی سرور۔ آپ جو کچھ لکھتے ہیں وہ صرف اسی ڈیوائس میں محفوظ رہتا ہے اور کبھی اپ لوڈ نہیں ہوتا۔",
+
+  "onboardingLanguageTitle": "اپنی زبان منتخب کریں",
+  "onboardingSkip": "چھوڑ دیں",
+  "onboardingNext": "آگے",
+  "onboardingStart": "شروع کریں",
+
+  "homeEmptyTitle": "ابھی کوئی بایوڈیٹا نہیں",
+  "homeEmptyBody": "اپنا پہلا بایوڈیٹا بنائیں — اس میں تقریباً دس منٹ لگتے ہیں۔",
+  "homeCreate": "بایوڈیٹا بنائیں",
+
+  "settingsUiLanguage": "ایپ کی زبان",
+  "settingsDocumentLanguage": "بایوڈیٹا کی زبان",
+  "settingsDigitStyle": "ہندسوں کا انداز",
+  "settingsDigitWestern": "1 2 3",
+  "settingsDigitEastern": "١ ٢ ٣",
+  "settingsDeleteAll": "میرا تمام ڈیٹا حذف کریں",
+  "settingsPrivacyPolicy": "پرائیویسی پالیسی",
+  "settingsLicenses": "اوپن سورس لائسنس",
+  "settingsAbout": "ایپ کے بارے میں",
+
+  "waitlistTitle": "میچ میکر پرو",
+  "waitlistComingSoon": "جلد آ رہا ہے",
+  "waitlistBody": "پیشہ ور رشتہ کروانے والوں کے لیے سہولیات تیار کی جا رہی ہیں۔ اپنی تفصیلات درج کریں، تیار ہونے پر ہم آپ کو اطلاع دیں گے۔",
+
+  "actionCancel": "منسوخ کریں",
+  "actionDelete": "حذف کریں",
+  "actionSave": "محفوظ کریں",
+  "actionRetry": "دوبارہ کوشش کریں",
+
+  "errorGenericTitle": "کچھ غلط ہو گیا",
+  "errorStorageBody": "آپ کے بایوڈیٹا نہیں کھل سکے۔ عام طور پر ایپ دوبارہ چلانے سے یہ مسئلہ حل ہو جاتا ہے۔"
+}

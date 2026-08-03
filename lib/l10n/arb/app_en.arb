@@ -1,0 +1,89 @@
+{
+  "@@locale": "en",
+
+  "appName": "MeriBiodata",
+  "@appName": {
+    "description": "The product name. Not translated."
+  },
+
+  "navHome": "My Biodatas",
+  "@navHome": {
+    "description": "Home screen title — the list of saved biodata profiles."
+  },
+  "navSettings": "Settings",
+  "@navSettings": {},
+
+  "onboardingWelcomeTitle": "Beautiful biodatas, in your own language",
+  "@onboardingWelcomeTitle": {
+    "description": "First onboarding screen headline."
+  },
+  "onboardingWelcomeBody": "Fill in a simple form and get a clean, print-ready marriage biodata as a PDF or an image.",
+  "@onboardingWelcomeBody": {},
+
+  "onboardingPrivacyTitle": "Your information stays on this phone",
+  "@onboardingPrivacyTitle": {
+    "description": "Privacy promise screen headline. Must read plainly, not as legal text."
+  },
+  "onboardingPrivacyBody": "MeriBiodata has no account and no server. Everything you type is stored only on this device, and nothing is ever uploaded.",
+  "@onboardingPrivacyBody": {},
+
+  "onboardingLanguageTitle": "Choose your language",
+  "@onboardingLanguageTitle": {},
+  "onboardingSkip": "Skip",
+  "@onboardingSkip": {},
+  "onboardingNext": "Next",
+  "@onboardingNext": {},
+  "onboardingStart": "Get started",
+  "@onboardingStart": {},
+
+  "homeEmptyTitle": "No biodatas yet",
+  "@homeEmptyTitle": {},
+  "homeEmptyBody": "Create your first biodata — it takes about ten minutes.",
+  "@homeEmptyBody": {},
+  "homeCreate": "Create biodata",
+  "@homeCreate": {},
+
+  "settingsUiLanguage": "App language",
+  "@settingsUiLanguage": {
+    "description": "The language of the interface, as distinct from the document language."
+  },
+  "settingsDocumentLanguage": "Biodata language",
+  "@settingsDocumentLanguage": {
+    "description": "The language the biodata document itself is generated in."
+  },
+  "settingsDigitStyle": "Number style",
+  "@settingsDigitStyle": {},
+  "settingsDigitWestern": "1 2 3",
+  "@settingsDigitWestern": {},
+  "settingsDigitEastern": "١ ٢ ٣",
+  "@settingsDigitEastern": {},
+  "settingsDeleteAll": "Delete all my data",
+  "@settingsDeleteAll": {},
+  "settingsPrivacyPolicy": "Privacy policy",
+  "@settingsPrivacyPolicy": {},
+  "settingsLicenses": "Open source licenses",
+  "@settingsLicenses": {},
+  "settingsAbout": "About",
+  "@settingsAbout": {},
+
+  "waitlistTitle": "Matchmaker Pro",
+  "@waitlistTitle": {},
+  "waitlistComingSoon": "Coming soon",
+  "@waitlistComingSoon": {},
+  "waitlistBody": "Tools for professional matchmakers are in development. Leave your details and we will let you know when they are ready.",
+  "@waitlistBody": {},
+
+  "actionCancel": "Cancel",
+  "@actionCancel": {},
+  "actionDelete": "Delete",
+  "@actionDelete": {},
+  "actionSave": "Save",
+  "@actionSave": {},
+  "actionRetry": "Try again",
+  "@actionRetry": {},
+
+  "errorGenericTitle": "Something went wrong",
+  "@errorGenericTitle": {},
+  "errorStorageBody": "Your biodatas could not be opened. Restarting the app usually fixes this.",
+  "@errorStorageBody": {}
+}

@@ -1,0 +1,14 @@
+include: package:very_good_analysis/analysis_options.yaml
+
+analyzer:
+  exclude:
+    - "**/*.g.dart"
+    - "**/*.freezed.dart"
+    - "spike/**"
+  errors:
+    todo: ignore
+
+linter:
+  rules:
+    # This project has no public API surface — it is an app, not a package.
+    public_member_api_docs: false
