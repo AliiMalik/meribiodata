@@ -1,0 +1,28 @@
+# Flutter/Dart
+.dart_tool/
+.packages
+build/
+.flutter-plugins
+.flutter-plugins-dependencies
+pubspec.lock
+
+# Android
+*.jks
+*.keystore
+key.properties
+local.properties
+.gradle/
+.cxx/
+
+# IDE
+.idea/
+.vscode/
+*.iml
+
+# OS
+Thumbs.db
+.DS_Store
+
+# Spike artifacts pulled off the device — regenerate by running the spike.
+# The curated subset referenced by docs/spike-nastaliq.md lives in docs/spike-assets/.
+spike/artifacts/
