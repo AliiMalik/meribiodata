@@ -71,11 +71,18 @@ class DocumentBuilder {
   const DocumentBuilder({
     required this.labels,
     this.strings = DocumentStrings.english,
+    this.stringsFor,
     this.now,
   });
 
   final BuiltInLabels labels;
+
+  /// Fallback vocabulary when [stringsFor] is not supplied.
   final DocumentStrings strings;
+
+  /// Resolves the document's vocabulary for a locale. Injected rather than
+  /// looked up here so this class stays pure Dart and testable without assets.
+  final DocumentStrings Function(String localeCode)? stringsFor;
 
   /// Injectable so age-dependent goldens are stable.
   final DateTime? now;
@@ -88,6 +95,7 @@ class DocumentBuilder {
     final language = AppLanguages.byCode(profile.documentLanguageCode);
     final resolver = LabelResolver(labels);
     final digits = language.defaultDigits;
+    final words = stringsFor?.call(language.code) ?? strings;
 
     final sections = <RenderedSection>[];
     for (final section in profile.schema.visibleSections) {
@@ -100,6 +108,7 @@ class DocumentBuilder {
           language: language,
           digits: digits,
           mode: mode,
+          words: words,
         );
         // A field with no answer simply does not print. A biodata full of
         // empty rows reads as unfinished.
@@ -115,7 +124,7 @@ class DocumentBuilder {
     }
 
     return RenderedDocument(
-      title: _title(profile, language, digits),
+      title: _title(profile, words),
       sections: sections,
       language: language,
       digitStyle: digits,
@@ -125,15 +134,11 @@ class DocumentBuilder {
     );
   }
 
-  String _title(
-    BiodataProfile profile,
-    LanguageDescriptor language,
-    DigitStyle digits,
-  ) {
+  String _title(BiodataProfile profile, DocumentStrings words) {
     final nameField = profile.schema.fieldByBuiltInKey(BuiltInKeys.name);
     final value = nameField == null ? null : profile.values[nameField.id];
     if (value is String && value.trim().isNotEmpty) return value.trim();
-    return strings.untitled;
+    return words.untitled;
   }
 
   RenderedField? _field({
@@ -142,6 +147,7 @@ class DocumentBuilder {
     required LanguageDescriptor language,
     required DigitStyle digits,
     required ExportMode mode,
+    required DocumentStrings words,
   }) {
     final raw = profile.values[field.id];
     final resolver = LabelResolver(labels);
@@ -150,15 +156,15 @@ class DocumentBuilder {
     final masking = mode == ExportMode.shareable && field.isSensitive;
     if (masking && field.masking == MaskingStrategy.omit) return null;
 
-    var text = _format(field, raw, language, digits);
+    var text = _format(field, raw, digits, words);
     var wasMasked = false;
 
     if (masking && text != null) {
       switch (field.masking) {
         case MaskingStrategy.generalise:
-          text = _generalise(field, raw, language, digits) ?? text;
+          text = _generalise(field, raw, digits, words) ?? text;
         case MaskingStrategy.placeholder:
-          text = strings.onRequest;
+          text = words.onRequest;
         case MaskingStrategy.omit:
           return null;
       }
@@ -190,17 +196,17 @@ class DocumentBuilder {
   String? _format(
     FieldDescriptor field,
     Object? raw,
-    LanguageDescriptor language,
     DigitStyle digits,
+    DocumentStrings words,
   ) {
     if (raw == null) return null;
     final text = switch (field.type) {
-      FieldType.date => _date(field, raw),
-      FieldType.height => _height(field, raw),
-      FieldType.weight => _weight(field, raw),
-      FieldType.currency => _currency(raw),
-      FieldType.repeatableGroup => _group(field, raw),
-      FieldType.boolean => raw == true ? strings.married : null,
+      FieldType.date => _date(field, raw, words),
+      FieldType.height => _height(field, raw, words),
+      FieldType.weight => _weight(field, raw, words),
+      FieldType.currency => _currency(raw, words),
+      FieldType.repeatableGroup => _group(field, raw, words),
+      FieldType.boolean => raw == true ? words.married : null,
       _ => raw.toString().trim(),
     };
     if (text == null || text.isEmpty) return null;
@@ -213,15 +219,15 @@ class DocumentBuilder {
   String? _generalise(
     FieldDescriptor field,
     Object? raw,
-    LanguageDescriptor language,
     DigitStyle digits,
+    DocumentStrings words,
   ) {
     if (raw == null) return null;
 
     if (field.type == FieldType.date && raw is String) {
       final date = DateTime.tryParse(raw);
       if (date == null) return null;
-      return Digits.format(_years(date), digits);
+      return Digits.format(_years(date, words), digits);
     }
 
     if (field.type == FieldType.multiline && raw is String) {
@@ -238,12 +244,10 @@ class DocumentBuilder {
     return null;
   }
 
-  String _years(DateTime date) => strings.years.replaceAll(
-    '{n}',
-    '${ageOn(date, now ?? DateTime.now())}',
-  );
+  String _years(DateTime date, DocumentStrings words) =>
+      words.years.replaceAll('{n}', '${ageOn(date, now ?? DateTime.now())}');
 
-  String? _date(FieldDescriptor field, Object raw) {
+  String? _date(FieldDescriptor field, Object raw, DocumentStrings words) {
     if (raw is! String) return null;
     final date = DateTime.tryParse(raw);
     if (date == null) return null;
@@ -251,53 +255,65 @@ class DocumentBuilder {
     final formatted = '${date.day}/${date.month}/${date.year}';
     return switch (field.dateDisplay ?? DateDisplay.dateOnly) {
       DateDisplay.dateOnly => formatted,
-      DateDisplay.ageOnly => _years(date),
-      DateDisplay.dateAndAge => '$formatted (${_years(date)})',
+      DateDisplay.ageOnly => _years(date, words),
+      DateDisplay.dateAndAge => '$formatted (${_years(date, words)})',
     };
   }
 
-  String? _height(FieldDescriptor field, Object raw) {
+  String? _height(
+    FieldDescriptor field,
+    Object raw,
+    DocumentStrings words,
+  ) {
     if (raw is! Map<String, dynamic>) return null;
     final height = HeightValue.fromJson(raw);
     if (field.unitPreference == LengthUnit.centimetres.wire) {
-      return strings.centimetres.replaceAll(
+      return words.centimetres.replaceAll(
         '{n}',
         '${height.centimetres.round()}',
       );
     }
-    return strings.feetInches
+    return words.feetInches
         .replaceAll('{f}', '${height.feet}')
         .replaceAll('{i}', '${height.inches}');
   }
 
-  String? _weight(FieldDescriptor field, Object raw) {
+  String? _weight(
+    FieldDescriptor field,
+    Object raw,
+    DocumentStrings words,
+  ) {
     if (raw is! Map<String, dynamic>) return null;
     final weight = WeightValue.fromJson(raw);
     if (field.unitPreference == MassUnit.pounds.wire) {
-      return strings.pounds.replaceAll('{n}', '${weight.pounds.round()}');
+      return words.pounds.replaceAll('{n}', '${weight.pounds.round()}');
     }
-    return strings.kilograms.replaceAll('{n}', '${weight.kilograms.round()}');
+    return words.kilograms.replaceAll('{n}', '${weight.kilograms.round()}');
   }
 
-  String? _currency(Object raw) {
+  String? _currency(Object raw, DocumentStrings words) {
     if (raw is! Map<String, dynamic>) return null;
     final money = CurrencyValue.fromJson(raw);
     final period = money.period == IncomePeriod.perMonth
-        ? strings.perMonth
-        : strings.perYear;
+        ? words.perMonth
+        : words.perYear;
     return '${money.currencyCode} ${money.amount} $period';
   }
 
   /// Renders the shorthand families actually write — "2 (1 married)" — and
   /// only lists people when the user filled them in (§6.2).
-  String? _group(FieldDescriptor field, Object raw) {
+  String? _group(
+    FieldDescriptor field,
+    Object raw,
+    DocumentStrings words,
+  ) {
     if (raw is! Map<String, dynamic>) return null;
     final group = RepeatableGroupValue.fromJson(raw);
     if (group.isEmpty) return null;
 
     final summary = StringBuffer('${group.effectiveTotal}');
     if (group.marriedCount case final int married when married > 0) {
-      summary.write(' ($married ${strings.married})');
+      summary.write(' ($married ${words.married})');
     }
 
     if (!group.hasDetail) return summary.toString();

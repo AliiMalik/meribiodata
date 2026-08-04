@@ -1,135 +1,306 @@
 {
   "_comment": "Shipped labels for the built-in schema, per DOCUMENT language. Not the app UI strings (those are ARB files in lib/l10n/arb). Adding a language here is a data-only change: add the locale code to each entry. Anything missing falls back to English. Reviewable without reading code.",
-
+  "_reviewStatus": {
+    "_comment": "Which languages have had their document labels checked by a native speaker. Anything marked draft still needs review before it is put in front of users — see open question 1 in docs/decisions.md.",
+    "en": "reviewed",
+    "ur": "reviewed",
+    "sd": "draft",
+    "ps": "draft",
+    "pa_Arab": "draft"
+  },
+  "documentStrings": {
+    "_comment": "Words the document itself needs — units, age, sibling status. Placeholders {n}, {f}, {i} are substituted. Without these an Urdu biodata would say '31 years' and '1 married' in English, which is exactly the half-translated look the product exists to avoid.",
+    "en": {
+      "years": "{n} years",
+      "feetInches": "{f} ft {i} in",
+      "centimetres": "{n} cm",
+      "kilograms": "{n} kg",
+      "pounds": "{n} lb",
+      "perMonth": "per month",
+      "perYear": "per year",
+      "married": "married",
+      "unmarried": "unmarried",
+      "onRequest": "on request",
+      "untitled": "Biodata"
+    },
+    "ur": {
+      "years": "{n} سال",
+      "feetInches": "{f} فٹ {i} انچ",
+      "centimetres": "{n} سینٹی میٹر",
+      "kilograms": "{n} کلوگرام",
+      "pounds": "{n} پاؤنڈ",
+      "perMonth": "ماہانہ",
+      "perYear": "سالانہ",
+      "married": "شادی شدہ",
+      "unmarried": "غیر شادی شدہ",
+      "onRequest": "طلب پر",
+      "untitled": "بایوڈیٹا"
+    },
+    "sd": {
+      "years": "{n} سال",
+      "feetInches": "{f} فٽ {i} انچ",
+      "centimetres": "{n} سينٽي ميٽر",
+      "kilograms": "{n} ڪلوگرام",
+      "pounds": "{n} پائونڊ",
+      "perMonth": "ماهوار",
+      "perYear": "ساليانو",
+      "married": "شادي شده",
+      "unmarried": "غير شادي شده",
+      "onRequest": "گهر تي",
+      "untitled": "بايوڊيٽا"
+    },
+    "ps": {
+      "years": "{n} کاله",
+      "feetInches": "{f} فټه {i} اینچه",
+      "centimetres": "{n} سانتي متره",
+      "kilograms": "{n} کیلوګرامه",
+      "pounds": "{n} پونډه",
+      "perMonth": "میاشتنی",
+      "perYear": "کلنی",
+      "married": "واده شوی",
+      "unmarried": "واده شوی نه دی",
+      "onRequest": "په غوښتنه",
+      "untitled": "بایوډاټا"
+    },
+    "pa_Arab": {
+      "years": "{n} سال",
+      "feetInches": "{f} فٹ {i} انچ",
+      "centimetres": "{n} سینٹی میٹر",
+      "kilograms": "{n} کلوگرام",
+      "pounds": "{n} پاؤنڈ",
+      "perMonth": "مہینے وار",
+      "perYear": "سالانہ",
+      "married": "ویاہیا ہویا",
+      "unmarried": "کنوارا",
+      "onRequest": "منگن تے",
+      "untitled": "بایوڈیٹا"
+    }
+  },
   "sections": {
     "personal": {
       "en": "Personal Details",
-      "ur": "ذاتی معلومات"
+      "ur": "ذاتی معلومات",
+      "sd": "ذاتي معلومات",
+      "ps": "شخصي معلومات",
+      "pa_Arab": "ذاتی معلومات"
     },
     "family": {
       "en": "Family Details",
-      "ur": "خاندانی معلومات"
+      "ur": "خاندانی معلومات",
+      "sd": "خانداني معلومات",
+      "ps": "کورنۍ معلومات",
+      "pa_Arab": "خاندانی معلومات"
     },
     "contact": {
       "en": "Contact & Address",
-      "ur": "رابطہ اور پتہ"
+      "ur": "رابطہ اور پتہ",
+      "sd": "رابطو ۽ پتو",
+      "ps": "اړیکه او پته",
+      "pa_Arab": "رابطہ تے پتہ"
     },
     "extras": {
       "en": "Additional Information",
-      "ur": "اضافی معلومات"
+      "ur": "اضافی معلومات",
+      "sd": "اضافي معلومات",
+      "ps": "اضافي معلومات",
+      "pa_Arab": "ہور معلومات"
     }
   },
-
   "fields": {
     "personal.name": {
       "en": "Name",
-      "ur": "نام"
+      "ur": "نام",
+      "sd": "نالو",
+      "ps": "نوم",
+      "pa_Arab": "ناں"
     },
     "personal.caste": {
       "en": "Caste / Biradari",
-      "ur": "ذات / برادری"
+      "ur": "ذات / برادری",
+      "sd": "ذات / برادري",
+      "ps": "قام / برادري",
+      "pa_Arab": "ذات / برادری"
     },
     "personal.dob": {
       "en": "Date of Birth",
-      "ur": "تاریخ پیدائش"
+      "ur": "تاریخ پیدائش",
+      "sd": "ڄم جي تاريخ",
+      "ps": "د زیږیدو نېټه",
+      "pa_Arab": "جم دی تریخ"
     },
     "personal.bloodGroup": {
       "en": "Blood Group",
-      "ur": "بلڈ گروپ"
+      "ur": "بلڈ گروپ",
+      "sd": "بلڊ گروپ",
+      "ps": "د وینې ګروپ",
+      "pa_Arab": "بلڈ گروپ"
     },
     "personal.maslak": {
       "en": "Maslak",
-      "ur": "مسلک"
+      "ur": "مسلک",
+      "sd": "مسلڪ",
+      "ps": "مسلک",
+      "pa_Arab": "مسلک"
     },
     "personal.height": {
       "en": "Height",
-      "ur": "قد"
+      "ur": "قد",
+      "sd": "قد",
+      "ps": "جګوالی",
+      "pa_Arab": "قد"
     },
     "personal.weight": {
       "en": "Weight",
-      "ur": "وزن"
+      "ur": "وزن",
+      "sd": "وزن",
+      "ps": "وزن",
+      "pa_Arab": "وزن"
     },
     "personal.education": {
       "en": "Education",
-      "ur": "تعلیم"
+      "ur": "تعلیم",
+      "sd": "تعليم",
+      "ps": "زده کړه",
+      "pa_Arab": "تعلیم"
     },
     "personal.occupation": {
       "en": "Occupation",
-      "ur": "پیشہ"
+      "ur": "پیشہ",
+      "sd": "پيشو",
+      "ps": "دنده",
+      "pa_Arab": "کم"
     },
     "personal.income": {
       "en": "Income",
-      "ur": "آمدنی"
+      "ur": "آمدنی",
+      "sd": "آمدني",
+      "ps": "عاید",
+      "pa_Arab": "آمدن"
     },
-
     "family.fatherName": {
       "en": "Father's Name",
-      "ur": "والد کا نام"
+      "ur": "والد کا نام",
+      "sd": "پيءُ جو نالو",
+      "ps": "د پلار نوم",
+      "pa_Arab": "پیو دا ناں"
     },
     "family.fatherOccupation": {
       "en": "Father's Occupation",
-      "ur": "والد کا پیشہ"
+      "ur": "والد کا پیشہ",
+      "sd": "پيءُ جو پيشو",
+      "ps": "د پلار دنده",
+      "pa_Arab": "پیو دا کم"
     },
     "family.motherName": {
       "en": "Mother's Name",
-      "ur": "والدہ کا نام"
+      "ur": "والدہ کا نام",
+      "sd": "ماءُ جو نالو",
+      "ps": "د مور نوم",
+      "pa_Arab": "ماں دا ناں"
     },
     "family.motherOccupation": {
       "en": "Mother's Occupation",
-      "ur": "والدہ کا پیشہ"
+      "ur": "والدہ کا پیشہ",
+      "sd": "ماءُ جو پيشو",
+      "ps": "د مور دنده",
+      "pa_Arab": "ماں دا کم"
     },
     "family.brothers": {
       "en": "Brothers",
-      "ur": "بھائی"
+      "ur": "بھائی",
+      "sd": "ڀائر",
+      "ps": "وروڼه",
+      "pa_Arab": "بھراوے"
     },
     "family.sisters": {
       "en": "Sisters",
-      "ur": "بہنیں"
+      "ur": "بہنیں",
+      "sd": "ڀيڻون",
+      "ps": "خویندې",
+      "pa_Arab": "بھیناں"
     },
     "family.maternalFamily": {
       "en": "Maternal Family (Nanihal)",
-      "ur": "ننھیال"
+      "ur": "ننھیال",
+      "sd": "ناناڻا",
+      "ps": "د مور کور",
+      "pa_Arab": "ننھیال"
     },
-
     "contact.address": {
       "en": "Address",
-      "ur": "پتہ"
+      "ur": "پتہ",
+      "sd": "پتو",
+      "ps": "پته",
+      "pa_Arab": "پتہ"
     },
     "contact.phone": {
       "en": "Contact",
-      "ur": "رابطہ"
+      "ur": "رابطہ",
+      "sd": "رابطو",
+      "ps": "اړیکه",
+      "pa_Arab": "رابطہ"
     },
-
     "extras.additionalInfo": {
       "en": "Additional Information",
-      "ur": "اضافی معلومات"
+      "ur": "اضافی معلومات",
+      "sd": "اضافي معلومات",
+      "ps": "اضافي معلومات",
+      "pa_Arab": "ہور معلومات"
     },
-
     "group.person.name": {
       "en": "Name",
-      "ur": "نام"
+      "ur": "نام",
+      "sd": "نالو",
+      "ps": "نوم",
+      "pa_Arab": "ناں"
     },
     "group.person.maritalStatus": {
       "en": "Marital Status",
-      "ur": "ازدواجی حیثیت"
+      "ur": "ازدواجی حیثیت",
+      "sd": "ازدواجي حيثيت",
+      "ps": "د واده حالت",
+      "pa_Arab": "ویاہ دی حالت"
     },
     "group.person.occupation": {
       "en": "Occupation",
-      "ur": "پیشہ"
+      "ur": "پیشہ",
+      "sd": "پيشو",
+      "ps": "دنده",
+      "pa_Arab": "کم"
     }
   },
-
   "options": {
     "maslak": {
-      "Hanafi": { "en": "Hanafi", "ur": "حنفی" },
-      "Deobandi": { "en": "Deobandi", "ur": "دیوبندی" },
-      "Barelvi": { "en": "Barelvi", "ur": "بریلوی" },
-      "Ahl-e-Hadith": { "en": "Ahl-e-Hadith", "ur": "اہل حدیث" },
-      "Shia": { "en": "Shia", "ur": "شیعہ" }
+      "Hanafi": {
+        "en": "Hanafi",
+        "ur": "حنفی"
+      },
+      "Deobandi": {
+        "en": "Deobandi",
+        "ur": "دیوبندی"
+      },
+      "Barelvi": {
+        "en": "Barelvi",
+        "ur": "بریلوی"
+      },
+      "Ahl-e-Hadith": {
+        "en": "Ahl-e-Hadith",
+        "ur": "اہل حدیث"
+      },
+      "Shia": {
+        "en": "Shia",
+        "ur": "شیعہ"
+      }
     },
     "maritalStatus": {
-      "Married": { "en": "Married", "ur": "شادی شدہ" },
-      "Unmarried": { "en": "Unmarried", "ur": "غیر شادی شدہ" }
+      "Married": {
+        "en": "Married",
+        "ur": "شادی شدہ"
+      },
+      "Unmarried": {
+        "en": "Unmarried",
+        "ur": "غیر شادی شدہ"
+      }
     }
   }
 }
