@@ -1,0 +1,15 @@
+targets:
+  $default:
+    builders:
+      json_serializable:
+        options:
+          # Without this, a generated toJson() emits nested *objects* rather
+          # than maps: `{'sections': instance.sections}`. That happens to work
+          # when the result goes straight into jsonEncode (which falls back to
+          # calling toJson itself), but an in-memory `fromJson(x.toJson())`
+          # round trip throws. The `.mbd` backup format (9.5) and every test
+          # that round-trips a model depend on toJson being self-contained.
+          explicit_to_json: true
+          # Enum values are written by name, matching the @JsonValue wire
+          # constants on FieldType and friends.
+          create_to_json: true

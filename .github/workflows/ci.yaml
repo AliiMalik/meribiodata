@@ -26,6 +26,9 @@ jobs:
       - name: Generate localizations
         run: flutter gen-l10n
 
+      - name: Generate models
+        run: dart run build_runner build
+
       - name: Fail on untranslated messages
         run: |
           if [ -s l10n-untranslated.json ] && [ "$(cat l10n-untranslated.json)" != "{}" ]; then
@@ -86,6 +89,8 @@ jobs:
           cache: true
 
       - run: flutter pub get
+      - run: flutter gen-l10n
+      - run: dart run build_runner build
 
       # Catches Android configuration breakage (minSdk 26, manifest, package id)
       # that the analyzer and unit tests cannot see.

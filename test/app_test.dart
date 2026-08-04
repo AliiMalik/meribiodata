@@ -3,6 +3,8 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:meribiodata/app.dart';
 import 'package:meribiodata/core/preferences/app_preferences.dart';
 import 'package:meribiodata/core/preferences/preferences_repository.dart';
+import 'package:meribiodata/data/bundled_labels.dart';
+import 'package:meribiodata/data/profile_repository.dart';
 import 'package:meribiodata/l10n/generated/app_localizations.dart';
 import 'package:meribiodata/l10n/language_descriptor.dart';
 
@@ -16,6 +18,14 @@ Future<AppPreferences> _preferencesIn(InMemoryLocalStore store) async {
 
 void main() {
   late InMemoryLocalStore store;
+  late BundledLabels labels;
+
+  setUpAll(() async {
+    TestWidgetsFlutterBinding.ensureInitialized();
+    // Loads the real asset, so a malformed field_labels.json fails a test
+    // rather than only showing up on a device.
+    labels = await BundledLabels.load();
+  });
 
   setUp(() async {
     store = InMemoryLocalStore();
@@ -26,7 +36,12 @@ void main() {
     final preferences = await _preferencesIn(store);
 
     await tester.pumpWidget(
-      MeriBiodataApp(store: store, preferences: preferences),
+      MeriBiodataApp(
+        store: store,
+        preferences: preferences,
+        profiles: ProfileRepository(store),
+        labels: labels,
+      ),
     );
     await tester.pumpAndSettle();
 
@@ -39,7 +54,12 @@ void main() {
     await preferences.completeOnboarding();
 
     await tester.pumpWidget(
-      MeriBiodataApp(store: store, preferences: preferences),
+      MeriBiodataApp(
+        store: store,
+        preferences: preferences,
+        profiles: ProfileRepository(store),
+        labels: labels,
+      ),
     );
     await tester.pumpAndSettle();
 
@@ -54,7 +74,12 @@ void main() {
     await preferences.completeOnboarding();
 
     await tester.pumpWidget(
-      MeriBiodataApp(store: store, preferences: preferences),
+      MeriBiodataApp(
+        store: store,
+        preferences: preferences,
+        profiles: ProfileRepository(store),
+        labels: labels,
+      ),
     );
     await tester.pumpAndSettle();
 
@@ -73,7 +98,12 @@ void main() {
     await preferences.setUiLanguage(AppLanguages.urdu);
 
     await tester.pumpWidget(
-      MeriBiodataApp(store: store, preferences: preferences),
+      MeriBiodataApp(
+        store: store,
+        preferences: preferences,
+        profiles: ProfileRepository(store),
+        labels: labels,
+      ),
     );
     await tester.pumpAndSettle();
 

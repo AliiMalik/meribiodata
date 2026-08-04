@@ -1,0 +1,135 @@
+{
+  "_comment": "Shipped labels for the built-in schema, per DOCUMENT language. Not the app UI strings (those are ARB files in lib/l10n/arb). Adding a language here is a data-only change: add the locale code to each entry. Anything missing falls back to English. Reviewable without reading code.",
+
+  "sections": {
+    "personal": {
+      "en": "Personal Details",
+      "ur": "ذاتی معلومات"
+    },
+    "family": {
+      "en": "Family Details",
+      "ur": "خاندانی معلومات"
+    },
+    "contact": {
+      "en": "Contact & Address",
+      "ur": "رابطہ اور پتہ"
+    },
+    "extras": {
+      "en": "Additional Information",
+      "ur": "اضافی معلومات"
+    }
+  },
+
+  "fields": {
+    "personal.name": {
+      "en": "Name",
+      "ur": "نام"
+    },
+    "personal.caste": {
+      "en": "Caste / Biradari",
+      "ur": "ذات / برادری"
+    },
+    "personal.dob": {
+      "en": "Date of Birth",
+      "ur": "تاریخ پیدائش"
+    },
+    "personal.bloodGroup": {
+      "en": "Blood Group",
+      "ur": "بلڈ گروپ"
+    },
+    "personal.maslak": {
+      "en": "Maslak",
+      "ur": "مسلک"
+    },
+    "personal.height": {
+      "en": "Height",
+      "ur": "قد"
+    },
+    "personal.weight": {
+      "en": "Weight",
+      "ur": "وزن"
+    },
+    "personal.education": {
+      "en": "Education",
+      "ur": "تعلیم"
+    },
+    "personal.occupation": {
+      "en": "Occupation",
+      "ur": "پیشہ"
+    },
+    "personal.income": {
+      "en": "Income",
+      "ur": "آمدنی"
+    },
+
+    "family.fatherName": {
+      "en": "Father's Name",
+      "ur": "والد کا نام"
+    },
+    "family.fatherOccupation": {
+      "en": "Father's Occupation",
+      "ur": "والد کا پیشہ"
+    },
+    "family.motherName": {
+      "en": "Mother's Name",
+      "ur": "والدہ کا نام"
+    },
+    "family.motherOccupation": {
+      "en": "Mother's Occupation",
+      "ur": "والدہ کا پیشہ"
+    },
+    "family.brothers": {
+      "en": "Brothers",
+      "ur": "بھائی"
+    },
+    "family.sisters": {
+      "en": "Sisters",
+      "ur": "بہنیں"
+    },
+    "family.maternalFamily": {
+      "en": "Maternal Family (Nanihal)",
+      "ur": "ننھیال"
+    },
+
+    "contact.address": {
+      "en": "Address",
+      "ur": "پتہ"
+    },
+    "contact.phone": {
+      "en": "Contact",
+      "ur": "رابطہ"
+    },
+
+    "extras.additionalInfo": {
+      "en": "Additional Information",
+      "ur": "اضافی معلومات"
+    },
+
+    "group.person.name": {
+      "en": "Name",
+      "ur": "نام"
+    },
+    "group.person.maritalStatus": {
+      "en": "Marital Status",
+      "ur": "ازدواجی حیثیت"
+    },
+    "group.person.occupation": {
+      "en": "Occupation",
+      "ur": "پیشہ"
+    }
+  },
+
+  "options": {
+    "maslak": {
+      "Hanafi": { "en": "Hanafi", "ur": "حنفی" },
+      "Deobandi": { "en": "Deobandi", "ur": "دیوبندی" },
+      "Barelvi": { "en": "Barelvi", "ur": "بریلوی" },
+      "Ahl-e-Hadith": { "en": "Ahl-e-Hadith", "ur": "اہل حدیث" },
+      "Shia": { "en": "Shia", "ur": "شیعہ" }
+    },
+    "maritalStatus": {
+      "Married": { "en": "Married", "ur": "شادی شدہ" },
+      "Unmarried": { "en": "Unmarried", "ur": "غیر شادی شدہ" }
+    }
+  }
+}

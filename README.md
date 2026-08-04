@@ -15,7 +15,7 @@ families. Android only.
 |---|---|
 | M0 — Nastaliq PDF spike | Complete. Pipeline chosen, awaiting native-reader sign-off. |
 | M1 — Foundation | Complete. |
-| M2 — Schema & form engine | Not started. |
+| M2 — Schema & form engine | Complete. |
 | M3 — Templates & export | Not started. |
 | M4 — Monetization & waitlist | Not started. |
 | M5 — Differentiators | Not started. |
@@ -28,11 +28,12 @@ Per-milestone write-ups are in [`docs/progress/`](docs/progress/).
 Requires Flutter 3.44.0 (stable) and JDK 17.
 
 ```bash
-flutter pub get && flutter gen-l10n && flutter run
+flutter pub get && flutter gen-l10n && dart run build_runner build && flutter run
 ```
 
-Localizations are generated into `lib/l10n/generated/` and are not committed; `flutter pub get`
-and `flutter gen-l10n` both produce them.
+Generated sources — localizations in `lib/l10n/generated/`, and the `freezed`/`json_serializable`
+output next to each model — are not committed. CI regenerates them before analyzing, so they
+cannot drift from their sources.
 
 Before pushing:
 
@@ -50,11 +51,17 @@ lib/
     storage/       LocalStore interface + encrypted Hive implementation
     theme/         design tokens; AppColors is the only file with hex values
     widgets/       shared UI
-  features/        one directory per screen
+  domain/          models and pure logic — no Flutter, no storage, no async
+  data/            repositories and bundled data assets
+  features/        one directory per screen, each with its own controller
   l10n/
     arb/           translation sources — the only place user-facing strings live
     generated/     gen_l10n output (git-ignored)
     language_descriptor.dart
+assets/
+  data/            biradari suggestions
+  fonts/           Inter + Noto Nastaliq Urdu + Noto Naskh Arabic (all OFL)
+  i18n/            shipped labels for built-in fields, per document language
 ```
 
 Four rules that are load-bearing rather than stylistic:
@@ -66,6 +73,9 @@ Four rules that are load-bearing rather than stylistic:
   one ARB file plus one `LanguageDescriptor` entry.
 - **No storage-engine type past the repository boundary,** and document ids are always UUIDs —
   Hive encrypts values but not keys.
+- **The form is data, never a widget tree.** Every field and section is a descriptor a user can
+  rename, reorder, hide, delete or create. Templates render whatever schema exists, so no
+  rendering code may assume any particular field is present.
 
 ## Key documents
 

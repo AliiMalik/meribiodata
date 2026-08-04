@@ -4,6 +4,8 @@ import 'package:meribiodata/core/preferences/app_preferences.dart';
 import 'package:meribiodata/core/router/app_router.dart';
 import 'package:meribiodata/core/storage/local_store.dart';
 import 'package:meribiodata/core/theme/app_theme.dart';
+import 'package:meribiodata/data/bundled_labels.dart';
+import 'package:meribiodata/data/profile_repository.dart';
 import 'package:meribiodata/l10n/generated/app_localizations.dart';
 import 'package:meribiodata/l10n/language_descriptor.dart';
 import 'package:provider/provider.dart';
@@ -12,11 +14,15 @@ class MeriBiodataApp extends StatefulWidget {
   const MeriBiodataApp({
     required this.store,
     required this.preferences,
+    required this.profiles,
+    required this.labels,
     super.key,
   });
 
   final LocalStore store;
   final AppPreferences preferences;
+  final ProfileRepository profiles;
+  final BundledLabels labels;
 
   @override
   State<MeriBiodataApp> createState() => _MeriBiodataAppState();
@@ -30,6 +36,8 @@ class _MeriBiodataAppState extends State<MeriBiodataApp> {
     return MultiProvider(
       providers: [
         Provider<LocalStore>.value(value: widget.store),
+        Provider<ProfileRepository>.value(value: widget.profiles),
+        Provider<BundledLabels>.value(value: widget.labels),
         ChangeNotifierProvider<AppPreferences>.value(
           value: widget.preferences,
         ),

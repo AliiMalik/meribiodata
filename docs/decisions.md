@@ -118,6 +118,74 @@ Background, confirming the build prompt's own prediction that it is a fill colou
 
 ---
 
+## D6 — The schema is per-profile, seeded from a default
+
+**Date:** 2026-08-04 · **Decided by:** Claude, flag if you disagree · **Milestone:** M2
+
+§6.2 describes the default schema as "seeded on first run", which reads as a single global schema.
+Combined with D4 (unlimited profiles) that creates a problem: the per-field overflow menu — rename,
+hide, mark sensitive, delete — lives in the **Form Editor**, which is per-profile. With a global
+schema, renaming "Caste" to "Zaat" while editing one child's biodata would silently rewrite their
+sibling's, and hiding a field on one would hide it everywhere. That is surprising in the worst way:
+invisible until the other biodata is exported.
+
+So: **each profile owns a complete copy of its schema**, created from a default seed when the
+profile is created. "Reset to defaults" in the Schema Editor re-seeds that one profile.
+
+**Consequences:**
+
+- 9.6's boy/girl presets become natural — they are just a second seed, chosen at creation.
+- 9.5's backup is self-contained per profile; no shared schema object to reconcile on restore.
+- The cost is that a user who wants the same rename across three profiles does it three times.
+  Acceptable, and arguably what they mean. If it proves annoying, "apply this schema to my other
+  biodatas" is a later feature, not an architectural change.
+- Schema copies are small (capped at 60 fields / 10 sections by §6.3), so duplication is cheap.
+
+---
+
+## D7 — Cross-language label fallback: following §6.1's order, with a caveat
+
+**Date:** 2026-08-04 · **Decided by:** Claude, **wants your ruling** · **Milestone:** M2
+
+§6.1 contains two rules that pull against each other:
+
+- The resolution order puts **"user override for any language"** (step 2) *above* **"built-in i18n
+  string for the active language"** (step 3).
+- The prose says: *"Renaming 'Caste' to 'Zaat/Biradari' in the Urdu document must not silently
+  rename it in the English document."*
+
+Under the stated order, a user who renames a field in Urdu **will** see their Urdu words in the
+English document, because English has no override of its own and step 2 fires before the shipped
+English label. The two statements only reconcile if "must not silently rename" is read as *"the
+stored overrides are per-language and one must not overwrite the other"* — which is exactly what
+the ordering plus the §6.1 language chip implies.
+
+**Implemented as specified.** Overrides are stored per locale, one never overwrites another, and
+`LabelResolver.isBorrowedFromAnotherLanguage` tells the UI when a shown label came from a different
+language so it can display the chip.
+
+**The caveat, and why I want your ruling.** For a *built-in* field this produces an English word
+inside an Urdu biodata — "Caste" where "ذات / برادری" was already available and correct. That is
+precisely the kind of blemish the product exists to avoid. For a *custom* field the behaviour is
+obviously right: there is no shipped label, so borrowing is the only alternative to showing a UUID.
+
+Three options:
+
+1. **As specified now** — step 2 always outranks the shipped label. Consistent, and the chip
+   explains it. Risks English text in an Urdu document.
+2. **Step 2 only for custom fields.** A built-in field with a shipped translation for the active
+   language uses it; a renamed built-in falls back to the shipped label rather than to another
+   language's override. Best output quality; slightly more surprising to edit.
+3. **Step 2, but prompt.** On switching document language, offer "you renamed 3 fields in Urdu —
+   translate them for English?" More code, best of both, M3 at the earliest.
+
+**My recommendation is 2.** The whole product thesis is that the Urdu output is right, and a
+built-in field already has a correct, reviewed translation sitting there. Option 1's failure mode
+lands in the exported PDF, which is the artifact the user shares. Changing to 2 is a small edit in
+`LabelResolver` and one test.
+
+---
+
 ## Still open
 
 | # | Question | Blocks |

@@ -45,6 +45,8 @@ flutter:
 
   assets:
     - assets/fonts/
+    - assets/i18n/
+    - assets/data/
 
   fonts:
     # UI chrome (Latin). SIL OFL.

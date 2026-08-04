@@ -3,6 +3,8 @@ import 'package:meribiodata/app.dart';
 import 'package:meribiodata/core/preferences/app_preferences.dart';
 import 'package:meribiodata/core/preferences/preferences_repository.dart';
 import 'package:meribiodata/core/storage/hive_local_store.dart';
+import 'package:meribiodata/data/bundled_labels.dart';
+import 'package:meribiodata/data/profile_repository.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -22,5 +24,12 @@ Future<void> _start() async {
   final preferences = AppPreferences(PreferencesRepository(store));
   await preferences.load();
 
-  runApp(MeriBiodataApp(store: store, preferences: preferences));
+  runApp(
+    MeriBiodataApp(
+      store: store,
+      preferences: preferences,
+      profiles: ProfileRepository(store),
+      labels: await BundledLabels.load(),
+    ),
+  );
 }

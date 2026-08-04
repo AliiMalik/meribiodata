@@ -41,5 +41,87 @@
   "actionRetry": "دوبارہ کوشش کریں",
 
   "errorGenericTitle": "کچھ غلط ہو گیا",
-  "errorStorageBody": "آپ کے بایوڈیٹا نہیں کھل سکے۔ عام طور پر ایپ دوبارہ چلانے سے یہ مسئلہ حل ہو جاتا ہے۔"
+  "errorStorageBody": "آپ کے بایوڈیٹا نہیں کھل سکے۔ عام طور پر ایپ دوبارہ چلانے سے یہ مسئلہ حل ہو جاتا ہے۔",
+
+  "editorTitle": "بایوڈیٹا میں تبدیلی",
+  "editorUntitled": "بغیر نام کا بایوڈیٹا",
+  "editorProfileName": "اس بایوڈیٹا کا نام رکھیں",
+  "editorProfileNameHint": "یہ صرف آپ کو نظر آتا ہے — دستاویز میں شامل نہیں ہوتا",
+  "editorProgress": "{percent}% مکمل",
+  "@editorProgress": {
+    "placeholders": { "percent": { "type": "int" } }
+  },
+  "editorSaving": "محفوظ ہو رہا ہے…",
+  "editorSaved": "محفوظ ہو گیا",
+  "editorSaveFailed": "محفوظ نہیں ہوا",
+  "editorNotFound": "یہ بایوڈیٹا اب موجود نہیں۔",
+
+  "fieldChooseDate": "تاریخ منتخب کریں",
+  "fieldAgeYears": "{years} سال",
+  "@fieldAgeYears": {
+    "placeholders": { "years": { "type": "int" } }
+  },
+  "fieldOther": "دیگر…",
+  "fieldSensitive": "محدود اشتراک میں چھپا رہے گا",
+  "fieldHidden": "دستاویز میں شامل نہیں",
+  "fieldRenamedInOtherLanguage": "دوسری زبان میں نام بدلا گیا",
+
+  "unitFeet": "فٹ",
+  "unitInches": "انچ",
+  "unitKilograms": "کلوگرام",
+  "periodMonth": "ماہانہ",
+  "periodYear": "سالانہ",
+
+  "groupTotal": "کتنے",
+  "groupMarried": "شادی شدہ",
+  "groupAddPerson": "ایک فرد کی تفصیل شامل کریں",
+
+  "menuRename": "عنوان تبدیل کریں",
+  "menuResetLabel": "عام عنوان استعمال کریں",
+  "menuMarkRequired": "لازمی قرار دیں",
+  "menuMarkOptional": "اختیاری قرار دیں",
+  "menuHide": "دستاویز سے چھپائیں",
+  "menuShow": "دستاویز میں دکھائیں",
+  "menuMarkSensitive": "حساس قرار دیں",
+  "menuMarkNotSensitive": "حساس نہ سمجھیں",
+  "menuDeleteField": "خانہ حذف کریں",
+
+  "schemaEditorTitle": "خانے اور حصے",
+  "schemaAddField": "نیا خانہ شامل کریں",
+  "schemaAddSection": "نیا حصہ شامل کریں",
+  "schemaResetTitle": "عام خانوں پر واپس جائیں؟",
+  "schemaResetBody": "یہ بایوڈیٹا دوبارہ عام خانوں اور حصوں پر چلا جائے گا، اور اس میں لکھی گئی ہر بات مٹ جائے گی۔ آپ کے دوسرے بایوڈیٹا پر کوئی اثر نہیں پڑے گا۔",
+  "schemaReset": "خانے دوبارہ ترتیب دیں",
+  "schemaFieldLabel": "عنوان",
+  "schemaFieldType": "قسم",
+
+  "errorFieldLimit": "ایک بایوڈیٹا میں زیادہ سے زیادہ {max} خانے ہو سکتے ہیں۔",
+  "@errorFieldLimit": {
+    "placeholders": { "max": { "type": "int" } }
+  },
+  "errorSectionLimit": "ایک بایوڈیٹا میں زیادہ سے زیادہ {max} حصے ہو سکتے ہیں۔",
+  "@errorSectionLimit": {
+    "placeholders": { "max": { "type": "int" } }
+  },
+  "errorFieldNotDeletable": "یہ خانہ حذف نہیں کیا جا سکتا۔",
+  "errorSectionNotDeletable": "یہ حصہ حذف نہیں کیا جا سکتا۔",
+  "errorLabelEmpty": "براہ کرم عنوان لکھیں۔",
+  "errorLabelTooLong": "یہ عنوان بہت طویل ہے۔",
+
+  "homeSearch": "بایوڈیٹا تلاش کریں",
+  "homeNoMatches": "اس تلاش سے کوئی بایوڈیٹا نہیں ملا۔",
+  "homeDuplicate": "نقل بنائیں",
+  "homeCopySuffix": "{name} (نقل)",
+  "@homeCopySuffix": {
+    "placeholders": { "name": { "type": "String" } }
+  },
+  "homeDeleteTitle": "یہ بایوڈیٹا حذف کریں؟",
+  "homeDeleteBody": "{name} اس فون سے ہمیشہ کے لیے حذف ہو جائے گا۔ اسے واپس نہیں لایا جا سکتا۔",
+  "@homeDeleteBody": {
+    "placeholders": { "name": { "type": "String" } }
+  },
+  "homeUpdatedAt": "{date} کو تبدیل کیا گیا",
+  "@homeUpdatedAt": {
+    "placeholders": { "date": { "type": "String" } }
+  }
 }

@@ -85,5 +85,139 @@
   "errorGenericTitle": "Something went wrong",
   "@errorGenericTitle": {},
   "errorStorageBody": "Your biodatas could not be opened. Restarting the app usually fixes this.",
-  "@errorStorageBody": {}
+  "@errorStorageBody": {},
+
+  "editorTitle": "Edit biodata",
+  "@editorTitle": {},
+  "editorUntitled": "Untitled biodata",
+  "@editorUntitled": {},
+  "editorProfileName": "Name this biodata",
+  "@editorProfileName": {
+    "description": "Internal label for the profile list. Never printed on the document."
+  },
+  "editorProfileNameHint": "Only you see this — it is never printed",
+  "@editorProfileNameHint": {},
+  "editorProgress": "{percent}% complete",
+  "@editorProgress": {
+    "placeholders": { "percent": { "type": "int" } }
+  },
+  "editorSaving": "Saving…",
+  "@editorSaving": {},
+  "editorSaved": "Saved",
+  "@editorSaved": {},
+  "editorSaveFailed": "Not saved",
+  "@editorSaveFailed": {},
+  "editorNotFound": "This biodata no longer exists.",
+  "@editorNotFound": {},
+
+  "fieldChooseDate": "Choose a date",
+  "@fieldChooseDate": {},
+  "fieldAgeYears": "{years} years",
+  "@fieldAgeYears": {
+    "placeholders": { "years": { "type": "int" } }
+  },
+  "fieldOther": "Other…",
+  "@fieldOther": {
+    "description": "Dropdown entry that reveals a free-text box. Every dropdown accepts free text."
+  },
+  "fieldSensitive": "Hidden in Shareable exports",
+  "@fieldSensitive": {},
+  "fieldHidden": "Hidden from the document",
+  "@fieldHidden": {},
+  "fieldRenamedInOtherLanguage": "Renamed in another language",
+  "@fieldRenamedInOtherLanguage": {
+    "description": "Chip shown when a label is borrowed from a different language's override."
+  },
+
+  "unitFeet": "Feet",
+  "@unitFeet": {},
+  "unitInches": "Inches",
+  "@unitInches": {},
+  "unitKilograms": "Kilograms",
+  "@unitKilograms": {},
+  "periodMonth": "Monthly",
+  "@periodMonth": {},
+  "periodYear": "Yearly",
+  "@periodYear": {},
+
+  "groupTotal": "How many",
+  "@groupTotal": {},
+  "groupMarried": "Married",
+  "@groupMarried": {},
+  "groupAddPerson": "Add details for one person",
+  "@groupAddPerson": {},
+
+  "menuRename": "Rename label",
+  "@menuRename": {},
+  "menuResetLabel": "Use the standard label",
+  "@menuResetLabel": {},
+  "menuMarkRequired": "Mark as required",
+  "@menuMarkRequired": {},
+  "menuMarkOptional": "Mark as optional",
+  "@menuMarkOptional": {},
+  "menuHide": "Hide from the document",
+  "@menuHide": {},
+  "menuShow": "Show in the document",
+  "@menuShow": {},
+  "menuMarkSensitive": "Mark as sensitive",
+  "@menuMarkSensitive": {},
+  "menuMarkNotSensitive": "Mark as not sensitive",
+  "@menuMarkNotSensitive": {},
+  "menuDeleteField": "Delete field",
+  "@menuDeleteField": {},
+
+  "schemaEditorTitle": "Fields & sections",
+  "@schemaEditorTitle": {},
+  "schemaAddField": "Add a field",
+  "@schemaAddField": {},
+  "schemaAddSection": "Add a section",
+  "@schemaAddSection": {},
+  "schemaResetTitle": "Reset to the standard fields?",
+  "@schemaResetTitle": {},
+  "schemaResetBody": "This biodata goes back to the standard fields and sections, and everything you have typed into it is erased. Your other biodatas are not affected.",
+  "@schemaResetBody": {},
+  "schemaReset": "Reset fields",
+  "@schemaReset": {},
+  "schemaFieldLabel": "Label",
+  "@schemaFieldLabel": {},
+  "schemaFieldType": "Type",
+  "@schemaFieldType": {},
+
+  "errorFieldLimit": "A biodata can have at most {max} fields.",
+  "@errorFieldLimit": {
+    "placeholders": { "max": { "type": "int" } }
+  },
+  "errorSectionLimit": "A biodata can have at most {max} sections.",
+  "@errorSectionLimit": {
+    "placeholders": { "max": { "type": "int" } }
+  },
+  "errorFieldNotDeletable": "This field cannot be removed.",
+  "@errorFieldNotDeletable": {},
+  "errorSectionNotDeletable": "This section cannot be removed.",
+  "@errorSectionNotDeletable": {},
+  "errorLabelEmpty": "Please type a label.",
+  "@errorLabelEmpty": {},
+  "errorLabelTooLong": "That label is too long.",
+  "@errorLabelTooLong": {},
+
+  "homeSearch": "Search biodatas",
+  "@homeSearch": {},
+  "homeNoMatches": "No biodatas match that search.",
+  "@homeNoMatches": {},
+  "homeDuplicate": "Duplicate",
+  "@homeDuplicate": {},
+  "homeCopySuffix": "{name} (copy)",
+  "@homeCopySuffix": {
+    "placeholders": { "name": { "type": "String" } }
+  },
+  "homeDeleteTitle": "Delete this biodata?",
+  "@homeDeleteTitle": {},
+  "homeDeleteBody": "{name} will be permanently deleted from this phone. This cannot be undone.",
+  "@homeDeleteBody": {
+    "placeholders": { "name": { "type": "String" } }
+  },
+  "homeUpdatedAt": "Edited {date}",
+  "@homeUpdatedAt": {
+    "placeholders": { "date": { "type": "String" } }
+  }
 }
