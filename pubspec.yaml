@@ -10,6 +10,7 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  flutter_image_compress: ^2.5.1
   flutter_localizations:
     sdk: flutter
 
@@ -26,7 +27,10 @@ dependencies:
   path_provider: ^2.1.6
   # State management is fixed by the SRS: Provider + ChangeNotifier +
   # repositories.
+  pdf: ^3.13.0
+  printing: ^5.15.0
   provider: ^6.1.5+1
+  share_plus: ^13.3.0
   uuid: ^4.6.0
 
 dev_dependencies:

@@ -1,0 +1,144 @@
+import 'dart:ui' show Color;
+
+import 'package:meribiodata/domain/render/doc_block.dart';
+import 'package:meribiodata/domain/render/rendered_document.dart';
+
+/// Page geometry, in PDF points (1/72 inch).
+class PageSpec {
+  const PageSpec({
+    required this.id,
+    required this.width,
+    required this.height,
+  });
+
+  static const a4 = PageSpec(id: 'a4', width: 595, height: 842);
+  static const letter = PageSpec(id: 'letter', width: 612, height: 792);
+
+  /// 4x6 inches — the card format families hand over in person.
+  static const card = PageSpec(id: 'card', width: 288, height: 432);
+
+  static const all = <PageSpec>[a4, letter, card];
+
+  final String id;
+  final double width;
+  final double height;
+
+  static PageSpec byId(String id) =>
+      all.firstWhere((p) => p.id == id, orElse: () => a4);
+}
+
+/// Everything a renderer needs to draw a template's blocks.
+///
+/// Documents are their own design surface, deliberately unlike the app UI:
+/// restrained ink, generous margins (§10). None of the app's greens belong
+/// here by default.
+class TemplateStyle {
+  const TemplateStyle({
+    required this.margin,
+    required this.titleSize,
+    required this.sectionTitleSize,
+    required this.labelSize,
+    required this.valueSize,
+    required this.labelColumnWidth,
+    required this.rowGap,
+    required this.sectionGap,
+    required this.ink,
+    required this.mutedInk,
+    required this.rule,
+    this.accent,
+    this.sectionTitleUppercase = false,
+    this.titleCentred = true,
+    this.showSectionRule = true,
+  });
+
+  final double margin;
+  final double titleSize;
+  final double sectionTitleSize;
+  final double labelSize;
+  final double valueSize;
+  final double labelColumnWidth;
+  final double rowGap;
+  final double sectionGap;
+
+  final Color ink;
+  final Color mutedInk;
+  final Color rule;
+
+  /// Null for the monochrome print-shop template.
+  final Color? accent;
+
+  final bool sectionTitleUppercase;
+  final bool titleCentred;
+  final bool showSectionRule;
+
+  bool get isMonochrome => accent == null;
+}
+
+/// A template is layout, typography and ornament — never a fixed field list.
+///
+/// It renders whatever schema exists (§6.4), so it must survive zero optional
+/// fields, every field, a hidden section, a custom section, and a 60-character
+/// custom label.
+abstract class DocumentTemplate {
+  const DocumentTemplate();
+
+  /// Stable id, stored on the profile. Never change one that has shipped.
+  String get id;
+
+  /// Shown in the picker. Not translated in M3 — template names are brand-ish
+  /// and the picker shows a live thumbnail anyway.
+  String get name;
+
+  /// True when the template prints without colour, for corner-shop printing.
+  bool get isMonochrome => style.isMonochrome;
+
+  TemplateStyle get style;
+
+  /// Turns a document into the block stream both renderers consume.
+  List<DocBlock> blocks(RenderedDocument document) {
+    final blocks = <DocBlock>[];
+
+    if (document.headerText case final String header when header.isNotEmpty) {
+      blocks
+        ..add(DocHeader(header))
+        ..add(DocSpacer(style.rowGap));
+    }
+
+    blocks.add(DocTitle(document.title));
+    if (style.showSectionRule) {
+      blocks
+        ..add(DocSpacer(style.rowGap))
+        ..add(DocDivider(color: style.rule));
+    }
+    blocks.add(DocSpacer(style.sectionGap));
+
+    for (final section in document.nonEmptySections) {
+      blocks
+        ..add(
+          DocSectionTitle(
+            style.sectionTitleUppercase
+                ? section.title.toUpperCase()
+                : section.title,
+          ),
+        )
+        ..add(DocSpacer(style.rowGap));
+
+      for (final field in section.fields) {
+        blocks.add(
+          DocRow(
+            label: field.label,
+            value: field.value,
+            isMasked: field.wasMasked,
+          ),
+        );
+      }
+      blocks.add(DocSpacer(style.sectionGap));
+    }
+
+    if (document.watermark case final String mark when mark.isNotEmpty) {
+      blocks.add(DocFooter(mark));
+    }
+
+    return blocks;
+  }
+}

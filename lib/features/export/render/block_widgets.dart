@@ -1,0 +1,210 @@
+import 'package:flutter/material.dart';
+import 'package:meribiodata/domain/render/doc_block.dart';
+import 'package:meribiodata/domain/render/template.dart';
+import 'package:meribiodata/l10n/language_descriptor.dart';
+
+/// Draws the layout IR as Flutter widgets.
+///
+/// This is the raster backend (Pipeline B, D1) — the one that renders
+/// Perso-Arabic correctly, because Flutter shapes text with HarfBuzz.
+class BlockWidgets {
+  const BlockWidgets({required this.style, required this.language});
+
+  final TemplateStyle style;
+  final LanguageDescriptor language;
+
+  TextStyle _base(double size, {Color? color, FontWeight? weight}) => TextStyle(
+    fontFamily: language.documentFontFamily,
+    fontFamilyFallback: language.documentFontFallback,
+    fontSize: size,
+    height: language.lineHeight,
+    color: color ?? style.ink,
+    fontWeight: weight,
+  );
+
+  TextAlign get _align => language.isRtl ? TextAlign.right : TextAlign.left;
+
+  Widget build(DocBlock block) => switch (block) {
+    DocHeader(:final text) => Center(
+      child: Text(
+        text,
+        textAlign: TextAlign.center,
+        style: _base(
+          style.valueSize + 1,
+          color: style.accent ?? style.mutedInk,
+        ),
+      ),
+    ),
+    DocTitle(:final text) => Align(
+      alignment: style.titleCentred
+          ? Alignment.center
+          : AlignmentDirectional.centerStart,
+      child: Text(
+        text,
+        textAlign: style.titleCentred ? TextAlign.center : _align,
+        style: _base(style.titleSize, weight: FontWeight.w700),
+      ),
+    ),
+    DocSectionTitle(:final text) => Text(
+      text,
+      textAlign: _align,
+      style: _base(
+        style.sectionTitleSize,
+        color: style.accent ?? style.ink,
+        weight: FontWeight.w700,
+      ),
+    ),
+    DocRow(:final label, :final value) => Padding(
+      padding: EdgeInsets.only(bottom: style.rowGap),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        // The row is laid out in document order explicitly rather than via
+        // Directionality, so the label column stays on the reading-start side
+        // in both directions without a second code path.
+        textDirection: TextDirection.ltr,
+        children: language.isRtl
+            ? [
+                Expanded(child: _value(value)),
+                SizedBox(width: style.rowGap),
+                SizedBox(width: style.labelColumnWidth, child: _label(label)),
+              ]
+            : [
+                SizedBox(width: style.labelColumnWidth, child: _label(label)),
+                SizedBox(width: style.rowGap),
+                Expanded(child: _value(value)),
+              ],
+      ),
+    ),
+    DocParagraph(:final text) => Text(
+      text,
+      textAlign: _align,
+      style: _base(style.valueSize),
+    ),
+    DocDivider(:final thickness, :final color) => Container(
+      height: thickness,
+      color: color ?? style.rule,
+    ),
+    DocSpacer(:final height) => SizedBox(height: height),
+    DocFooter(:final text) => Center(
+      child: Text(
+        text,
+        textAlign: TextAlign.center,
+        style: _base(style.labelSize - 2, color: style.mutedInk),
+      ),
+    ),
+  };
+
+  Widget _label(String label) => Text(
+    label,
+    textAlign: _align,
+    style: _base(
+      style.labelSize,
+      color: style.mutedInk,
+      weight: FontWeight.w700,
+    ),
+  );
+
+  Widget _value(String value) =>
+      Text(value, textAlign: _align, style: _base(style.valueSize));
+}
+
+/// The full document as one tall column, at page width.
+///
+/// Laid out once; the paginator measures it and then renders slices of it, so
+/// there is exactly one layout pass and page N always looks like the same
+/// content did when measured.
+class DocumentColumn extends StatelessWidget {
+  const DocumentColumn({
+    required this.blocks,
+    required this.style,
+    required this.language,
+    required this.width,
+    this.blockKeys,
+    super.key,
+  });
+
+  final List<DocBlock> blocks;
+  final TemplateStyle style;
+  final LanguageDescriptor language;
+  final double width;
+
+  /// One key per block, used by the paginator to read heights.
+  final List<GlobalKey>? blockKeys;
+
+  @override
+  Widget build(BuildContext context) {
+    final painter = BlockWidgets(style: style, language: language);
+
+    return SizedBox(
+      width: width,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          for (var i = 0; i < blocks.length; i++)
+            KeyedSubtree(
+              key: blockKeys == null ? null : blockKeys![i],
+              child: painter.build(blocks[i]),
+            ),
+        ],
+      ),
+    );
+  }
+}
+
+/// One page: white paper, margins, and the slice of the column that belongs
+/// on this page.
+class DocumentPage extends StatelessWidget {
+  const DocumentPage({
+    required this.blocks,
+    required this.style,
+    required this.language,
+    required this.page,
+    required this.offsetY,
+    required this.height,
+    super.key,
+  });
+
+  final List<DocBlock> blocks;
+  final TemplateStyle style;
+  final LanguageDescriptor language;
+  final PageSpec page;
+
+  /// How far into the tall column this page starts.
+  final double offsetY;
+
+  /// Visible height of the content area on this page.
+  final double height;
+
+  @override
+  Widget build(BuildContext context) {
+    final contentWidth = page.width - style.margin * 2;
+
+    return Container(
+      width: page.width,
+      height: page.height,
+      color: Colors.white,
+      padding: EdgeInsets.all(style.margin),
+      child: ClipRect(
+        child: SizedBox(
+          width: contentWidth,
+          height: height,
+          child: OverflowBox(
+            alignment: Alignment.topLeft,
+            minHeight: 0,
+            maxHeight: double.infinity,
+            child: Transform.translate(
+              offset: Offset(0, -offsetY),
+              child: DocumentColumn(
+                blocks: blocks,
+                style: style,
+                language: language,
+                width: contentWidth,
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}

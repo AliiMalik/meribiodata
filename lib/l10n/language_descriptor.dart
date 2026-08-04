@@ -74,10 +74,18 @@ class LanguageDescriptor {
     TextScript.naskh => 'NotoNaskhArabic',
   };
 
+  /// Fallback chain for document text.
+  ///
+  /// Every Perso-Arabic chain ends in Inter, and that is not cosmetic: Noto
+  /// Naskh Arabic ships no glyphs for `/ ( ) - +`, which are exactly the
+  /// characters a phone number, a date and a parenthesised age need. Without
+  /// an explicit fallback those come from whatever font the device happens to
+  /// have — the same device-dependent rendering the UI font chain fixes, and
+  /// the thing this product cannot afford to get wrong.
   List<String> get documentFontFallback => switch (script) {
     TextScript.latin => const [],
-    TextScript.nastaliq => const ['NotoNaskhArabic'],
-    TextScript.naskh => const [],
+    TextScript.nastaliq => const ['NotoNaskhArabic', 'Inter'],
+    TextScript.naskh => const ['Inter'],
   };
 
   /// Line-height multiplier for *document* text blocks.
