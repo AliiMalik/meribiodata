@@ -122,5 +122,34 @@ moves. AdMob's collection is still collection, and it is the developer who decla
 2. **Waitlist form provider** — the policy names the provider and links its policy. Fill this in once
    the form exists (open question 8).
 3. **Effective date** — set on the day it goes live.
-4. The hosted URL then goes into the Play listing, into the Settings screen, and into
-   `AppConfig.privacyPolicyUrl`.
+
+The publish workflow refuses to deploy while items 1 and 3 are still placeholders, so this list
+cannot be skipped by accident.
+
+## How it gets published
+
+`.github/workflows/publish-privacy.yml` deploys `docs/privacy/` — and only that folder — to GitHub
+Pages on every push that touches it. The page is a single self-contained HTML file with no build
+step, so it works anywhere that serves static files.
+
+To turn it on:
+
+```bash
+git remote add origin git@github.com:<you>/meribiodata.git
+git push -u origin master
+```
+
+Then in the repository: **Settings → Pages → Source → GitHub Actions**. The workflow runs and prints
+the URL.
+
+**If this repository stays private,** GitHub Pages needs a paid plan. The cheaper route is a
+separate small public repo holding just the contents of `docs/privacy/`, with Pages enabled on it.
+Nothing about the page changes.
+
+Once the URL exists:
+
+1. Set it as the default in `lib/core/config/legal_links.dart`, or pass
+   `--dart-define=PRIVACY_POLICY_URL=…` at build time.
+2. Delete `test/core/legal_links_test.dart`, which exists to fail at exactly this moment.
+3. Put the same URL in the Play Console listing **and** in the Data Safety form. Play checks that
+   the two agree.
