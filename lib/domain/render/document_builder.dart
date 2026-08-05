@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+
 import 'package:meribiodata/domain/biodata/biodata_profile.dart';
 import 'package:meribiodata/domain/biodata/default_schema.dart';
 import 'package:meribiodata/domain/biodata/field_descriptor.dart';
@@ -87,10 +89,15 @@ class DocumentBuilder {
   /// Injectable so age-dependent goldens are stable.
   final DateTime? now;
 
+  /// [photo] is supplied by the caller rather than read from
+  /// [BiodataProfile.photoPath], for two reasons: this class stays pure Dart
+  /// with no filesystem, and the include-or-not decision (9.3) lives in one
+  /// place in the UI instead of being re-derived here.
   RenderedDocument build(
     BiodataProfile profile, {
     ExportMode mode = ExportMode.full,
     String? watermark,
+    Uint8List? photo,
   }) {
     final language = AppLanguages.byCode(profile.documentLanguageCode);
     final resolver = LabelResolver(labels);
@@ -131,6 +138,8 @@ class DocumentBuilder {
       mode: mode,
       headerText: profile.headerText,
       watermark: watermark,
+      photo: photo,
+      photoOnSeparatePage: profile.photoOnSeparatePage,
     );
   }
 

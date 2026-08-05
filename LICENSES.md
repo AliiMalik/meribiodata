@@ -37,6 +37,7 @@ a default.
 
 | Package | Version | License |
 |---|---|---|
+| cryptography | 2.9.0 | Apache-2.0 |
 | flutter_image_compress | 2.5.1 | MIT |
 | flutter_secure_storage | 10.3.1 | BSD-3-Clause |
 | freezed_annotation | 3.1.0 | MIT |
@@ -44,6 +45,7 @@ a default.
 | google_mobile_ads | 9.0.0 | Apache-2.0 |
 | hive_ce | 2.19.3 | Apache-2.0 |
 | hive_ce_flutter | 2.3.4 | Apache-2.0 |
+| image_picker | 1.2.3 | Apache-2.0 |
 | intl | (resolved by flutter_localizations) | BSD-3-Clause |
 | json_annotation | 4.12.0 | BSD-3-Clause |
 | path_provider | 2.1.6 | BSD-3-Clause |
@@ -73,10 +75,13 @@ browser by design (`docs/decisions.md` D8), and CI enforces that.
 |---|---|
 | arabic_reshaper (MIT) | Evaluated in M0. Not carried forward — the presentation-forms approach it implements is unusable for Nastaliq. See `docs/spike-nastaliq.md`. |
 | hive_ce_generator (Apache-2.0) | Dropped. Its analyzer constraint forces a prerelease `freezed`, and storing JSON documents is a better fit for a schema-driven field engine. See `docs/decisions.md` D2. |
+| file_picker (MIT) | Added at M5 for backup restore, then removed. Its Android build still evaluates the removed `jcenter()` repository, and every version that fixes that pins a `win32` range `share_plus` rejects; the only resolvable combination was a beta. Replaced by ~40 lines of Storage Access Framework in `MainActivity.kt`. |
+| image_cropper (Apache-2.0) | Not adopted. It wraps two heavy native cropper libraries and adds an Android activity and theme to configure, to deliver a free-form crop the app does not want — biodata photos are a fixed portrait shape. `PhotoCropScreen` is a Flutter widget over `dart:ui`, and the same code path also does the metadata stripping (9.3). |
+| Any EXIF-editing package | Not adopted, and not needed. Metadata is not edited out of the photo; the photo is redrawn from decoded pixels, so there is nothing for it to survive in. See `lib/features/photo/photo_processor.dart`. |
 
-### Expected later
-
-Image-picking and crypto packages at M5.
+**Transitive note:** `image_picker` brings `image_picker_android` and the platform interface. The
+desktop implementations (`image_picker_macos`, `image_picker_windows`, both BSD-3-Clause) resolve
+but are never built — the app has no `ios/`, `macos/` or `windows/` target.
 
 Note: `printing` is used only for its PDF plumbing. `Printing.convertHtml` — the M0
 Pipeline C route — is deprecated and broken on Android, and is not called anywhere.

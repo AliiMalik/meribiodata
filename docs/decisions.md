@@ -240,6 +240,56 @@ the committed value is Google's test App ID for the same reason.
 
 ---
 
+## D11 — Shareable is the default export mode, and the choice does not persist
+
+**Decision.** The Preview & Export screen opens in Shareable mode every time, and the mode resets
+to Shareable whenever the screen is opened. Choosing Full is a deliberate act on each export.
+
+**Why.** The two mistakes are not symmetric. Sending a Shareable copy to a family who wanted the
+full details means they ask for a phone number — an annoyance, and recoverable. Sending a Full
+copy into a WhatsApp group puts a young woman's mobile number and home address into circulation
+that nobody can recall. A remembered preference optimises for the recoverable mistake at the cost
+of the unrecoverable one.
+
+The cost is real — a matchmaker exporting ten Full biodatas in a row taps twice each time — and it
+is accepted.
+
+---
+
+## D12 — Photos: opt-in per export, and stripped by redrawing rather than by editing
+
+Resolves open question 6 ("Photos: included by default in templates, or opt-in?").
+
+**Decision.**
+
+1. **Opt-in per export.** A stored photo is included only when the switch on the export screen is
+   on. It defaults to on in Full and off in Shareable, and — the part that matters — switching
+   mode **resets** the switch rather than carrying the previous answer over. The failure being
+   designed against is a user who includes the photo for one trusted family, switches to the
+   wide-sharing copy, and sends a photograph to a WhatsApp group. After this, that needs a second
+   deliberate tap, next to the warning.
+2. **`RenderedDocument.photo` is the only route in.** `DocumentBuilder` never reads
+   `BiodataProfile.photoPath`; the caller passes bytes or does not. "Excluded" is therefore the
+   absence of data rather than a flag every renderer has to remember to check.
+3. **Metadata is not stripped, it is never carried.** The picked file is decoded to pixels, the
+   pixels are drawn onto a fresh canvas, and the canvas is encoded from scratch. EXIF, GPS, the
+   camera serial, an editing app's history — none of it has a path through, because metadata does
+   not survive being turned into pixels. `ExifScanner` exists to *check* this in tests and in a
+   debug assertion, not to do it.
+4. **Photos live in `photos/`, outside the FileProvider grant.** `file_paths.xml` grants only
+   `exports/`. No share intent can reach a stored photo; the only way one leaves the phone is
+   inside a document the user exported with the switch on.
+5. **Photos are carried inside the `.mbd` backup**, base64 in the encrypted payload. A restore
+   that brought back the words and dropped the photographs would fail at the thing people notice
+   first. Files without the `photos` key are treated as valid older backups.
+
+**Why not a "sensitive by default, remember my choice" toggle.** Because the whole point is that
+this choice is context-dependent. There is no setting for "this recipient is trustworthy".
+
+**Cost accepted.** A backup of ten profiles with photos is roughly 2 MB rather than 60 KB.
+
+---
+
 ## Still open
 
 | # | Question | Blocks |
@@ -249,7 +299,7 @@ the committed value is Google's test App ID for the same reason.
 | 3 | Native-reader sign-off on the Urdu/Sindhi/Pashto output — the last M0 exit criterion. | M0 (open) |
 | 4 | Real-device benchmark against NFR-2 (< 3 s on a 3 GB phone). | M0 / M6 |
 | 5 | Watermark wording and prominence. Currently the placeholder "Made with MeriBiodata", visible on every export today. | M3 (open) |
-| 6 | Photos: included by default in templates, or opt-in? | M5 |
+| ~~6~~ | ~~Photos: included by default in templates, or opt-in?~~ **Answered by D12: opt-in per export, reset on every mode change.** | closed |
 | 7 | Backup password policy: enforce minimum strength, or warn only? | M5 |
 | 8 | The waitlist form URL itself, once you create the form. | M4 |
 | 9 | Play Console account (needed only for the M6 upload). | M6 |

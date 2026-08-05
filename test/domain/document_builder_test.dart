@@ -1,10 +1,14 @@
+import 'dart:typed_data';
+
 import 'package:flutter_test/flutter_test.dart';
 import 'package:meribiodata/domain/biodata/biodata_profile.dart';
 import 'package:meribiodata/domain/biodata/default_schema.dart';
 import 'package:meribiodata/domain/biodata/field_values.dart';
 import 'package:meribiodata/domain/biodata/schema_editor.dart';
+import 'package:meribiodata/domain/render/doc_block.dart';
 import 'package:meribiodata/domain/render/document_builder.dart';
 import 'package:meribiodata/domain/render/rendered_document.dart';
+import 'package:meribiodata/domain/render/templates.dart';
 import 'package:meribiodata/domain/text/bidi_text.dart';
 import 'package:meribiodata/l10n/language_descriptor.dart';
 
@@ -369,5 +373,90 @@ void main() {
         DigitStyle.western,
       );
     });
+  });
+
+  group('the photo is carried, never inferred (9.3)', () {
+    final photo = Uint8List.fromList(List.generate(64, (i) => i));
+
+    test('a profile with a photo on disk renders without one unless it is '
+        'passed in', () {
+      // The include-or-exclude decision belongs to the export screen. If the
+      // builder read photoPath itself, every caller would have to remember to
+      // suppress it — and the one that forgot would put a photograph into a
+      // wide-sharing copy.
+      final profile = profileWith(
+        const {},
+      ).copyWith(photoPath: 'photos/anything.jpg');
+
+      expect(builder.build(profile).hasPhoto, isFalse);
+      expect(builder.build(profile, photo: photo).hasPhoto, isTrue);
+    });
+
+    test(
+      'Shareable mode does not silently strip a photo the caller passed',
+      () {
+        // Stripping here would be a second, hidden rule about photos. There is
+        // exactly one, and it lives in the UI where the warning is.
+        final document = builder.build(
+          profileWith(const {}),
+          mode: ExportMode.shareable,
+          photo: photo,
+        );
+
+        expect(document.photo, photo);
+      },
+    );
+
+    test('the separate-page choice travels with the profile', () {
+      final profile = profileWith(const {}).copyWith(
+        photoOnSeparatePage: true,
+      );
+
+      expect(builder.build(profile, photo: photo).photoOnSeparatePage, isTrue);
+    });
+  });
+
+  group('templates place the photo (9.3)', () {
+    final photo = Uint8List.fromList(List.generate(64, (i) => i));
+
+    for (final template in Templates.all) {
+      test('${template.id} puts an inline photo above the sections', () {
+        final blocks = template.blocks(
+          builder.build(profileWith(const {}), photo: photo),
+        );
+
+        final photoAt = blocks.indexWhere((b) => b is DocPhoto);
+        final firstSection = blocks.indexWhere((b) => b is DocSectionTitle);
+
+        expect(photoAt, isNonNegative);
+        expect(blocks.whereType<DocPageBreak>(), isEmpty);
+        if (firstSection >= 0) expect(photoAt, lessThan(firstSection));
+      });
+
+      test(
+        '${template.id} puts a separate-page photo last, behind a break',
+        () {
+          final blocks = template.blocks(
+            builder.build(
+              profileWith(const {}).copyWith(photoOnSeparatePage: true),
+              photo: photo,
+            ),
+          );
+
+          expect(blocks.last, isA<DocPhoto>());
+          expect(
+            blocks.indexWhere((b) => b is DocPageBreak),
+            lessThan(blocks.indexWhere((b) => b is DocPhoto)),
+          );
+        },
+      );
+
+      test('${template.id} emits no photo blocks when there is none', () {
+        final blocks = template.blocks(builder.build(profileWith(const {})));
+
+        expect(blocks.whereType<DocPhoto>(), isEmpty);
+        expect(blocks.whereType<DocPageBreak>(), isEmpty);
+      });
+    }
   });
 }

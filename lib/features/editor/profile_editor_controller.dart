@@ -115,6 +115,33 @@ class ProfileEditorController extends ChangeNotifier {
     _scheduleSave();
   }
 
+  /// The old file is deleted here rather than left behind: a photo the user
+  /// removed must actually leave the device, not linger in app storage where a
+  /// later backup would pick it up (9.3).
+  Future<void> setPhoto(String? relativePath) async {
+    final current = _profile;
+    if (current == null || current.photoPath == relativePath) return;
+
+    final previous = current.photoPath;
+    _profile = current.copyWith(photoPath: relativePath);
+    _scheduleSave();
+
+    // Written now rather than on the debounce, because the repository decides
+    // whether to delete the old file by asking which profiles still reference
+    // it — and the answer is wrong until this change has landed.
+    await flush();
+    await _repository.releasePhotoIfUnused(previous);
+  }
+
+  void setPhotoOnSeparatePage({required bool onSeparatePage}) {
+    final current = _profile;
+    if (current == null || current.photoOnSeparatePage == onSeparatePage) {
+      return;
+    }
+    _profile = current.copyWith(photoOnSeparatePage: onSeparatePage);
+    _scheduleSave();
+  }
+
   void setDocumentLanguage(String localeCode) {
     final current = _profile;
     if (current == null || current.documentLanguageCode == localeCode) return;

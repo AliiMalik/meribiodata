@@ -1,3 +1,4 @@
+import 'dart:typed_data';
 import 'dart:ui' show Color;
 
 /// The layout intermediate representation shared by both rendering backends.
@@ -86,4 +87,33 @@ class DocFooter extends DocBlock {
   const DocFooter(this.text);
 
   final String text;
+}
+
+/// The candidate's photo (9.3).
+///
+/// Carries the JPEG bytes rather than a path, for the same reason every other
+/// block carries finished text: a template must be renderable from a value, so
+/// that a golden test can pin one without touching the filesystem.
+///
+/// [widthFraction] is of the page's content width — the renderers know that,
+/// templates do not, and a fixed point size would swamp the 4x6 card page.
+class DocPhoto extends DocBlock {
+  const DocPhoto({
+    required this.bytes,
+    required this.widthFraction,
+    this.aspectRatio = 3 / 4,
+  });
+
+  final Uint8List bytes;
+  final double widthFraction;
+
+  /// Width over height. Portrait, so below 1.
+  final double aspectRatio;
+}
+
+/// Forces everything after it onto a new page (9.3, the separate photo page).
+///
+/// Zero height, so it costs nothing when the renderer measures the column.
+class DocPageBreak extends DocBlock {
+  const DocPageBreak();
 }

@@ -101,7 +101,14 @@ void main() {
     await pumpEditor(tester, await seedProfile());
 
     // Date of Birth, Maslak and Income are sensitive by default and all sit in
-    // the first section.
+    // the first section — which the photo card (9.3) now pushes below the fold
+    // on a test-sized viewport, so scroll rather than assume.
+    await tester.scrollUntilVisible(
+      find.byIcon(Icons.lock_outline),
+      120,
+      scrollable: find.byType(Scrollable).first,
+    );
+
     expect(find.text(l10n.fieldSensitive), findsWidgets);
     expect(find.byIcon(Icons.lock_outline), findsWidgets);
   });

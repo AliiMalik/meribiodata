@@ -13,6 +13,7 @@ import 'package:meribiodata/domain/biodata/label_resolver.dart';
 import 'package:meribiodata/features/ads/banner_slot.dart';
 import 'package:meribiodata/features/editor/profile_editor_controller.dart';
 import 'package:meribiodata/features/editor/widgets/field_card.dart';
+import 'package:meribiodata/features/photo/photo_card.dart';
 import 'package:meribiodata/l10n/generated/app_localizations.dart';
 import 'package:meribiodata/l10n/language_descriptor.dart';
 import 'package:provider/provider.dart';
@@ -138,6 +139,15 @@ class _EditorBody extends StatelessWidget {
               onChanged: controller.setProfileName,
             ),
             const SizedBox(height: AppSpacing.xl),
+            // Above the fields, because a photo is not a schema field and the
+            // decision to have one at all deserves its own moment (9.3).
+            PhotoCard(
+              photoPath: profile.photoPath,
+              onSeparatePage: profile.photoOnSeparatePage,
+              onPhotoChanged: (path) => unawaited(controller.setPhoto(path)),
+              onSeparatePageChanged: (value) =>
+                  controller.setPhotoOnSeparatePage(onSeparatePage: value),
+            ),
             for (final section in profile.schema.orderedSections) ...[
               _SectionHeading(
                 title: resolver.sectionTitle(section, language),

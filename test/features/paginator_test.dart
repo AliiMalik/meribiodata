@@ -76,6 +76,73 @@ void main() {
     );
   });
 
+  group('a forced page break (9.3, the separate photo page)', () {
+    test('ends the page early, wherever it falls', () {
+      final slices = paginate(
+        [row(), const DocPageBreak(), row()],
+        [30, 0, 30],
+      );
+
+      expect(slices.length, 2);
+      expect(slices[0].height, 30);
+      expect(slices[1].offsetY, 30);
+      expect(slices[1].height, 30);
+    });
+
+    test('does not produce a blank page when it lands on a page boundary', () {
+      // Two full pages of rows, then a break: the break has nothing above it
+      // on the new page, so emitting a slice for it would print an empty one.
+      final slices = paginate(
+        [row(), row(), const DocPageBreak(), row()],
+        [100, 100, 0, 30],
+      );
+
+      expect(slices.length, 3);
+      expect(slices.every((s) => s.height > 0), isTrue);
+    });
+
+    test('wins over keep-with-next, which is only a preference', () {
+      // The heading would normally be pulled down to sit with its row. The
+      // break is a hard instruction and cuts first.
+      final slices = paginate(
+        [row(), const DocSectionTitle('Photo'), const DocPageBreak(), row()],
+        [30, 20, 0, 30],
+      );
+
+      expect(slices.length, 2);
+      expect(slices[0].height, 50);
+    });
+
+    test('a trailing break adds no page of its own', () {
+      final slices = paginate([row(), const DocPageBreak()], [30, 0]);
+
+      expect(slices.length, 1);
+      expect(slices.single.height, 30);
+    });
+
+    test('every block still lands on exactly one page', () {
+      final blocks = <DocBlock>[
+        row(),
+        row(),
+        const DocPageBreak(),
+        row(),
+        row(),
+      ];
+      final heights = <double>[40, 40, 0, 40, 40];
+
+      final slices = paginate(blocks, heights);
+
+      final covered = slices.fold<double>(0, (sum, s) => sum + s.height);
+      expect(covered, 160);
+      for (var i = 1; i < slices.length; i++) {
+        expect(
+          slices[i].offsetY,
+          closeTo(slices[i - 1].offsetY + slices[i - 1].height, 0.001),
+        );
+      }
+    });
+  });
+
   test('an empty document still produces one page', () {
     expect(paginate(const [], const []).length, 1);
   });

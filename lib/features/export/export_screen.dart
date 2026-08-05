@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -17,6 +18,7 @@ import 'package:meribiodata/features/editor/profile_editor_controller.dart';
 import 'package:meribiodata/features/export/export_service.dart';
 import 'package:meribiodata/features/export/widgets/document_preview.dart';
 import 'package:meribiodata/features/export/widgets/export_mode_selector.dart';
+import 'package:meribiodata/features/photo/photo_store.dart';
 import 'package:meribiodata/l10n/generated/app_localizations.dart';
 import 'package:meribiodata/l10n/language_descriptor.dart';
 import 'package:provider/provider.dart';
@@ -56,13 +58,39 @@ class _ExportScreenState extends State<ExportScreen> {
 
   bool _whatsAppAvailable = false;
 
+  Uint8List? _photo;
+
+  /// Whether the photo goes into *this* export (9.3).
+  ///
+  /// Off in Shareable and on in Full, and — critically — reset every time the
+  /// mode changes rather than remembered. The failure that matters is a user
+  /// who ticks "include" for one trusted family, switches to the wide-sharing
+  /// copy, and sends a young woman's photograph to a WhatsApp group. Making
+  /// the switch back to Shareable clear the choice means that mistake needs a
+  /// second deliberate tap, in the same place the warning is.
+  bool _includePhoto = false;
+
   @override
   void initState() {
     super.initState();
     unawaited(_controller.load());
     unawaited(_checkWhatsApp());
+    unawaited(_loadPhoto());
     WidgetsBinding.instance.addPostFrameCallback((_) => _explainOnce());
   }
+
+  Future<void> _loadPhoto() async {
+    final profile = await context.read<ProfileRepository>().load(
+      widget.profileId,
+    );
+    final bytes = await const PhotoStore().read(profile?.photoPath);
+    if (mounted) setState(() => _photo = bytes);
+  }
+
+  void _setMode(ExportMode mode) => setState(() {
+    _mode = mode;
+    _includePhoto = mode == ExportMode.full && _photo != null;
+  });
 
   Future<void> _checkWhatsApp() async {
     final available = await const PlatformBridge().isWhatsAppAvailable();
@@ -142,6 +170,10 @@ class _ExportScreenState extends State<ExportScreen> {
             profile,
             mode: _mode,
             watermark: 'Made with MeriBiodata',
+            // The single point at which a photo can enter a document. If this
+            // is null the renderers have nothing to draw, so "excluded" is
+            // structural rather than a flag someone has to remember to check.
+            photo: _includePhoto ? _photo : null,
           );
 
           // How much Shareable would remove, computed by diffing the two
@@ -182,8 +214,20 @@ class _ExportScreenState extends State<ExportScreen> {
                 ExportModeSelector(
                   mode: _mode,
                   maskedFieldCount: maskedCount,
-                  onChanged: (mode) => setState(() => _mode = mode),
+                  onChanged: _setMode,
                 ),
+
+                if (_photo != null) ...[
+                  SwitchListTile(
+                    contentPadding: EdgeInsets.zero,
+                    secondary: const Icon(Icons.portrait_outlined),
+                    title: Text(l10n.photoInclude),
+                    value: _includePhoto,
+                    onChanged: (value) => setState(() => _includePhoto = value),
+                  ),
+                  if (_includePhoto && _mode == ExportMode.shareable)
+                    _Notice(l10n.photoIncludeShareableWarning),
+                ],
                 const SizedBox(height: AppSpacing.xl),
 
                 if (!labels.isReviewed(document.language.code))

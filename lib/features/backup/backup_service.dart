@@ -6,6 +6,7 @@ import 'package:cryptography/cryptography.dart';
 import 'package:meribiodata/core/storage/local_store.dart';
 import 'package:meribiodata/domain/biodata/biodata_profile.dart';
 import 'package:meribiodata/features/backup/backup_format.dart';
+import 'package:meribiodata/features/photo/photo_store.dart';
 
 /// What a restore should do with what is already on the device.
 enum RestoreStrategy {
@@ -23,11 +24,20 @@ class BackupContents {
     required this.header,
     required this.profiles,
     required this.preferences,
+    this.photos = const {},
   });
 
   final BackupHeader header;
   final List<BiodataProfile> profiles;
   final Map<String, dynamic> preferences;
+
+  /// Relative path to JPEG bytes, for every profile that has a photo (9.3).
+  ///
+  /// Carried inside the backup rather than left on disk because the point of
+  /// the file is to survive a lost phone. A restore that brought back the
+  /// text and silently dropped the photographs would be a restore that failed
+  /// at exactly the thing people notice.
+  final Map<String, Uint8List> photos;
 }
 
 /// Creates and restores the password-protected `.mbd` file (9.5).
@@ -36,11 +46,13 @@ class BackupContents {
 /// one way it could otherwise be *worse* than a cloud one. It is deliberately
 /// a manual export/import file: no background upload, no sync, no account.
 class BackupService {
-  BackupService(this._store, {Random? random})
-    : _random = random ?? Random.secure();
+  BackupService(this._store, {Random? random, PhotoStore? photos})
+    : _random = random ?? Random.secure(),
+      _photos = photos ?? const PhotoStore();
 
   final LocalStore _store;
   final Random _random;
+  final PhotoStore _photos;
 
   static const appVersion = '1.0.0';
 
@@ -51,8 +63,23 @@ class BackupService {
     final preferences =
         await _store.read(Collections.preferences, 'app') ?? const {};
 
+    // Base64 rather than a container format: the payload is already one JSON
+    // blob inside one AES-GCM box, and a second framing layer would be a
+    // second thing to get wrong for a 33% saving on a 150 KB photo.
+    final photos = <String, String>{};
+    for (final profile in profiles) {
+      final path = profile['photoPath'];
+      if (path is! String || path.isEmpty || photos.containsKey(path)) continue;
+      final bytes = await _photos.read(path);
+      if (bytes != null) photos[path] = base64Encode(bytes);
+    }
+
     final payload = utf8.encode(
-      jsonEncode({'profiles': profiles, 'preferences': preferences}),
+      jsonEncode({
+        'profiles': profiles,
+        'preferences': preferences,
+        'photos': photos,
+      }),
     );
 
     final salt = _randomBytes(BackupFormat.saltLength);
@@ -128,10 +155,18 @@ class BackupService {
         for (final raw in json['profiles'] as List<dynamic>)
           BiodataProfile.fromJson(raw as Map<String, dynamic>),
       ];
+      // Absent in a backup written before photos were carried, so a missing
+      // key is a valid older file rather than a corrupt one.
+      final rawPhotos = (json['photos'] as Map<String, dynamic>?) ?? const {};
+
       return BackupContents(
         header: header,
         profiles: profiles,
         preferences: (json['preferences'] as Map<String, dynamic>?) ?? const {},
+        photos: {
+          for (final entry in rawPhotos.entries)
+            entry.key: base64Decode(entry.value as String),
+        },
       );
     } on Object {
       throw const BackupException(BackupError.corrupt);
@@ -149,6 +184,14 @@ class BackupService {
   }) async {
     if (strategy == RestoreStrategy.replace) {
       await _store.clearCollection(Collections.profiles);
+    }
+
+    // Photos first: a profile whose photo has not landed yet renders a
+    // "missing" placeholder, whereas a photo with no profile is invisible. If
+    // the write fails, failing before the profiles are touched is the safer
+    // half to lose (NFR-9).
+    for (final entry in contents.photos.entries) {
+      await _photos.writeAt(entry.key, entry.value);
     }
 
     for (final profile in contents.profiles) {

@@ -94,6 +94,40 @@ abstract class DocumentTemplate {
 
   TemplateStyle get style;
 
+  /// Photo width as a fraction of the content width (9.3).
+  ///
+  /// Modest inline, because the photo sits above the details and should not
+  /// push them onto a second page; generous when it has a page to itself,
+  /// which is the whole reason for asking for one.
+  static const inlinePhotoFraction = 0.34;
+  static const fullPagePhotoFraction = 0.62;
+
+  /// The photo where it sits in the flow, under the name. Empty when there is
+  /// no photo or the user asked for it on its own page.
+  List<DocBlock> inlinePhoto(RenderedDocument document) {
+    final photo = document.photo;
+    if (photo == null || document.photoOnSeparatePage) return const [];
+    return [
+      DocPhoto(bytes: photo, widthFraction: inlinePhotoFraction),
+      DocSpacer(style.sectionGap),
+    ];
+  }
+
+  /// The photo on a page of its own, at the end of the document.
+  ///
+  /// At the end rather than the front: when the biodata is shared as images,
+  /// the photo is then the last file, and a sender who wants to pass on the
+  /// details without the picture simply does not forward it.
+  List<DocBlock> photoPage(RenderedDocument document) {
+    final photo = document.photo;
+    if (photo == null || !document.photoOnSeparatePage) return const [];
+    return [
+      const DocPageBreak(),
+      DocSpacer(style.sectionGap),
+      DocPhoto(bytes: photo, widthFraction: fullPagePhotoFraction),
+    ];
+  }
+
   /// Turns a document into the block stream both renderers consume.
   List<DocBlock> blocks(RenderedDocument document) {
     final blocks = <DocBlock>[];
@@ -110,7 +144,9 @@ abstract class DocumentTemplate {
         ..add(DocSpacer(style.rowGap))
         ..add(DocDivider(color: style.rule));
     }
-    blocks.add(DocSpacer(style.sectionGap));
+    blocks
+      ..add(DocSpacer(style.sectionGap))
+      ..addAll(inlinePhoto(document));
 
     for (final section in document.nonEmptySections) {
       blocks
@@ -139,6 +175,7 @@ abstract class DocumentTemplate {
       blocks.add(DocFooter(mark));
     }
 
+    blocks.addAll(photoPage(document));
     return blocks;
   }
 }

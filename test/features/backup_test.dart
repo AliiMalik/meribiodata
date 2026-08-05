@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:io';
 import 'dart:math';
 import 'dart:typed_data';
 
@@ -8,6 +9,7 @@ import 'package:meribiodata/data/profile_repository.dart';
 import 'package:meribiodata/domain/biodata/default_schema.dart';
 import 'package:meribiodata/features/backup/backup_format.dart';
 import 'package:meribiodata/features/backup/backup_service.dart';
+import 'package:meribiodata/features/photo/photo_store.dart';
 
 import '../support/in_memory_local_store.dart';
 
@@ -249,4 +251,91 @@ void main() {
       expect(first, isNot(equals(second)));
     },
   );
+
+  group('photos travel inside the file (9.3)', () {
+    late Directory here;
+    late Directory newPhone;
+    late PhotoStore photosHere;
+    late PhotoStore photosThere;
+
+    final jpeg = Uint8List.fromList(List.generate(512, (i) => i % 256));
+
+    setUp(() async {
+      here = await Directory.systemTemp.createTemp('backup-photos-here');
+      newPhone = await Directory.systemTemp.createTemp('backup-photos-there');
+      photosHere = PhotoStore(base: () async => here);
+      photosThere = PhotoStore(base: () async => newPhone);
+    });
+
+    tearDown(() async {
+      for (final dir in [here, newPhone]) {
+        if (dir.existsSync()) await dir.delete(recursive: true);
+      }
+    });
+
+    test('a photo survives a restore onto a different phone', () async {
+      // The whole point of the backup is a lost phone. A restore that brought
+      // back the words and dropped the photographs would fail at the thing
+      // people would notice first.
+      final id = await seedProfile('Ayesha');
+      final path = await photosHere.save(jpeg);
+      final profile = await repository.load(id);
+      await repository.save(profile!.copyWith(photoPath: path));
+
+      final bytes = await BackupService(
+        store,
+        random: Random(1),
+        photos: photosHere,
+      ).create(password: password);
+
+      final fresh = InMemoryLocalStore();
+      await fresh.init();
+      final restorer = BackupService(fresh, photos: photosThere);
+      await restorer.restore(
+        await restorer.open(bytes, password: password),
+        strategy: RestoreStrategy.merge,
+      );
+
+      final restored = await ProfileRepository(fresh).loadAll();
+      expect(restored.single.photoPath, path);
+      expect(await photosThere.read(path), jpeg);
+    });
+
+    test('a profile whose photo file has vanished still backs up', () async {
+      final id = await seedProfile('Ali');
+      final profile = await repository.load(id);
+      await repository.save(
+        profile!.copyWith(photoPath: 'photos/never-existed.jpg'),
+      );
+
+      final bytes = await BackupService(
+        store,
+        random: Random(1),
+        photos: photosHere,
+      ).create(password: password);
+
+      final fresh = InMemoryLocalStore();
+      await fresh.init();
+      final restorer = BackupService(fresh, photos: photosThere);
+      final contents = await restorer.open(bytes, password: password);
+
+      expect(contents.profiles.single.photoPath, 'photos/never-existed.jpg');
+      expect(contents.photos, isEmpty);
+    });
+
+    test('a backup written before photos were carried still opens', () async {
+      // The encrypted payload gained a key; a file without it is an older
+      // valid backup, not a corrupt one.
+      await seedProfile('Ali');
+      final bytes = await BackupService(
+        store,
+        random: Random(1),
+        photos: photosHere,
+      ).create(password: password);
+
+      final contents = await service.open(bytes, password: password);
+      expect(contents.photos, isEmpty);
+      expect(contents.profiles, hasLength(1));
+    });
+  });
 }

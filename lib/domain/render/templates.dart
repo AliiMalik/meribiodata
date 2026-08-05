@@ -152,7 +152,8 @@ class CompactTemplate extends DocumentTemplate {
     }
     blocks
       ..add(DocTitle(document.title))
-      ..add(DocSpacer(style.rowGap));
+      ..add(DocSpacer(style.rowGap))
+      ..addAll(inlinePhoto(document));
 
     for (final section in document.nonEmptySections) {
       blocks
@@ -176,6 +177,7 @@ class CompactTemplate extends DocumentTemplate {
       blocks.add(DocFooter(mark));
     }
 
+    blocks.addAll(photoPage(document));
     return blocks;
   }
 }

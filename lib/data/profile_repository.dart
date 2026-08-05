@@ -1,6 +1,7 @@
 import 'package:meribiodata/core/storage/local_store.dart';
 import 'package:meribiodata/domain/biodata/biodata_profile.dart';
 import 'package:meribiodata/domain/biodata/default_schema.dart';
+import 'package:meribiodata/features/photo/photo_store.dart';
 import 'package:uuid/uuid.dart';
 
 /// Reads and writes biodata profiles.
@@ -9,10 +10,13 @@ import 'package:uuid/uuid.dart';
 /// UUIDs — Hive encrypts values but not keys, so a user-derived id would leak
 /// a name onto disk in plaintext (`docs/decisions.md` D2).
 class ProfileRepository {
-  ProfileRepository(this._store, {Uuid? uuid}) : _uuid = uuid ?? const Uuid();
+  ProfileRepository(this._store, {Uuid? uuid, PhotoStore? photos})
+    : _uuid = uuid ?? const Uuid(),
+      _photos = photos ?? const PhotoStore();
 
   final LocalStore _store;
   final Uuid _uuid;
+  final PhotoStore _photos;
 
   String newId() => _uuid.v4();
 
@@ -43,7 +47,25 @@ class ProfileRepository {
     profile.copyWith(updatedAt: DateTime.now()).toJson(),
   );
 
-  Future<void> delete(String id) => _store.delete(Collections.profiles, id);
+  Future<void> delete(String id) async {
+    final profile = await load(id);
+    await _store.delete(Collections.profiles, id);
+    // Otherwise deleting a biodata leaves the photograph behind in app
+    // storage, where the next backup would quietly pick it up again.
+    await releasePhotoIfUnused(profile?.photoPath);
+  }
+
+  /// Deletes a photo file once nothing points at it any more (9.3).
+  ///
+  /// The check is necessary because [duplicate] copies `photoPath` verbatim,
+  /// so two profiles can share one file. Deleting on the first removal would
+  /// blank the copy's photo.
+  Future<void> releasePhotoIfUnused(String? relativePath) async {
+    if (relativePath == null || relativePath.isEmpty) return;
+    final profiles = await loadAll();
+    if (profiles.any((p) => p.photoPath == relativePath)) return;
+    await _photos.delete(relativePath);
+  }
 
   /// A brand-new biodata, seeded with the default schema (§6.2, D6).
   BiodataProfile create({

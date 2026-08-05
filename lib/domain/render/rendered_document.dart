@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+
 import 'package:meribiodata/domain/biodata/field_type.dart';
 import 'package:meribiodata/l10n/language_descriptor.dart';
 
@@ -61,6 +63,8 @@ class RenderedDocument {
     required this.mode,
     this.headerText,
     this.watermark,
+    this.photo,
+    this.photoOnSeparatePage = false,
   });
 
   /// The candidate's name, or a fallback. Used as the document heading.
@@ -76,6 +80,19 @@ class RenderedDocument {
 
   /// Phase 1 footer watermark. Null suppresses it.
   final String? watermark;
+
+  /// The candidate photo as JPEG, or null when there is none *or* when the
+  /// user chose to leave it out of this export (9.3).
+  ///
+  /// The decision is made by the caller and this field is the whole record of
+  /// it, so there is exactly one place a photo can enter a document — which is
+  /// what makes "a photo cannot leak into a Shareable copy by accident" a
+  /// property of the code rather than a habit.
+  final Uint8List? photo;
+
+  final bool photoOnSeparatePage;
+
+  bool get hasPhoto => photo != null;
 
   bool get isRtl => language.isRtl;
 

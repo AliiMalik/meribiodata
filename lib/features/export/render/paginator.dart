@@ -48,6 +48,13 @@ abstract final class Paginator {
     var index = 0;
 
     while (index < blocks.length) {
+      // A break that lands at the top of a page has already done its job.
+      // Emitting a slice for it would produce a blank page.
+      if (blocks[index] is DocPageBreak) {
+        index++;
+        continue;
+      }
+
       final pageEnd = pageStart + pageHeight;
       var lastFitting = -1;
 
@@ -69,6 +76,16 @@ abstract final class Paginator {
           index++;
         }
         continue;
+      }
+
+      // A forced break ends the page wherever it falls, even mid-run (9.3).
+      // Applied before the keep-with-next pull-back, because a break is a hard
+      // constraint and stranding rules are a preference.
+      for (var i = index; i <= lastFitting; i++) {
+        if (blocks[i] is DocPageBreak) {
+          lastFitting = i;
+          break;
+        }
       }
 
       // Do not strand a heading: if the last block that fits wants to keep its

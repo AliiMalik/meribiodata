@@ -1,7 +1,11 @@
+import 'dart:typed_data';
+import 'dart:ui' as ui;
+
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:meribiodata/data/bundled_labels.dart';
 import 'package:meribiodata/domain/biodata/field_type.dart';
+import 'package:meribiodata/domain/render/doc_block.dart';
 import 'package:meribiodata/domain/render/rendered_document.dart';
 import 'package:meribiodata/domain/render/template.dart';
 import 'package:meribiodata/domain/render/templates.dart';
@@ -29,6 +33,7 @@ void main() {
     RenderedDocument document,
     DocumentTemplate template, {
     PageSpec page = PageSpec.a4,
+    Map<Uint8List, ui.Image> images = const {},
   }) async {
     tester.view
       ..physicalSize = Size(page.width, page.height)
@@ -47,6 +52,7 @@ void main() {
             page: page,
             offsetY: 0,
             height: page.height - template.style.margin * 2,
+            images: images,
           ),
         ),
       ),
@@ -189,6 +195,143 @@ void main() {
           .join(' ');
       expect(shareableValues, isNot(contains('1234567')));
       expect(shareableValues, isNot(contains('House 12')));
+    });
+  });
+
+  group('the photo in the document (9.3)', () {
+    /// A recognisable test card rather than a flat colour, so a golden would
+    /// change if the photo were ever squashed, mirrored or cropped wrongly.
+    Future<Uint8List> testCard(int width, int height) async {
+      final recorder = ui.PictureRecorder();
+      Canvas(recorder)
+        ..drawRect(
+          Rect.fromLTWH(0, 0, width.toDouble(), height.toDouble()),
+          Paint()..color = const Color(0xFFB0BEC5),
+        )
+        // Off-centre, so a horizontal flip is visible.
+        ..drawCircle(
+          Offset(width * 0.35, height * 0.3),
+          width * 0.18,
+          Paint()..color = const Color(0xFF37474F),
+        )
+        ..drawRect(
+          Rect.fromLTWH(0, height * 0.75, width.toDouble(), height * 0.25),
+          Paint()..color = const Color(0xFF546E7A),
+        );
+      final picture = recorder.endRecording();
+      final image = await picture.toImage(width, height);
+      picture.dispose();
+      final data = await image.toByteData(format: ui.ImageByteFormat.png);
+      image.dispose();
+      return data!.buffer.asUint8List();
+    }
+
+    RenderedDocument withPhoto(
+      RenderedDocument document,
+      Uint8List photo, {
+      bool separatePage = false,
+    }) => RenderedDocument(
+      title: document.title,
+      sections: document.sections,
+      language: document.language,
+      digitStyle: document.digitStyle,
+      mode: document.mode,
+      headerText: document.headerText,
+      watermark: document.watermark,
+      photo: photo,
+      photoOnSeparatePage: separatePage,
+    );
+
+    /// Decodes the way the exporter does. Image.memory would paint a frame or
+    /// two late and the golden would capture an empty rectangle.
+    Future<Map<Uint8List, ui.Image>> decode(
+      WidgetTester tester,
+      List<DocBlock> blocks,
+    ) async {
+      final images = <Uint8List, ui.Image>{};
+      for (final block in blocks.whereType<DocPhoto>()) {
+        final decoded = await tester.runAsync(() async {
+          final codec = await ui.instantiateImageCodec(block.bytes);
+          final frame = await codec.getNextFrame();
+          codec.dispose();
+          return frame.image;
+        });
+        images[block.bytes] = decoded!;
+      }
+      addTearDown(() {
+        for (final image in images.values) {
+          image.dispose();
+        }
+      });
+      return images;
+    }
+
+    for (final template in Templates.all) {
+      testWidgets('${template.id} lays out an inline photo', (tester) async {
+        final photo = await tester.runAsync(() => testCard(300, 400));
+        final document = withPhoto(
+          sampleDocument('en', labels: labels),
+          photo!,
+        );
+
+        await pumpPage(
+          tester,
+          document,
+          template,
+          images: await decode(tester, template.blocks(document)),
+        );
+
+        await expectLater(
+          find.byType(DocumentPage),
+          matchesGoldenFile('goldens/${template.id}-photo.png'),
+        );
+      });
+    }
+
+    testWidgets('an RTL document keeps the photo centred, not mirrored', (
+      tester,
+    ) async {
+      final photo = await tester.runAsync(() => testCard(300, 400));
+      final document = withPhoto(
+        sampleDocument('ur', labels: labels),
+        photo!,
+      );
+
+      await pumpPage(
+        tester,
+        document,
+        Templates.classic,
+        images: await decode(tester, Templates.classic.blocks(document)),
+      );
+
+      await expectLater(
+        find.byType(DocumentPage),
+        matchesGoldenFile('goldens/classic-ur-photo.png'),
+      );
+    });
+
+    testWidgets('a landscape photo is cropped to portrait, never squashed', (
+      tester,
+    ) async {
+      // The stored photo is portrait, but a restored backup or a future crop
+      // shape could hand a wider one over. BoxFit.cover must crop it.
+      final photo = await tester.runAsync(() => testCard(600, 300));
+      final document = withPhoto(
+        sampleDocument('en', labels: labels),
+        photo!,
+      );
+
+      await pumpPage(
+        tester,
+        document,
+        Templates.classic,
+        images: await decode(tester, Templates.classic.blocks(document)),
+      );
+
+      await expectLater(
+        find.byType(DocumentPage),
+        matchesGoldenFile('goldens/classic-photo-landscape.png'),
+      );
     });
   });
 }

@@ -54,12 +54,18 @@ class DocumentExporter {
     final style = template.style;
     final overlay = Overlay.of(context, rootOverlay: true);
 
+    // Decoded before the stage is mounted, never during it. Image.memory
+    // decodes asynchronously and paints a frame or two late, which is
+    // invisible on screen and produces a blank rectangle in a captured page.
+    final images = await _decodePhotos(blocks);
+
     final job = _ExportJob(
       blocks: blocks,
       style: style,
       language: document.language,
       page: page,
       pixelRatio: ratioForDpi(dpi),
+      images: images,
     );
 
     final entry = OverlayEntry(
@@ -77,7 +83,23 @@ class DocumentExporter {
       return await job.completer.future;
     } finally {
       entry.remove();
+      for (final image in images.values) {
+        image.dispose();
+      }
     }
+  }
+
+  static Future<Map<Uint8List, ui.Image>> _decodePhotos(
+    List<DocBlock> blocks,
+  ) async {
+    final images = <Uint8List, ui.Image>{};
+    for (final block in blocks) {
+      if (block is! DocPhoto || images.containsKey(block.bytes)) continue;
+      final codec = await ui.instantiateImageCodec(block.bytes);
+      images[block.bytes] = (await codec.getNextFrame()).image;
+      codec.dispose();
+    }
+    return images;
   }
 }
 
@@ -91,6 +113,7 @@ class _ExportJob {
     required this.language,
     required this.page,
     required this.pixelRatio,
+    required this.images,
   }) : blockKeys = List.generate(blocks.length, (_) => GlobalKey());
 
   final List<DocBlock> blocks;
@@ -98,6 +121,7 @@ class _ExportJob {
   final LanguageDescriptor language;
   final PageSpec page;
   final double pixelRatio;
+  final Map<Uint8List, ui.Image> images;
 
   final List<GlobalKey> blockKeys;
   final Completer<List<RenderedPage>> completer = Completer();
@@ -217,6 +241,7 @@ class _ExportStageState extends State<_ExportStage> {
               language: job.language,
               width: job.page.width - job.style.margin * 2,
               blockKeys: job.blockKeys,
+              images: job.images,
             ),
           ),
           _Phase.rendering => RepaintBoundary(
@@ -230,6 +255,7 @@ class _ExportStageState extends State<_ExportStage> {
                 page: job.page,
                 offsetY: job.slices[_pageIndex].offsetY,
                 height: job.slices[_pageIndex].height,
+                images: job.images,
               ),
             ),
           ),

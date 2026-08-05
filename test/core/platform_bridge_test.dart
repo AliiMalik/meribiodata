@@ -1,5 +1,4 @@
 import 'dart:io';
-import 'dart:typed_data';
 
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -92,12 +91,14 @@ void main() {
       expect(await const PlatformBridge().openDocument(), isNull);
     });
 
-    test('swallows a platform error rather than throwing at the caller',
-        () async {
-      respond((_) => throw PlatformException(code: 'read_failed'));
+    test(
+      'swallows a platform error rather than throwing at the caller',
+      () async {
+        respond((_) => throw PlatformException(code: 'read_failed'));
 
-      expect(await const PlatformBridge().openDocument(), isNull);
-    });
+        expect(await const PlatformBridge().openDocument(), isNull);
+      },
+    );
   });
 
   test('every method degrades quietly with no channel registered', () async {

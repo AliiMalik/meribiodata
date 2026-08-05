@@ -1,3 +1,6 @@
+import 'dart:typed_data';
+import 'dart:ui' as ui;
+
 import 'package:flutter/material.dart';
 import 'package:meribiodata/domain/render/doc_block.dart';
 import 'package:meribiodata/domain/render/template.dart';
@@ -8,10 +11,33 @@ import 'package:meribiodata/l10n/language_descriptor.dart';
 /// This is the raster backend (Pipeline B, D1) — the one that renders
 /// Perso-Arabic correctly, because Flutter shapes text with HarfBuzz.
 class BlockWidgets {
-  const BlockWidgets({required this.style, required this.language});
+  const BlockWidgets({
+    required this.style,
+    required this.language,
+    this.contentWidth = 0,
+    this.images = const {},
+  });
 
   final TemplateStyle style;
   final LanguageDescriptor language;
+
+  /// Page width less margins. A photo sizes itself as a fraction of this, so a
+  /// template needs no knowledge of the page it will land on.
+  final double contentWidth;
+
+  /// Photos already decoded, keyed by the JPEG bytes they came from.
+  ///
+  /// [Image.memory] decodes asynchronously and paints a frame late. That is
+  /// invisible on screen and fatal off it: the export captures a fixed number
+  /// of frames, so a late decode means a blank rectangle where the face should
+  /// be. The exporter decodes up front and passes the results here, and
+  /// [RawImage] paints them synchronously.
+  ///
+  /// Keyed by the bytes rather than by the [DocPhoto]: a template builds a
+  /// fresh block list on every call, so a block identity would only match if
+  /// the caller happened to reuse the exact list it decoded from. The bytes
+  /// come straight off the document and are the same object either way.
+  final Map<Uint8List, ui.Image> images;
 
   TextStyle _base(double size, {Color? color, FontWeight? weight}) => TextStyle(
     fontFamily: language.documentFontFamily,
@@ -85,6 +111,10 @@ class BlockWidgets {
       color: color ?? style.rule,
     ),
     DocSpacer(:final height) => SizedBox(height: height),
+    final DocPhoto photo => _photo(photo),
+    // Zero height by design: the paginator acts on the block's presence, not
+    // on its size.
+    DocPageBreak() => const SizedBox.shrink(),
     DocFooter(:final text) => Center(
       child: Text(
         text,
@@ -93,6 +123,21 @@ class BlockWidgets {
       ),
     ),
   };
+
+  Widget _photo(DocPhoto block) {
+    final width = contentWidth * block.widthFraction;
+    final decoded = images[block.bytes];
+
+    return Center(
+      child: SizedBox(
+        width: width,
+        height: width / block.aspectRatio,
+        child: decoded == null
+            ? Image.memory(block.bytes, fit: BoxFit.cover)
+            : RawImage(image: decoded, fit: BoxFit.cover),
+      ),
+    );
+  }
 
   Widget _label(String label) => Text(
     label,
@@ -120,6 +165,7 @@ class DocumentColumn extends StatelessWidget {
     required this.language,
     required this.width,
     this.blockKeys,
+    this.images = const {},
     super.key,
   });
 
@@ -131,9 +177,16 @@ class DocumentColumn extends StatelessWidget {
   /// One key per block, used by the paginator to read heights.
   final List<GlobalKey>? blockKeys;
 
+  final Map<Uint8List, ui.Image> images;
+
   @override
   Widget build(BuildContext context) {
-    final painter = BlockWidgets(style: style, language: language);
+    final painter = BlockWidgets(
+      style: style,
+      language: language,
+      contentWidth: width,
+      images: images,
+    );
 
     return SizedBox(
       width: width,
@@ -162,6 +215,7 @@ class DocumentPage extends StatelessWidget {
     required this.page,
     required this.offsetY,
     required this.height,
+    this.images = const {},
     super.key,
   });
 
@@ -175,6 +229,8 @@ class DocumentPage extends StatelessWidget {
 
   /// Visible height of the content area on this page.
   final double height;
+
+  final Map<Uint8List, ui.Image> images;
 
   @override
   Widget build(BuildContext context) {
@@ -200,6 +256,7 @@ class DocumentPage extends StatelessWidget {
                 style: style,
                 language: language,
                 width: contentWidth,
+                images: images,
               ),
             ),
           ),

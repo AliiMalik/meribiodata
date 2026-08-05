@@ -48,6 +48,7 @@ abstract final class PdfRenderer {
     required PageSpec page,
   }) async {
     final style = template.style;
+    final contentWidth = page.width - style.margin * 2;
     final regular = pw.Font.ttf(
       await rootBundle.load('assets/fonts/Inter-Regular.ttf'),
     );
@@ -120,6 +121,17 @@ abstract final class PdfRenderer {
         height: thickness,
       ),
       DocSpacer(:final height) => pw.SizedBox(height: height),
+      DocPhoto(:final bytes, :final widthFraction, :final aspectRatio) =>
+        pw.Center(
+          child: pw.SizedBox(
+            width: contentWidth * widthFraction,
+            height: contentWidth * widthFraction / aspectRatio,
+            child: pw.Image(pw.MemoryImage(bytes), fit: pw.BoxFit.cover),
+          ),
+        ),
+      // MultiPage understands this directly; the raster path has to paginate
+      // around it itself (see Paginator).
+      DocPageBreak() => pw.NewPage(),
       DocFooter(:final text) => pw.Center(
         child: pw.Text(
           text,

@@ -47,6 +47,14 @@ abstract class BiodataProfile with _$BiodataProfile {
     /// Relative path of the candidate photo inside the app's private
     /// directory. Never a content:// URI, which would not survive a restart.
     String? photoPath,
+
+    /// Prints the photo on a page of its own rather than under the name (9.3).
+    ///
+    /// Two real reasons families ask for this: a photo page can be printed on
+    /// photo paper while the details print on plain paper, and when the biodata
+    /// is shared as images, the photo is a separate file the sender can simply
+    /// not forward.
+    @Default(false) bool photoOnSeparatePage,
   }) = _BiodataProfile;
 
   const BiodataProfile._();
