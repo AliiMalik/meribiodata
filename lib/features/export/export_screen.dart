@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:meribiodata/core/platform/platform_bridge.dart';
 import 'package:meribiodata/core/preferences/app_preferences.dart';
 import 'package:meribiodata/core/router/app_routes.dart';
 import 'package:meribiodata/core/theme/app_colors.dart';
@@ -14,7 +15,6 @@ import 'package:meribiodata/domain/render/template.dart';
 import 'package:meribiodata/domain/render/templates.dart';
 import 'package:meribiodata/features/editor/profile_editor_controller.dart';
 import 'package:meribiodata/features/export/export_service.dart';
-import 'package:meribiodata/features/export/whatsapp_share.dart';
 import 'package:meribiodata/features/export/widgets/document_preview.dart';
 import 'package:meribiodata/features/export/widgets/export_mode_selector.dart';
 import 'package:meribiodata/l10n/generated/app_localizations.dart';
@@ -65,7 +65,7 @@ class _ExportScreenState extends State<ExportScreen> {
   }
 
   Future<void> _checkWhatsApp() async {
-    final available = await const WhatsAppShare().isAvailable();
+    final available = await const PlatformBridge().isWhatsAppAvailable();
     if (mounted) setState(() => _whatsAppAvailable = available);
   }
 

@@ -3,11 +3,11 @@ import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_image_compress/flutter_image_compress.dart';
+import 'package:meribiodata/core/platform/platform_bridge.dart';
 import 'package:meribiodata/domain/render/rendered_document.dart';
 import 'package:meribiodata/domain/render/template.dart';
 import 'package:meribiodata/features/export/render/document_exporter.dart';
 import 'package:meribiodata/features/export/render/pdf_renderer.dart';
-import 'package:meribiodata/features/export/whatsapp_share.dart';
 import 'package:meribiodata/l10n/language_descriptor.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:share_plus/share_plus.dart';
@@ -147,9 +147,9 @@ class ExportService {
     ExportResult result, {
     required String mimeType,
     String? text,
-    WhatsAppShare whatsApp = const WhatsAppShare(),
+    PlatformBridge platform = const PlatformBridge(),
   }) async {
-    final sent = await whatsApp.share(
+    final sent = await platform.shareToWhatsApp(
       files: result.files,
       mimeType: mimeType,
       text: text,

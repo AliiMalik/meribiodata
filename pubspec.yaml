@@ -9,7 +9,6 @@ environment:
 
 dependencies:
   cryptography: ^2.9.0
-  file_picker: ^3.0.4
   flutter:
     sdk: flutter
   flutter_image_compress: ^2.5.1

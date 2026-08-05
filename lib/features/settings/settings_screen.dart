@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:meribiodata/core/preferences/app_preferences.dart';
+import 'package:meribiodata/core/router/app_routes.dart';
 import 'package:meribiodata/core/theme/app_spacing.dart';
 import 'package:meribiodata/core/widgets/language_option_tile.dart';
 import 'package:meribiodata/l10n/generated/app_localizations.dart';
@@ -54,6 +56,25 @@ class SettingsScreen extends StatelessWidget {
               onSelectionChanged: (selection) =>
                   preferences.setDigitStyle(selection.first),
             ),
+          ),
+          const Divider(),
+          SwitchListTile(
+            secondary: const Icon(Icons.translate),
+            title: Text(l10n.settingsRomanInput),
+            subtitle: Text(l10n.romanInputOff),
+            value: preferences.romanInputDefault,
+            onChanged: (enabled) =>
+                preferences.setRomanInputDefault(enabled: enabled),
+          ),
+          ListTile(
+            leading: const Icon(Icons.backup_outlined),
+            title: Text(l10n.backupTitle),
+            subtitle: Text(
+              l10n.backupExplain,
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+            ),
+            onTap: () => context.push(AppRoutes.backup),
           ),
           const Divider(),
           ListTile(
