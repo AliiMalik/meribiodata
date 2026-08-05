@@ -306,5 +306,16 @@
     "description": "Shown once, the first time the user reaches the export screen. This is the app's most valuable idea and users will not discover it on their own (9.4)."
   },
   "exportExplainGotIt": "Got it",
-  "@exportExplainGotIt": {}
+  "@exportExplainGotIt": {},
+
+  "exportWhatsApp": "Share on WhatsApp",
+  "@exportWhatsApp": {},
+  "exportWhatsAppDocumentHint": "Tip: in WhatsApp, choose Document rather than Photo to send it at full quality. Sent as a photo, WhatsApp shrinks it.",
+  "@exportWhatsAppDocumentHint": {
+    "description": "9.1 — most users do not know WhatsApp preserves fidelity for documents but recompresses photos."
+  },
+  "exportSharePages": "{count, plural, =1{1 page} other{{count} pages}}",
+  "@exportSharePages": {
+    "placeholders": { "count": { "type": "int" } }
+  }
 }

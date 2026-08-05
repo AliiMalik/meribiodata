@@ -14,6 +14,7 @@ import 'package:meribiodata/domain/render/template.dart';
 import 'package:meribiodata/domain/render/templates.dart';
 import 'package:meribiodata/features/editor/profile_editor_controller.dart';
 import 'package:meribiodata/features/export/export_service.dart';
+import 'package:meribiodata/features/export/whatsapp_share.dart';
 import 'package:meribiodata/features/export/widgets/document_preview.dart';
 import 'package:meribiodata/features/export/widgets/export_mode_selector.dart';
 import 'package:meribiodata/l10n/generated/app_localizations.dart';
@@ -53,11 +54,19 @@ class _ExportScreenState extends State<ExportScreen> {
   /// and choosing Full is a deliberate act each time (docs/decisions.md D11).
   ExportMode _mode = ExportMode.shareable;
 
+  bool _whatsAppAvailable = false;
+
   @override
   void initState() {
     super.initState();
     unawaited(_controller.load());
+    unawaited(_checkWhatsApp());
     WidgetsBinding.instance.addPostFrameCallback((_) => _explainOnce());
+  }
+
+  Future<void> _checkWhatsApp() async {
+    final available = await const WhatsAppShare().isAvailable();
+    if (mounted) setState(() => _whatsAppAvailable = available);
   }
 
   Future<void> _explainOnce() async {
@@ -76,7 +85,7 @@ class _ExportScreenState extends State<ExportScreen> {
 
   Future<void> _run(
     Future<ExportResult> Function() job, {
-    bool thenShare = false,
+    _ShareTarget share = _ShareTarget.none,
   }) async {
     if (_busy) return;
     setState(() => _busy = true);
@@ -85,12 +94,15 @@ class _ExportScreenState extends State<ExportScreen> {
     final messenger = ScaffoldMessenger.of(context);
     try {
       final result = await job();
-      if (thenShare) {
-        await _service.share(result);
-      } else {
-        messenger.showSnackBar(
-          SnackBar(content: Text(l10n.exportSaved(result.files.first.path))),
-        );
+      switch (share) {
+        case _ShareTarget.none:
+          messenger.showSnackBar(
+            SnackBar(content: Text(l10n.exportSaved(result.files.first.path))),
+          );
+        case _ShareTarget.sheet:
+          await _service.share(result);
+        case _ShareTarget.whatsApp:
+          await _service.shareToWhatsApp(result, mimeType: 'image/jpeg');
       }
     } on Object catch (error, stack) {
       debugPrint('Export failed: $error\n$stack');
@@ -246,7 +258,9 @@ class _ExportScreenState extends State<ExportScreen> {
                     label: Text(l10n.exportImage),
                   ),
                   const SizedBox(height: AppSpacing.sm),
-                  OutlinedButton.icon(
+                  // Co-equal with the other two (9.1): a biodata reaches far
+                  // more people through WhatsApp than as an emailed PDF.
+                  FilledButton.icon(
                     onPressed: () => _run(
                       () => _service.exportImages(
                         context: context,
@@ -255,11 +269,23 @@ class _ExportScreenState extends State<ExportScreen> {
                         page: page,
                         fileName: fileName,
                       ),
-                      thenShare: true,
+                      share: _whatsAppAvailable
+                          ? _ShareTarget.whatsApp
+                          : _ShareTarget.sheet,
                     ),
-                    icon: const Icon(Icons.share_outlined),
-                    label: Text(l10n.exportShare),
+                    icon: const Icon(Icons.chat_outlined),
+                    label: Text(
+                      _whatsAppAvailable
+                          ? l10n.exportWhatsApp
+                          : l10n.exportShare,
+                    ),
                   ),
+                  if (_whatsAppAvailable) ...[
+                    const SizedBox(height: AppSpacing.sm),
+                    // Most users do not know WhatsApp preserves a document but
+                    // recompresses a photo. One line, where it is relevant.
+                    _Notice(l10n.exportWhatsAppDocumentHint),
+                  ],
                 ],
               ],
             ),
@@ -269,6 +295,9 @@ class _ExportScreenState extends State<ExportScreen> {
     );
   }
 }
+
+/// Where an export goes once it exists.
+enum _ShareTarget { none, sheet, whatsApp }
 
 class _Setting extends StatelessWidget {
   const _Setting({required this.label});

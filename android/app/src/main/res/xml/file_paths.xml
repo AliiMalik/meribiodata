@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    What the FileProvider is allowed to hand to another app.
+
+    Deliberately narrow: only the exports directory. A biodata's database, its
+    images and everything else stay unreachable, so a share intent can never
+    expose more than the file the user chose to send.
+-->
+<paths>
+    <files-path name="exports" path="exports/"/>
+</paths>

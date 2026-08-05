@@ -7,6 +7,7 @@ import 'package:meribiodata/domain/render/rendered_document.dart';
 import 'package:meribiodata/domain/render/template.dart';
 import 'package:meribiodata/features/export/render/document_exporter.dart';
 import 'package:meribiodata/features/export/render/pdf_renderer.dart';
+import 'package:meribiodata/features/export/whatsapp_share.dart';
 import 'package:meribiodata/l10n/language_descriptor.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:share_plus/share_plus.dart';
@@ -137,10 +138,36 @@ class ExportService {
     );
   }
 
+  /// Sends straight to WhatsApp, falling back to the share sheet (9.1).
+  ///
+  /// Returns true when WhatsApp took it. The fallback is deliberate rather
+  /// than an error path: on a phone without WhatsApp the user still expects
+  /// the button to do something.
+  Future<bool> shareToWhatsApp(
+    ExportResult result, {
+    required String mimeType,
+    String? text,
+    WhatsAppShare whatsApp = const WhatsAppShare(),
+  }) async {
+    final sent = await whatsApp.share(
+      files: result.files,
+      mimeType: mimeType,
+      text: text,
+    );
+    if (!sent) await share(result, text: text);
+    return sent;
+  }
+
   /// Exports live in a dedicated directory so "delete all my data" (NFR-7) can
   /// clear cached exports as well as the database.
+  ///
+  /// The *support* directory rather than the documents one, because it maps to
+  /// Android's `files/` — the only location a FileProvider `<files-path>` can
+  /// grant from. Sharing to WhatsApp (9.1) needs that grant, and keeping the
+  /// grant to one directory means a share intent can never expose the database
+  /// or a stored photo.
   static Future<Directory> exportsDirectory() async {
-    final base = await getApplicationDocumentsDirectory();
+    final base = await getApplicationSupportDirectory();
     final dir = Directory('${base.path}/exports');
     if (!dir.existsSync()) dir.createSync(recursive: true);
     return dir;
