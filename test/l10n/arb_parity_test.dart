@@ -53,12 +53,14 @@ void main() {
     final english = load('app_en.arb');
     final urdu = load('app_ur.arb');
 
-    // Deliberate exceptions: the product name and the digit samples are the
-    // same string in every language.
+    // Deliberate exceptions: the product name, the digit samples and the
+    // paper-size names are the same string in every language.
     const sameInEveryLanguage = {
       'appName',
       'settingsDigitWestern',
       'settingsDigitEastern',
+      'exportPageA4',
+      'exportPageLetter',
     };
 
     for (final key in messageKeys(urdu)) {

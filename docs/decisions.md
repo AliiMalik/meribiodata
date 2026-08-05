@@ -190,12 +190,12 @@ lands in the exported PDF, which is the artifact the user shares. Changing to 2 
 
 | # | Question | Blocks |
 |---|---|---|
-| 1 | Who reviews Sindhi / Pashto / Punjabi translations? | M3 |
+| 1 | Who reviews Sindhi / Pashto / Punjabi translations? **Now blocking:** draft labels ship in `assets/i18n/field_labels.json` marked `draft`, and the export screen warns when an unreviewed language is selected. | M3 (open) |
 | 2 | Waitlist mechanism: `mailto:` vs embedded third-party form — changes the privacy policy text | M4 |
 | 3 | Photos: included by default in templates, or opt-in? | M5 |
 | 4 | Backup password policy: enforce minimum strength, or warn only? | M5 |
 | 5 | App name, package id, Play Console account — needed for real AdMob unit IDs | M4 |
-| 6 | Watermark wording and prominence | M3 |
+| 6 | Watermark wording and prominence. Currently the placeholder "Made with MeriBiodata", set at the export call site. | M3 (open) |
 | 7 | 9.6 Boy/Girl biodata presets — build or not? | M2 |
 | 8 | 9.7 Accessibility for older users — build or not? (strongly recommended) | M5.5 |
 

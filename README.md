@@ -16,7 +16,7 @@ families. Android only.
 | M0 — Nastaliq PDF spike | Complete. Pipeline chosen, awaiting native-reader sign-off. |
 | M1 — Foundation | Complete. |
 | M2 — Schema & form engine | Complete. |
-| M3 — Templates & export | Not started. |
+| M3 — Templates & export | Complete; P1 label translations awaiting native review. |
 | M4 — Monetization & waitlist | Not started. |
 | M5 — Differentiators | Not started. |
 | M5.5 — Polish · M6 — Hardening | Not started. |
@@ -39,6 +39,12 @@ Before pushing:
 
 ```bash
 dart format lib test && flutter analyze --fatal-infos && flutter test
+```
+
+Golden images live in `test/render/goldens/`. After a deliberate rendering change:
+
+```bash
+flutter test --update-goldens
 ```
 
 ## Architecture

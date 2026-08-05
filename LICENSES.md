@@ -37,6 +37,7 @@ a default.
 
 | Package | Version | License |
 |---|---|---|
+| flutter_image_compress | 2.5.1 | MIT |
 | flutter_secure_storage | 10.3.1 | BSD-3-Clause |
 | freezed_annotation | 3.1.0 | MIT |
 | go_router | 17.3.0 | BSD-3-Clause |
@@ -45,7 +46,10 @@ a default.
 | intl | (resolved by flutter_localizations) | BSD-3-Clause |
 | json_annotation | 4.12.0 | BSD-3-Clause |
 | path_provider | 2.1.6 | BSD-3-Clause |
+| pdf | 3.13.0 | Apache-2.0 |
+| printing | 5.15.0 | Apache-2.0 |
 | provider | 6.1.5+1 | MIT |
+| share_plus | 13.3.0 | BSD-3-Clause |
 | uuid | 4.6.0 | MIT |
 
 ### Build-time only (not shipped in the APK)
@@ -66,5 +70,7 @@ a default.
 
 ### Expected later
 
-`pdf` and `printing` (both Apache-2.0) return at M3 for the export pipelines;
-`google_mobile_ads` at M4; image, sharing and crypto packages at M5.
+`google_mobile_ads` at M4; image-picking and crypto packages at M5.
+
+Note: `printing` is used only for its PDF plumbing. `Printing.convertHtml` — the M0
+Pipeline C route — is deprecated and broken on Android, and is not called anywhere.

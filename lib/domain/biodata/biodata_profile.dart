@@ -30,8 +30,13 @@ abstract class BiodataProfile with _$BiodataProfile {
     /// `field_values.dart`.
     @Default(<String, dynamic>{}) Map<String, dynamic> values,
 
-    /// Chosen template id. Null until the user picks one (M3).
+    /// Chosen template id. Null until the user picks one; the renderer falls
+    /// back to the default rather than refusing to draw.
     String? templateId,
+
+    /// Chosen page size id (`a4`, `letter`, `card`). Remembered per profile
+    /// because a card-sized biodata is a deliberate, repeated choice.
+    @Default('a4') String pageSizeId,
 
     /// Optional title printed above the biodata — a Bismillah line, a family
     /// name, a Quranic reference (§6.2, optional extras). A document-level

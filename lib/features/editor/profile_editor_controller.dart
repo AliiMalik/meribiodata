@@ -101,6 +101,20 @@ class ProfileEditorController extends ChangeNotifier {
     _scheduleSave();
   }
 
+  void setTemplate(String templateId) {
+    final current = _profile;
+    if (current == null || current.templateId == templateId) return;
+    _profile = current.copyWith(templateId: templateId);
+    _scheduleSave();
+  }
+
+  void setPageSize(String pageId) {
+    final current = _profile;
+    if (current == null || current.pageSizeId == pageId) return;
+    _profile = current.copyWith(pageSizeId: pageId);
+    _scheduleSave();
+  }
+
   void setDocumentLanguage(String localeCode) {
     final current = _profile;
     if (current == null || current.documentLanguageCode == localeCode) return;

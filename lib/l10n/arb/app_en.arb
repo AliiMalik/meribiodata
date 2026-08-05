@@ -219,5 +219,50 @@
   "homeUpdatedAt": "Edited {date}",
   "@homeUpdatedAt": {
     "placeholders": { "date": { "type": "String" } }
+  },
+
+  "templatePickerTitle": "Choose a template",
+  "@templatePickerTitle": {},
+  "templateMonochrome": "Prints in black & white",
+  "@templateMonochrome": {
+    "description": "Badge on the print-shop template — many users print at a corner shop."
+  },
+
+  "exportTitle": "Preview & Export",
+  "@exportTitle": {},
+  "exportDocumentLanguage": "Document language",
+  "@exportDocumentLanguage": {},
+  "exportPageSize": "Page size",
+  "@exportPageSize": {},
+  "exportPageA4": "A4",
+  "@exportPageA4": {},
+  "exportPageLetter": "Letter",
+  "@exportPageLetter": {},
+  "exportPageCard": "4×6 card",
+  "@exportPageCard": {},
+  "exportPdf": "Export PDF",
+  "@exportPdf": {},
+  "exportImage": "Save image",
+  "@exportImage": {},
+  "exportShare": "Share",
+  "@exportShare": {},
+  "exportWorking": "Preparing…",
+  "@exportWorking": {},
+  "exportSaved": "Saved to {location}",
+  "@exportSaved": {
+    "placeholders": { "location": { "type": "String" } }
+  },
+  "exportFailed": "The export could not be created.",
+  "@exportFailed": {},
+  "exportPageOf": "Page {page} of {total}",
+  "@exportPageOf": {
+    "placeholders": {
+      "page": { "type": "int" },
+      "total": { "type": "int" }
+    }
+  },
+  "exportDraftLanguageWarning": "The labels for this language are still being reviewed by native speakers.",
+  "@exportDraftLanguageWarning": {
+    "description": "Shown when the document language's built-in labels are marked draft."
   }
 }

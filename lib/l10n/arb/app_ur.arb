@@ -123,5 +123,32 @@
   "homeUpdatedAt": "{date} کو تبدیل کیا گیا",
   "@homeUpdatedAt": {
     "placeholders": { "date": { "type": "String" } }
-  }
+  },
+
+  "templatePickerTitle": "ڈیزائن منتخب کریں",
+  "templateMonochrome": "سیاہ و سفید پرنٹ کے لیے",
+
+  "exportTitle": "جائزہ اور محفوظ کریں",
+  "exportDocumentLanguage": "دستاویز کی زبان",
+  "exportPageSize": "صفحے کا سائز",
+  "exportPageA4": "A4",
+  "exportPageLetter": "Letter",
+  "exportPageCard": "4×6 کارڈ",
+  "exportPdf": "پی ڈی ایف بنائیں",
+  "exportImage": "تصویر محفوظ کریں",
+  "exportShare": "بھیجیں",
+  "exportWorking": "تیار ہو رہا ہے…",
+  "exportSaved": "{location} میں محفوظ ہو گیا",
+  "@exportSaved": {
+    "placeholders": { "location": { "type": "String" } }
+  },
+  "exportFailed": "دستاویز تیار نہیں ہو سکی۔",
+  "exportPageOf": "صفحہ {page} از {total}",
+  "@exportPageOf": {
+    "placeholders": {
+      "page": { "type": "int" },
+      "total": { "type": "int" }
+    }
+  },
+  "exportDraftLanguageWarning": "اس زبان کے عنوانات کا ابھی مقامی ماہرین جائزہ لے رہے ہیں۔"
 }

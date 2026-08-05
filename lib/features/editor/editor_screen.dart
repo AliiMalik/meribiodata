@@ -93,6 +93,19 @@ class _EditorBody extends StatelessWidget {
               onPressed: () =>
                   context.push(AppRoutes.schemaEditorFor(profile.id)),
             ),
+            IconButton(
+              tooltip: l10n.exportTitle,
+              icon: const Icon(Icons.visibility_outlined),
+              onPressed: () async {
+                // Flush first: the export reads the saved profile, so an
+                // unsaved keystroke would be missing from the document.
+                await controller.flush();
+                if (context.mounted) {
+                  await context.push(AppRoutes.exportFor(profile.id));
+                }
+                await controller.load();
+              },
+            ),
           ],
           bottom: PreferredSize(
             preferredSize: const Size.fromHeight(4),
