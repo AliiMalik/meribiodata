@@ -13,16 +13,24 @@ class AppPreferences extends ChangeNotifier {
   static const _keyUiLocale = 'uiLocale';
   static const _keyDigitStyle = 'digitStyle';
   static const _keyOnboardingComplete = 'onboardingComplete';
+  static const _keyExportModesExplained = 'exportModesExplained';
 
   final PreferencesRepository _repository;
 
   LanguageDescriptor _uiLanguage = AppLanguages.english;
   DigitStyle _digitStyle = DigitStyle.western;
   bool _onboardingComplete = false;
+  bool _exportModesExplained = false;
 
   LanguageDescriptor get uiLanguage => _uiLanguage;
   DigitStyle get digitStyle => _digitStyle;
   bool get onboardingComplete => _onboardingComplete;
+
+  /// Whether the Full vs Shareable explanation has been shown. It is the app's
+  /// most valuable idea and users will not discover it on their own (9.4), so
+  /// it is shown once — and only once, because a repeating dialog gets
+  /// dismissed unread.
+  bool get exportModesExplained => _exportModesExplained;
 
   Future<void> load() async {
     final values = await _repository.load();
@@ -37,6 +45,7 @@ class AppPreferences extends ChangeNotifier {
       );
     }
     _onboardingComplete = values[_keyOnboardingComplete] as bool? ?? false;
+    _exportModesExplained = values[_keyExportModesExplained] as bool? ?? false;
 
     notifyListeners();
   }
@@ -62,9 +71,17 @@ class AppPreferences extends ChangeNotifier {
     await _persist();
   }
 
+  Future<void> markExportModesExplained() async {
+    if (_exportModesExplained) return;
+    _exportModesExplained = true;
+    notifyListeners();
+    await _persist();
+  }
+
   Future<void> _persist() => _repository.save({
     _keyUiLocale: _uiLanguage.code,
     _keyDigitStyle: _digitStyle.name,
     _keyOnboardingComplete: _onboardingComplete,
+    _keyExportModesExplained: _exportModesExplained,
   });
 }

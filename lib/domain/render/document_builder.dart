@@ -233,8 +233,13 @@ class DocumentBuilder {
     if (field.type == FieldType.multiline && raw is String) {
       // The last comma-separated part of an address is the city often enough
       // to be a sensible default, and the user can always edit the field.
+      //
+      // The separator list includes U+060C ARABIC COMMA and U+061B ARABIC
+      // SEMICOLON. Splitting on the ASCII comma alone silently failed for
+      // every Urdu, Sindhi and Pashto address — which is to say, for exactly
+      // the users this masking exists to protect. Caught by a golden.
       final parts = raw
-          .split(RegExp('[,\n]'))
+          .split(_addressSeparators)
           .map((p) => p.trim())
           .where((p) => p.isNotEmpty)
           .toList();
@@ -243,6 +248,10 @@ class DocumentBuilder {
 
     return null;
   }
+
+  /// Address separators, including U+060C ARABIC COMMA and U+061B ARABIC
+  /// SEMICOLON — the ones Urdu, Sindhi and Pashto addresses actually use.
+  static final RegExp _addressSeparators = RegExp('[,،؛\n]');
 
   String _years(DateTime date, DocumentStrings words) =>
       words.years.replaceAll('{n}', '${ageOn(date, now ?? DateTime.now())}');

@@ -145,16 +145,50 @@ void main() {
     });
   });
 
-  testWidgets('Shareable mode visibly differs from Full (9.4)', (tester) async {
-    await pumpPage(
-      tester,
-      sampleDocument('en', labels: labels, mode: ExportMode.shareable),
-      Templates.classic,
-    );
+  group('template x language x export mode (M5 exit criterion)', () {
+    // Shareable is the mode most documents will actually be sent in, so it
+    // gets the same coverage Full does rather than a single spot check.
+    for (final template in Templates.all) {
+      for (final language in ['en', 'ur']) {
+        testWidgets('${template.id} / $language / shareable', (tester) async {
+          await pumpPage(
+            tester,
+            sampleDocument(
+              language,
+              labels: labels,
+              mode: ExportMode.shareable,
+            ),
+            template,
+          );
 
-    await expectLater(
-      find.byType(DocumentPage),
-      matchesGoldenFile('goldens/classic-en-shareable.png'),
-    );
+          await expectLater(
+            find.byType(DocumentPage),
+            matchesGoldenFile(
+              'goldens/${template.id}-$language-shareable.png',
+            ),
+          );
+        });
+      }
+    }
+
+    testWidgets('Shareable removes what Full shows', (tester) async {
+      final full = sampleDocument('en', labels: labels);
+      final shareable = sampleDocument(
+        'en',
+        labels: labels,
+        mode: ExportMode.shareable,
+      );
+
+      // The contact number is omitted outright and the address is coarsened,
+      // so Shareable must carry strictly fewer fields.
+      expect(shareable.fieldCount, lessThan(full.fieldCount));
+
+      final shareableValues = shareable.sections
+          .expand((s) => s.fields)
+          .map((f) => f.value)
+          .join(' ');
+      expect(shareableValues, isNot(contains('1234567')));
+      expect(shareableValues, isNot(contains('House 12')));
+    });
   });
 }

@@ -2,17 +2,20 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:meribiodata/core/preferences/app_preferences.dart';
 import 'package:meribiodata/core/router/app_routes.dart';
 import 'package:meribiodata/core/theme/app_colors.dart';
 import 'package:meribiodata/core/theme/app_spacing.dart';
 import 'package:meribiodata/data/bundled_labels.dart';
 import 'package:meribiodata/data/profile_repository.dart';
 import 'package:meribiodata/domain/render/document_builder.dart';
+import 'package:meribiodata/domain/render/rendered_document.dart';
 import 'package:meribiodata/domain/render/template.dart';
 import 'package:meribiodata/domain/render/templates.dart';
 import 'package:meribiodata/features/editor/profile_editor_controller.dart';
 import 'package:meribiodata/features/export/export_service.dart';
 import 'package:meribiodata/features/export/widgets/document_preview.dart';
+import 'package:meribiodata/features/export/widgets/export_mode_selector.dart';
 import 'package:meribiodata/l10n/generated/app_localizations.dart';
 import 'package:meribiodata/l10n/language_descriptor.dart';
 import 'package:provider/provider.dart';
@@ -41,10 +44,27 @@ class _ExportScreenState extends State<ExportScreen> {
 
   bool _busy = false;
 
+  /// Defaults to Shareable, and resets to it every time this screen opens.
+  ///
+  /// The two mistakes are not symmetric. Sending a Shareable copy to one
+  /// trusted family means they ask for a phone number — recoverable. Sending a
+  /// Full copy to a WhatsApp group puts a young woman's number and address
+  /// into circulation that nobody can recall. So the safe mode is the default,
+  /// and choosing Full is a deliberate act each time (docs/decisions.md D11).
+  ExportMode _mode = ExportMode.shareable;
+
   @override
   void initState() {
     super.initState();
     unawaited(_controller.load());
+    WidgetsBinding.instance.addPostFrameCallback((_) => _explainOnce());
+  }
+
+  Future<void> _explainOnce() async {
+    final preferences = context.read<AppPreferences>();
+    if (preferences.exportModesExplained || !mounted) return;
+    await showExportModeExplainer(context);
+    await preferences.markExportModesExplained();
   }
 
   @override
@@ -99,10 +119,23 @@ class _ExportScreenState extends State<ExportScreen> {
 
           final template = Templates.byId(profile.templateId);
           final page = PageSpec.byId(profile.pageSizeId);
-          final document = DocumentBuilder(
+          final builder = DocumentBuilder(
             labels: labels,
             stringsFor: labels.stringsFor,
-          ).build(profile, watermark: 'Made with MeriBiodata');
+          );
+
+          // Built in the selected mode, so the preview *is* the document —
+          // 9.4 requires the user to see precisely what the recipient will.
+          final document = builder.build(
+            profile,
+            mode: _mode,
+            watermark: 'Made with MeriBiodata',
+          );
+
+          // How much Shareable would remove, computed by diffing the two
+          // builds rather than by re-deriving the masking rules here.
+          final fullFieldCount = builder.build(profile).fieldCount;
+          final maskedCount = fullFieldCount - document.fieldCount;
 
           final fileName = ExportService.fileNameFor(document);
 
@@ -131,6 +164,13 @@ class _ExportScreenState extends State<ExportScreen> {
                     template: template,
                     page: page,
                   ),
+                ),
+                const SizedBox(height: AppSpacing.xl),
+
+                ExportModeSelector(
+                  mode: _mode,
+                  maskedFieldCount: maskedCount,
+                  onChanged: (mode) => setState(() => _mode = mode),
                 ),
                 const SizedBox(height: AppSpacing.xl),
 

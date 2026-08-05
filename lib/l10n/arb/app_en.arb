@@ -278,5 +278,33 @@
   "exportDraftLanguageWarning": "The labels for this language are still being reviewed by native speakers.",
   "@exportDraftLanguageWarning": {
     "description": "Shown when the document language's built-in labels are marked draft."
-  }
+  },
+
+  "exportMode": "Who is this for?",
+  "@exportMode": {
+    "description": "Heading for the Full vs Shareable choice. Phrased as the question the user is actually answering, not as jargon."
+  },
+  "exportModeShareable": "Wide sharing",
+  "@exportModeShareable": {},
+  "exportModeFull": "One family",
+  "@exportModeFull": {},
+  "exportModeShareableHint": "Private details are left out. Safe for WhatsApp groups and rishta contacts.",
+  "@exportModeShareableHint": {},
+  "exportModeFullHint": "Everything you entered, including private details. Send only to people you trust.",
+  "@exportModeFullHint": {},
+  "exportModeHiddenCount": "{count, plural, =1{1 private detail is hidden or shortened} other{{count} private details are hidden or shortened}}",
+  "@exportModeHiddenCount": {
+    "placeholders": { "count": { "type": "int" } }
+  },
+  "exportModeFullWarning": "This copy includes private details.",
+  "@exportModeFullWarning": {},
+
+  "exportExplainTitle": "Two ways to share a biodata",
+  "@exportExplainTitle": {},
+  "exportExplainBody": "A biodata gets forwarded on. You choose what travels with it.\n\nWide sharing leaves out private details like your phone number and exact address, and shows only your city and age. Use it for WhatsApp groups and rishta contacts.\n\nOne family includes everything. Use it when you are sending to a specific family you trust.\n\nYou can mark any field as private yourself — look for the lock icon while filling the form.",
+  "@exportExplainBody": {
+    "description": "Shown once, the first time the user reaches the export screen. This is the app's most valuable idea and users will not discover it on their own (9.4)."
+  },
+  "exportExplainGotIt": "Got it",
+  "@exportExplainGotIt": {}
 }

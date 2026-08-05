@@ -309,6 +309,27 @@ void main() {
       );
     });
 
+    test('generalises an Urdu address, which uses the Arabic comma', () {
+      // Regression: splitting on the ASCII comma alone left the full street
+      // address in every Urdu, Sindhi and Pashto Shareable export — the exact
+      // users this masking protects. Caught by a golden, pinned here.
+      final profile = profileWith({
+        BuiltInKeys.address: 'مکان نمبر 12، گلبرگ، لاہور',
+      }, language: 'ur');
+
+      expect(
+        BidiText.strip(
+          builder
+              .build(profile, mode: ExportMode.shareable)
+              .sections
+              .expand((s) => s.fields)
+              .single
+              .value,
+        ),
+        'لاہور',
+      );
+    });
+
     test('Full mode leaves everything exactly as entered', () {
       final profile = profileWith({
         BuiltInKeys.address: 'House 12, Gulberg, Lahore',
