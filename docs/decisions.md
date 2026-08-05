@@ -300,7 +300,7 @@ this choice is context-dependent. There is no setting for "this recipient is tru
 | 4 | Real-device benchmark against NFR-2 (< 3 s on a 3 GB phone). | M0 / M6 |
 | 5 | Watermark wording and prominence. Currently the placeholder "Made with MeriBiodata", visible on every export today. | M3 (open) |
 | ~~6~~ | ~~Photos: included by default in templates, or opt-in?~~ **Answered by D12: opt-in per export, reset on every mode change.** | closed |
-| 7 | Backup password policy: enforce minimum strength, or warn only? | M5 |
+| 7 | Backup password policy: enforce minimum strength, or warn only? **M5 ships a minimum of 8 characters and nothing more.** | M6 |
 | 8 | The waitlist form URL itself, once you create the form. | M4 |
 | 9 | Play Console account (needed only for the M6 upload). | M6 |
 | 10 | 9.6 Boy/Girl biodata presets — build or not? | M2 (deferred) |
