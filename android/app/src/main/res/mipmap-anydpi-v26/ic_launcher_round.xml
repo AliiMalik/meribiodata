@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    Adaptive icon. Android 8+ composites these two layers and applies whatever
+    mask the launcher chooses, so the artwork must survive being cropped to a
+    circle, a squircle or a rounded square.
+
+    This is why the wordmark is not here: the mask clips everything outside the
+    inner 66% of the canvas, and text at the edges is the first thing it eats.
+    The wordmark lives on the Play Store asset (docs/brand/), which is never
+    masked. minSdk is 26, so every device this app supports uses these layers
+    and never the legacy PNGs beside them.
+-->
+<adaptive-icon xmlns:android="http://schemas.android.com/apk/res/android">
+    <background android:drawable="@mipmap/ic_launcher_background"/>
+    <foreground android:drawable="@mipmap/ic_launcher_foreground"/>
+</adaptive-icon>

@@ -66,6 +66,7 @@ class DocumentExporter {
       page: page,
       pixelRatio: ratioForDpi(dpi),
       images: images,
+      watermark: document.watermark,
     );
 
     final entry = OverlayEntry(
@@ -114,6 +115,7 @@ class _ExportJob {
     required this.page,
     required this.pixelRatio,
     required this.images,
+    required this.watermark,
   }) : blockKeys = List.generate(blocks.length, (_) => GlobalKey());
 
   final List<DocBlock> blocks;
@@ -122,6 +124,7 @@ class _ExportJob {
   final PageSpec page;
   final double pixelRatio;
   final Map<Uint8List, ui.Image> images;
+  final String? watermark;
 
   final List<GlobalKey> blockKeys;
   final Completer<List<RenderedPage>> completer = Completer();
@@ -256,6 +259,7 @@ class _ExportStageState extends State<_ExportStage> {
                 offsetY: job.slices[_pageIndex].offsetY,
                 height: job.slices[_pageIndex].height,
                 images: job.images,
+                watermark: job.watermark,
               ),
             ),
           ),

@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:meribiodata/core/preferences/app_preferences.dart';
 import 'package:meribiodata/core/theme/app_colors.dart';
 import 'package:meribiodata/core/theme/app_spacing.dart';
 import 'package:meribiodata/data/bundled_labels.dart';
@@ -65,6 +66,7 @@ class _TemplatePickerScreenState extends State<TemplatePickerScreen> {
           final document = DocumentBuilder(
             labels: labels,
             stringsFor: labels.stringsFor,
+            units: context.watch<AppPreferences>().documentUnits,
           ).build(profile);
           final selected = profile.templateId ?? Templates.defaultId;
 

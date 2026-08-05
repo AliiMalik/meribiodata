@@ -88,6 +88,85 @@ void main() {
     }
   });
 
+  group('dark theme body text pairs meet WCAG AA (4.5:1)', () {
+    // A dark theme is not the light one inverted, and it is where a palette
+    // most easily fails quietly: `primaryDark` on a near-black surface is
+    // 1.6:1 and simply disappears. Every dark pair is measured here for the
+    // same reason the light ones are.
+    final pairs = <String, (Color, Color)>{
+      'darkTextPrimary on darkBackground': (
+        AppColors.darkTextPrimary,
+        AppColors.darkBackground,
+      ),
+      'darkTextPrimary on darkSurface': (
+        AppColors.darkTextPrimary,
+        AppColors.darkSurface,
+      ),
+      'darkTextPrimary on darkSurfaceHigh': (
+        AppColors.darkTextPrimary,
+        AppColors.darkSurfaceHigh,
+      ),
+      'darkTextSecondary on darkBackground': (
+        AppColors.darkTextSecondary,
+        AppColors.darkBackground,
+      ),
+      'darkTextSecondary on darkSurface': (
+        AppColors.darkTextSecondary,
+        AppColors.darkSurface,
+      ),
+      'darkTextSecondary on darkSurfaceHigh': (
+        AppColors.darkTextSecondary,
+        AppColors.darkSurfaceHigh,
+      ),
+      'darkPrimary on darkBackground': (
+        AppColors.darkPrimary,
+        AppColors.darkBackground,
+      ),
+      'darkPrimary on darkSurface': (
+        AppColors.darkPrimary,
+        AppColors.darkSurface,
+      ),
+      'darkAccentTeal on darkSurface': (
+        AppColors.darkAccentTeal,
+        AppColors.darkSurface,
+      ),
+      'onDarkPrimary on darkPrimary': (
+        AppColors.onDarkPrimary,
+        AppColors.darkPrimary,
+      ),
+      'onDarkPrimaryContainer on darkPrimaryContainer': (
+        AppColors.onDarkPrimaryContainer,
+        AppColors.darkPrimaryContainer,
+      ),
+      'darkError on darkBackground': (
+        AppColors.darkError,
+        AppColors.darkBackground,
+      ),
+    };
+
+    for (final entry in pairs.entries) {
+      test(entry.key, () {
+        final ratio = contrastRatio(entry.value.$1, entry.value.$2);
+        expect(
+          ratio,
+          greaterThanOrEqualTo(aaBody),
+          reason:
+              '${entry.key} is ${ratio.toStringAsFixed(2)}:1, below AA for '
+              'body text in dark mode.',
+        );
+      });
+    }
+
+    test('the light theme brand green would be unreadable here', () {
+      // Pins the reason darkPrimary exists at all, so nobody "simplifies" the
+      // palette back to one green.
+      expect(
+        contrastRatio(AppColors.primaryDark, AppColors.darkBackground),
+        lessThan(aaLarge),
+      );
+    });
+  });
+
   group('large-text / fill-only colours', () {
     test('primaryGreen on background passes AA large but not body', () {
       final ratio = contrastRatio(

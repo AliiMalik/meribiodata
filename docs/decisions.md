@@ -290,6 +290,47 @@ this choice is context-dependent. There is no setting for "this recipient is tru
 
 ---
 
+## D13 — No in-app "delete all my data"
+
+**Decision.** There is no delete-everything button. Uninstalling the app is the deletion path, and
+the privacy policy says so in those words.
+
+**Why.** The requirement it drops (NFR-7) was written for apps that hold data somewhere the user
+cannot reach. This one does not: there is no account, no server and no cloud copy. Everything lives
+in the app's private storage, which Android removes on uninstall — completely, including the
+encrypted database, the photos and the cached exports.
+
+A button would therefore delete exactly what uninstalling already deletes, while *implying* there
+was something else somewhere. On a privacy-first app that implication is the wrong one to leave.
+
+Play's data-deletion requirement applies to accounts and server-side data. Neither exists here, so
+the uninstall answer is complete rather than a shortcut.
+
+**Cost accepted.** A user who wants to clear one biodata deletes that biodata; a user who wants to
+clear everything and keep the app must uninstall and reinstall. `PhotoStore.deleteAll` was removed
+rather than left unused.
+
+---
+
+## D14 — The watermark is a page background, not a footer line
+
+**Decision.** "Made with MeriBiodata" is drawn across the lower third of every page, at about 86% of
+the page width, behind the content, at a tenth of the ink strength — 13% on the monochrome template,
+which gets photocopied.
+
+**Why.** The old version was a small grey line at the bottom of the last page. That is trivially
+cropped off, and cropping is precisely what someone passing the work off as their own would do. A
+wide translucent band sitting behind the text cannot be removed without removing the biodata with
+it, and at a tenth strength it does not compete with anything printed in front of it.
+
+Moving it out of the block stream has two side effects, both good: it now appears on *every* page
+rather than once, and the paginator no longer has to reserve space for it.
+
+**Still open:** the wording. "Made with MeriBiodata" remains the placeholder from M3 (open
+question 5). Only the treatment is settled here.
+
+---
+
 ## Still open
 
 | # | Question | Blocks |
@@ -298,7 +339,7 @@ this choice is context-dependent. There is no setting for "this recipient is tru
 | 2 | **D7 ruling** — should a built-in field borrow another language's rename, or fall back to its shipped translation? Recommendation: option 2. | M3 (open) |
 | 3 | Native-reader sign-off on the Urdu/Sindhi/Pashto output — the last M0 exit criterion. | M0 (open) |
 | 4 | Real-device benchmark against NFR-2 (< 3 s on a 3 GB phone). | M0 / M6 |
-| 5 | Watermark wording and prominence. Currently the placeholder "Made with MeriBiodata", visible on every export today. | M3 (open) |
+| 5 | Watermark **wording**. The treatment is settled by D14 (a translucent band across the lower third of every page); the words are still the M3 placeholder "Made with MeriBiodata". | M6 |
 | ~~6~~ | ~~Photos: included by default in templates, or opt-in?~~ **Answered by D12: opt-in per export, reset on every mode change.** | closed |
 | 7 | Backup password policy: enforce minimum strength, or warn only? **M5 ships a minimum of 8 characters and nothing more.** | M6 |
 | 8 | The waitlist form URL itself, once you create the form. | M4 |

@@ -5,13 +5,24 @@ This file is updated in the same commit as any dependency change.
 
 ## Fonts
 
-Bundled in `assets/fonts/`. Total bundled weight: **1.87 MB** (see NFR-8 note below).
+Bundled in `assets/fonts/`, **subset** to the scripts the app renders. Total bundled weight:
+**1.34 MB**, down from 2.18 MB (see the subsetting note below).
 
-| Font | Weights | Size | License | Source |
-|---|---|---|---|---|
-| Inter | Regular, SemiBold, Bold | 1252 KB | SIL OFL 1.1 | [rsms/inter](https://github.com/rsms/inter) v4.1 |
-| Noto Nastaliq Urdu | Regular, Bold | 508 KB | SIL OFL 1.1 | [notofonts](https://github.com/notofonts/notofonts.github.io) |
-| Noto Naskh Arabic | Regular, Bold | 527 KB | SIL OFL 1.1 | [notofonts](https://github.com/notofonts/notofonts.github.io) |
+| Font | Weights | Size (subset) | Was | License | Source |
+|---|---|---|---|---|---|
+| Inter | Regular, SemiBold, Bold | 425 KB | 1222 KB | SIL OFL 1.1 | [rsms/inter](https://github.com/rsms/inter) v4.1 |
+| Noto Nastaliq Urdu | Regular, Bold | 484 KB | 496 KB | SIL OFL 1.1 | [notofonts](https://github.com/notofonts/notofonts.github.io) |
+| Noto Naskh Arabic | Regular, Bold | 465 KB | 514 KB | SIL OFL 1.1 | [notofonts](https://github.com/notofonts/notofonts.github.io) |
+
+**Subsetting and the OFL.** Both families are subset by `tool/subset_fonts.py`; the pristine
+originals are kept in `tool/font-originals/` so the operation is repeatable and reversible. Neither
+copyright statement declares a Reserved Font Name, so the OFL permits modification while keeping the
+family names. The full licence texts ship with the fonts, as OFL clause 2 requires.
+
+Inter loses Greek and Cyrillic, which is where its weight actually was and which this app never
+renders. The Noto faces barely move, because nearly all of their weight *is* the Arabic script and
+its shaping tables — all OpenType layout features are retained deliberately, since dropping one
+would break Nastaliq joining rather than merely losing a glyph.
 
 License texts ship alongside the fonts: `assets/fonts/Inter-OFL.txt`, `assets/fonts/Noto-OFL.txt`.
 
@@ -24,10 +35,8 @@ not bundled**, per the build prompt's license hygiene rule.
 
 **Still to add:** Lora or Noto Serif (OFL) for the English document body at M3.
 
-**NFR-8 note.** Inter's static weights are ~420 KB each because they carry Greek and Cyrillic we
-never use; Inter Medium was dropped for this reason. Subsetting all three families to the
-codepoints we actually render is an M6 task and should cut this figure substantially. If the
-bundle still looks heavy after subsetting, downloadable per-language font packs are the
+**NFR-8 note.** Subsetting is now done (−38% overall). If the bundle still looks heavy,
+downloadable per-language font packs are the
 next lever (§4) — but they trade against the offline-first promise, so that is a discussion, not
 a default.
 

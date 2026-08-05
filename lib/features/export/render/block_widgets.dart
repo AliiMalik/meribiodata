@@ -115,13 +115,6 @@ class BlockWidgets {
     // Zero height by design: the paginator acts on the block's presence, not
     // on its size.
     DocPageBreak() => const SizedBox.shrink(),
-    DocFooter(:final text) => Center(
-      child: Text(
-        text,
-        textAlign: TextAlign.center,
-        style: _base(style.labelSize - 2, color: style.mutedInk),
-      ),
-    ),
   };
 
   Widget _photo(DocPhoto block) {
@@ -215,6 +208,7 @@ class DocumentPage extends StatelessWidget {
     required this.page,
     required this.offsetY,
     required this.height,
+    this.watermark,
     this.images = const {},
     super.key,
   });
@@ -230,6 +224,9 @@ class DocumentPage extends StatelessWidget {
   /// Visible height of the content area on this page.
   final double height;
 
+  /// Painted behind the content, on every page. Null suppresses it.
+  final String? watermark;
+
   final Map<Uint8List, ui.Image> images;
 
   @override
@@ -240,23 +237,110 @@ class DocumentPage extends StatelessWidget {
       width: page.width,
       height: page.height,
       color: Colors.white,
-      padding: EdgeInsets.all(style.margin),
-      child: ClipRect(
-        child: SizedBox(
-          width: contentWidth,
-          height: height,
-          child: OverflowBox(
-            alignment: Alignment.topLeft,
-            minHeight: 0,
-            maxHeight: double.infinity,
-            child: Transform.translate(
-              offset: Offset(0, -offsetY),
-              child: DocumentColumn(
-                blocks: blocks,
+      child: Stack(
+        children: [
+          if (watermark case final String mark when mark.isNotEmpty)
+            Positioned.fill(
+              child: DocumentWatermark(
+                text: mark,
                 style: style,
-                language: language,
-                width: contentWidth,
-                images: images,
+                page: page,
+              ),
+            ),
+          Padding(
+            padding: EdgeInsets.all(style.margin),
+            child: _content(contentWidth),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _content(double contentWidth) {
+    return ClipRect(
+      child: SizedBox(
+        width: contentWidth,
+        height: height,
+        child: OverflowBox(
+          alignment: Alignment.topLeft,
+          minHeight: 0,
+          maxHeight: double.infinity,
+          child: Transform.translate(
+            offset: Offset(0, -offsetY),
+            child: DocumentColumn(
+              blocks: blocks,
+              style: style,
+              language: language,
+              width: contentWidth,
+              images: images,
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+/// The "made with" mark, laid across the lower part of the page.
+///
+/// Deliberately not a footer line any more. A small line of grey type at the
+/// bottom of a page is trivially cropped off, and cropping is exactly what
+/// someone passing the work off as their own would do. A wide, translucent band
+/// sitting *behind* the text cannot be removed without removing the biodata
+/// with it — and because it is only about a tenth of the ink strength, it does
+/// not compete with anything printed in front of it.
+///
+/// It is a page background rather than a block in the flow, so it repeats on
+/// every page and costs the paginator nothing.
+class DocumentWatermark extends StatelessWidget {
+  const DocumentWatermark({
+    required this.text,
+    required this.style,
+    required this.page,
+    super.key,
+  });
+
+  final String text;
+  final TemplateStyle style;
+  final PageSpec page;
+
+  /// Share of the page width the mark spans.
+  static const widthFraction = 0.86;
+
+  /// Where its centre sits, as a share of page height. Low enough to read as a
+  /// mark on the paper rather than as a heading, high enough to still be behind
+  /// body text on a full page.
+  static const verticalPosition = 0.72;
+
+  static const colourOpacity = 0.10;
+
+  /// A monochrome template gets a slightly stronger mark: it is printed and
+  /// photocopied at a corner shop, and 10% grey does not always survive that.
+  static const monochromeOpacity = 0.13;
+
+  double get opacity => style.isMonochrome ? monochromeOpacity : colourOpacity;
+
+  @override
+  Widget build(BuildContext context) {
+    final width = page.width * widthFraction;
+
+    return IgnorePointer(
+      child: Align(
+        alignment: const Alignment(0, verticalPosition * 2 - 1),
+        child: SizedBox(
+          width: width,
+          child: FittedBox(
+            child: Text(
+              text,
+              maxLines: 1,
+              style: TextStyle(
+                // Inter regardless of document language: the mark is the app's
+                // name, not part of the biodata, and it must set identically
+                // whatever script the document is in.
+                fontFamily: 'Inter',
+                fontWeight: FontWeight.w700,
+                letterSpacing: 2,
+                color: style.ink.withValues(alpha: opacity),
               ),
             ),
           ),

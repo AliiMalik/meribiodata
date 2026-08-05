@@ -53,6 +53,7 @@ class DocumentPreview extends StatelessWidget {
             page: page,
             offsetY: 0,
             height: page.height - template.style.margin * 2,
+            watermark: document.watermark,
           ),
         ),
       ),

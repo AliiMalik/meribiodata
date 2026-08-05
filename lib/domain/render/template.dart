@@ -171,10 +171,6 @@ abstract class DocumentTemplate {
       blocks.add(DocSpacer(style.sectionGap));
     }
 
-    if (document.watermark case final String mark when mark.isNotEmpty) {
-      blocks.add(DocFooter(mark));
-    }
-
     blocks.addAll(photoPage(document));
     return blocks;
   }

@@ -1,5 +1,7 @@
-import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
 import 'package:meribiodata/core/preferences/preferences_repository.dart';
+import 'package:meribiodata/domain/biodata/field_type.dart';
+import 'package:meribiodata/domain/render/document_builder.dart';
 import 'package:meribiodata/l10n/language_descriptor.dart';
 
 /// App-wide user preferences.
@@ -15,6 +17,9 @@ class AppPreferences extends ChangeNotifier {
   static const _keyOnboardingComplete = 'onboardingComplete';
   static const _keyExportModesExplained = 'exportModesExplained';
   static const _keyRomanInput = 'romanInputDefault';
+  static const _keyHeightUnit = 'heightUnit';
+  static const _keyWeightUnit = 'weightUnit';
+  static const _keyThemeMode = 'themeMode';
 
   final PreferencesRepository _repository;
 
@@ -23,6 +28,9 @@ class AppPreferences extends ChangeNotifier {
   bool _onboardingComplete = false;
   bool _exportModesExplained = false;
   bool _romanInputDefault = false;
+  LengthUnit _heightUnit = LengthUnit.feetInches;
+  MassUnit _weightUnit = MassUnit.kilograms;
+  ThemeMode _themeMode = ThemeMode.system;
 
   LanguageDescriptor get uiLanguage => _uiLanguage;
   DigitStyle get digitStyle => _digitStyle;
@@ -40,6 +48,21 @@ class AppPreferences extends ChangeNotifier {
   /// pushed through a transliterator. Once they turn it on, it is remembered.
   bool get romanInputDefault => _romanInputDefault;
 
+  /// Feet-and-inches by default, because that is how height is spoken about in
+  /// Pakistan even where everything else is metric.
+  LengthUnit get heightUnit => _heightUnit;
+
+  MassUnit get weightUnit => _weightUnit;
+
+  /// Units as the document builder wants them.
+  DocumentUnits get documentUnits =>
+      DocumentUnits(length: _heightUnit, mass: _weightUnit);
+
+  /// Follows the phone by default. The *document* is unaffected either way —
+  /// a biodata always renders on white paper, because it is printed and
+  /// forwarded, not read in the app.
+  ThemeMode get themeMode => _themeMode;
+
   Future<void> load() async {
     final values = await _repository.load();
 
@@ -56,12 +79,52 @@ class AppPreferences extends ChangeNotifier {
     _exportModesExplained = values[_keyExportModesExplained] as bool? ?? false;
     _romanInputDefault = values[_keyRomanInput] as bool? ?? false;
 
+    if (values[_keyHeightUnit] case final String wire) {
+      _heightUnit = LengthUnit.values.firstWhere(
+        (u) => u.wire == wire,
+        orElse: () => LengthUnit.feetInches,
+      );
+    }
+    if (values[_keyWeightUnit] case final String wire) {
+      _weightUnit = MassUnit.values.firstWhere(
+        (u) => u.wire == wire,
+        orElse: () => MassUnit.kilograms,
+      );
+    }
+    if (values[_keyThemeMode] case final String name) {
+      _themeMode = ThemeMode.values.firstWhere(
+        (m) => m.name == name,
+        orElse: () => ThemeMode.system,
+      );
+    }
+
     notifyListeners();
   }
 
   Future<void> setUiLanguage(LanguageDescriptor language) async {
     if (language.code == _uiLanguage.code) return;
     _uiLanguage = language;
+    notifyListeners();
+    await _persist();
+  }
+
+  Future<void> setHeightUnit(LengthUnit unit) async {
+    if (unit == _heightUnit) return;
+    _heightUnit = unit;
+    notifyListeners();
+    await _persist();
+  }
+
+  Future<void> setWeightUnit(MassUnit unit) async {
+    if (unit == _weightUnit) return;
+    _weightUnit = unit;
+    notifyListeners();
+    await _persist();
+  }
+
+  Future<void> setThemeMode(ThemeMode mode) async {
+    if (mode == _themeMode) return;
+    _themeMode = mode;
     notifyListeners();
     await _persist();
   }
@@ -100,5 +163,8 @@ class AppPreferences extends ChangeNotifier {
     _keyOnboardingComplete: _onboardingComplete,
     _keyExportModesExplained: _exportModesExplained,
     _keyRomanInput: _romanInputDefault,
+    _keyHeightUnit: _heightUnit.wire,
+    _keyWeightUnit: _weightUnit.wire,
+    _keyThemeMode: _themeMode.name,
   });
 }

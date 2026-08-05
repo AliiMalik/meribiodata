@@ -5,6 +5,7 @@ import 'package:flutter/services.dart' show rootBundle;
 import 'package:meribiodata/domain/render/doc_block.dart';
 import 'package:meribiodata/domain/render/rendered_document.dart';
 import 'package:meribiodata/domain/render/template.dart';
+import 'package:meribiodata/features/export/render/block_widgets.dart';
 import 'package:meribiodata/features/export/render/document_exporter.dart';
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
@@ -132,21 +133,26 @@ abstract final class PdfRenderer {
       // MultiPage understands this directly; the raster path has to paginate
       // around it itself (see Paginator).
       DocPageBreak() => pw.NewPage(),
-      DocFooter(:final text) => pw.Center(
-        child: pw.Text(
-          text,
-          style: pw.TextStyle(
-            fontSize: style.labelSize - 2,
-            color: _pdf(style.mutedInk),
-          ),
-        ),
-      ),
     };
 
     pdf.addPage(
       pw.MultiPage(
-        pageFormat: PdfPageFormat(page.width, page.height),
-        margin: pw.EdgeInsets.all(style.margin),
+        pageTheme: pw.PageTheme(
+          pageFormat: PdfPageFormat(page.width, page.height),
+          margin: pw.EdgeInsets.all(style.margin),
+          theme: pw.ThemeData.withFont(base: regular, bold: bold),
+          // The watermark is drawn behind the content on every page, matching
+          // the raster backend's DocumentWatermark. Deliberately a page
+          // background rather than a block: it repeats on every page, costs
+          // pagination nothing, and — the point of it — cannot be cropped off
+          // the way a footer line can.
+          buildBackground: (context) => _watermark(
+            document.watermark,
+            style,
+            page,
+            bold,
+          ),
+        ),
         // MultiPage paginates for free here — the raster path has to do it
         // itself, which is why Paginator exists.
         build: (context) => [
@@ -156,6 +162,47 @@ abstract final class PdfRenderer {
     );
 
     return pdf.save();
+  }
+
+  static pw.Widget _watermark(
+    String? text,
+    TemplateStyle style,
+    PageSpec page,
+    pw.Font bold,
+  ) {
+    if (text == null || text.isEmpty) return pw.SizedBox();
+
+    final ink = style.ink;
+    // A tenth of the ink strength, or a little more on the monochrome template
+    // — it gets photocopied, and 10% grey does not always survive that.
+    final alpha = style.isMonochrome
+        ? DocumentWatermark.monochromeOpacity
+        : DocumentWatermark.colourOpacity;
+
+    return pw.FullPage(
+      ignoreMargins: true,
+      child: pw.Align(
+        // pdf's Alignment runs +1 at the *top*, the opposite of Flutter's.
+        alignment: const pw.Alignment(
+          0,
+          1 - DocumentWatermark.verticalPosition * 2,
+        ),
+        child: pw.SizedBox(
+          width: page.width * DocumentWatermark.widthFraction,
+          child: pw.FittedBox(
+            child: pw.Text(
+              text,
+              maxLines: 1,
+              style: pw.TextStyle(
+                font: bold,
+                letterSpacing: 2,
+                color: PdfColor(ink.r, ink.g, ink.b, alpha),
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
   }
 
   static pw.TextStyle _title(pw.Font bold, TemplateStyle style) => pw.TextStyle(

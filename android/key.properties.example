@@ -1,0 +1,21 @@
+# Copy to android/key.properties and fill in. That file is gitignored and must
+# stay that way — it holds the passwords to the upload key.
+#
+# Create the keystore once, and then back it up somewhere you will still have
+# in five years:
+#
+#   keytool -genkey -v -keystore upload-keystore.jks \
+#     -keyalg RSA -keysize 2048 -validity 10000 -alias upload
+#
+# Losing this file means the app can never be updated on Play under
+# safarnamastudios.meribiodata.app again. Google cannot reset it for you unless
+# you enrolled in Play App Signing, and even then only the app signing key is
+# recoverable, not this one.
+
+storePassword=
+keyPassword=
+keyAlias=upload
+
+# Relative to the android/ directory, or absolute. Keep the .jks outside the
+# repository.
+storeFile=../../upload-keystore.jks

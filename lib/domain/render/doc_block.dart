@@ -82,13 +82,6 @@ class DocSpacer extends DocBlock {
   final double height;
 }
 
-/// A footer line repeated on every page — the Phase 1 watermark.
-class DocFooter extends DocBlock {
-  const DocFooter(this.text);
-
-  final String text;
-}
-
 /// The candidate's photo (9.3).
 ///
 /// Carries the JPEG bytes rather than a path, for the same reason every other

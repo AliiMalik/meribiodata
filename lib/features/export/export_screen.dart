@@ -162,6 +162,7 @@ class _ExportScreenState extends State<ExportScreen> {
           final builder = DocumentBuilder(
             labels: labels,
             stringsFor: labels.stringsFor,
+            units: context.watch<AppPreferences>().documentUnits,
           );
 
           // Built in the selected mode, so the preview *is* the document —

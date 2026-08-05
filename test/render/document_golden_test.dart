@@ -53,6 +53,7 @@ void main() {
             offsetY: 0,
             height: page.height - template.style.margin * 2,
             images: images,
+            watermark: document.watermark,
           ),
         ),
       ),

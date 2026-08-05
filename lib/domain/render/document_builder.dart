@@ -63,6 +63,25 @@ class DocumentStrings {
   );
 }
 
+/// How height and weight are written, when the field itself does not say.
+///
+/// A field may pin its own unit, which wins. Everything else follows this,
+/// which comes from the app's Settings — so changing the setting restyles every
+/// biodata that never overrode it, without rewriting a single stored value.
+/// Values are always stored canonically (see [LengthUnit]); this is display
+/// only.
+class DocumentUnits {
+  const DocumentUnits({
+    this.length = LengthUnit.feetInches,
+    this.mass = MassUnit.kilograms,
+  });
+
+  final LengthUnit length;
+  final MassUnit mass;
+
+  static const standard = DocumentUnits();
+}
+
 /// Turns a stored profile into something a template can lay out.
 ///
 /// This is where every "how should that look" decision lives — units, dates,
@@ -74,6 +93,7 @@ class DocumentBuilder {
     required this.labels,
     this.strings = DocumentStrings.english,
     this.stringsFor,
+    this.units = DocumentUnits.standard,
     this.now,
   });
 
@@ -85,6 +105,9 @@ class DocumentBuilder {
   /// Resolves the document's vocabulary for a locale. Injected rather than
   /// looked up here so this class stays pure Dart and testable without assets.
   final DocumentStrings Function(String localeCode)? stringsFor;
+
+  /// Fallback units for fields that do not pin one of their own.
+  final DocumentUnits units;
 
   /// Injectable so age-dependent goldens are stable.
   final DateTime? now;
@@ -285,7 +308,8 @@ class DocumentBuilder {
   ) {
     if (raw is! Map<String, dynamic>) return null;
     final height = HeightValue.fromJson(raw);
-    if (field.unitPreference == LengthUnit.centimetres.wire) {
+    final unit = field.unitPreference ?? units.length.wire;
+    if (unit == LengthUnit.centimetres.wire) {
       return words.centimetres.replaceAll(
         '{n}',
         '${height.centimetres.round()}',
@@ -303,7 +327,8 @@ class DocumentBuilder {
   ) {
     if (raw is! Map<String, dynamic>) return null;
     final weight = WeightValue.fromJson(raw);
-    if (field.unitPreference == MassUnit.pounds.wire) {
+    final unit = field.unitPreference ?? units.mass.wire;
+    if (unit == MassUnit.pounds.wire) {
       return words.pounds.replaceAll('{n}', '${weight.pounds.round()}');
     }
     return words.kilograms.replaceAll('{n}', '${weight.kilograms.round()}');

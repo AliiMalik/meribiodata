@@ -217,13 +217,11 @@ abstract final class DefaultSchema {
         personalId,
         BuiltInKeys.height,
         FieldType.height,
-        unitPreference: LengthUnit.feetInches.wire,
       ),
       field(
         personalId,
         BuiltInKeys.weight,
         FieldType.weight,
-        unitPreference: MassUnit.kilograms.wire,
       ),
       field(
         personalId,

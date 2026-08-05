@@ -65,4 +65,45 @@ abstract final class AppColors {
   static const Color onAccentGold = textPrimary;
   static const Color onSecondaryGreen = textPrimary;
   static const Color onLightGreen = textPrimary;
+
+  // --- Dark theme ------------------------------------------------------
+  //
+  // Not the light palette inverted. Two things change deliberately:
+  //
+  // The green gets *lighter*, not darker. `primaryDark` on a dark surface is
+  // 1.6:1 — invisible. A dark theme has to move the brand colour up the scale
+  // to keep it a brand colour at all.
+  //
+  // The surfaces are near-black rather than pure black, so elevation still
+  // reads. Every pair below is checked in `test/theme/contrast_test.dart`
+  // against the same AA thresholds the light theme has to meet.
+
+  /// Green-400. 8.1:1 on [darkBackground] — usable for text, unlike the light
+  /// theme's brand green.
+  static const darkPrimary = Color(0xFF4ADE80);
+
+  /// Container for filled buttons in dark mode, carrying [onDarkPrimary].
+  static const darkPrimaryContainer = Color(0xFF14532D);
+
+  /// Teal-300, lifted from the light theme's Teal-700 for the same reason.
+  static const darkAccentTeal = Color(0xFF5EEAD4);
+
+  static const darkBackground = Color(0xFF0F1115);
+  static const darkSurface = Color(0xFF181B21);
+  static const darkSurfaceHigh = Color(0xFF22262E);
+
+  static const darkTextPrimary = Color(0xFFE8EAED);
+
+  /// Slate-400. Slate-500 measures 4.16:1 here, just under AA — the same trap
+  /// the light theme hit from the other direction (D5).
+  static const darkTextSecondary = Color(0xFF9CA9BA);
+
+  static const darkDivider = Color(0xFF313742);
+  static const darkError = Color(0xFFFF6B6B);
+
+  /// Dark ink on the light green fill.
+  static const onDarkPrimary = Color(0xFF06210F);
+
+  /// Light ink on the deep green container.
+  static const onDarkPrimaryContainer = Color(0xFFDCFCE7);
 }

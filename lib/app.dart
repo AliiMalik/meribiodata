@@ -54,6 +54,8 @@ class _MeriBiodataAppState extends State<MeriBiodataApp> {
         builder: (context, preferences, _) => MaterialApp.router(
           onGenerateTitle: (context) => AppL10n.of(context).appName,
           theme: AppTheme.lightFor(preferences.uiLanguage),
+          darkTheme: AppTheme.darkFor(preferences.uiLanguage),
+          themeMode: preferences.themeMode,
           routerConfig: _router,
           locale: Locale(preferences.uiLanguage.code),
           supportedLocales: [

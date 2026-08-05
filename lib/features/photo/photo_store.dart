@@ -77,10 +77,4 @@ class PhotoStore {
     final file = await fileFor(relativePath);
     if (file.existsSync()) await file.delete();
   }
-
-  /// Removes every stored photo. Part of "delete all my data" (NFR-7).
-  Future<void> deleteAll() async {
-    final dir = await directory();
-    if (dir.existsSync()) await dir.delete(recursive: true);
-  }
 }
