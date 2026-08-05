@@ -66,42 +66,17 @@ class _BackupScreenState extends State<BackupScreen> {
     return file;
   }
 
-  /// Two entries plus the blunt warning. 9.5 requires being explicit that
-  /// there is no recovery path — a vague error later reads as data loss
-  /// caused by the app.
-  Future<String?> _askForNewPassword() async {
-    final l10n = AppL10n.of(context);
-
-    while (true) {
-      final first = await promptForText(
-        context,
-        title: l10n.backupPasswordLabel,
-        helperText: l10n.backupNoRecovery,
-      );
-      if (first == null || !mounted) return null;
-
-      if (first.length < 8) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text(l10n.backupPasswordTooShort)));
-        continue;
-      }
-
-      final second = await promptForText(
-        context,
-        title: l10n.backupPasswordConfirm,
-      );
-      if (second == null || !mounted) return null;
-
-      if (first != second) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text(l10n.backupPasswordMismatch)));
-        continue;
-      }
-      return first;
-    }
-  }
+  /// One dialog with both entries, not two in sequence.
+  ///
+  /// Two reasons. The user should see the no-recovery warning *while* choosing
+  /// the password rather than before it, and a mismatch should be answerable
+  /// without retyping both. The sequential version also pushed its second
+  /// dialog in the same frame the first was closing, which is a genuinely
+  /// awkward moment in a Navigator (see `text_prompt_dialog.dart`).
+  Future<String?> _askForNewPassword() => showDialog<String>(
+    context: context,
+    builder: (context) => const _NewPasswordDialog(),
+  );
 
   Future<void> _restore() async {
     final l10n = AppL10n.of(context);
@@ -127,6 +102,7 @@ class _BackupScreenState extends State<BackupScreen> {
     final password = await promptForText(
       context,
       title: l10n.backupPasswordEnter,
+      obscure: true,
       helperText: l10n.backupContains(
         header.profileCount,
         _shortDate(header.createdAt),
@@ -202,7 +178,14 @@ class _BackupScreenState extends State<BackupScreen> {
     BackupError.corrupt => l10n.backupErrorCorrupt,
   };
 
-  static String _shortDate(DateTime at) => '${at.day}/${at.month}/${at.year}';
+  /// Converted to local time first. The header stores UTC, and a backup made
+  /// after 5 pm in Pakistan otherwise reads as having been made yesterday —
+  /// which, on the one screen whose job is to tell the user *which* file this
+  /// is, is exactly the wrong thing to get wrong.
+  static String _shortDate(DateTime at) {
+    final local = at.toLocal();
+    return '${local.day}/${local.month}/${local.year}';
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -265,6 +248,94 @@ class _BackupScreenState extends State<BackupScreen> {
           ),
         ],
       ),
+    );
+  }
+}
+
+/// Chooses and confirms a backup password.
+///
+/// The minimum length and the match are checked here rather than by the caller
+/// because they are the same question the user is looking at: 9.5 requires
+/// being blunt that a forgotten password is unrecoverable, and a rule the user
+/// only meets by trial and error undercuts that.
+class _NewPasswordDialog extends StatefulWidget {
+  const _NewPasswordDialog();
+
+  static const minimumLength = 8;
+
+  @override
+  State<_NewPasswordDialog> createState() => _NewPasswordDialogState();
+}
+
+class _NewPasswordDialogState extends State<_NewPasswordDialog> {
+  final _password = TextEditingController();
+  final _confirmation = TextEditingController();
+
+  String? _error;
+
+  @override
+  void dispose() {
+    _password.dispose();
+    _confirmation.dispose();
+    super.dispose();
+  }
+
+  void _submit() {
+    final l10n = AppL10n.of(context);
+    final password = _password.text;
+
+    if (password.length < _NewPasswordDialog.minimumLength) {
+      setState(() => _error = l10n.backupPasswordTooShort);
+      return;
+    }
+    if (password != _confirmation.text) {
+      setState(() => _error = l10n.backupPasswordMismatch);
+      return;
+    }
+    Navigator.of(context).pop(password);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppL10n.of(context);
+
+    return AlertDialog(
+      title: Text(l10n.backupPasswordLabel),
+      content: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            l10n.backupNoRecovery,
+            style: Theme.of(context).textTheme.bodySmall,
+          ),
+          const SizedBox(height: AppSpacing.lg),
+          TextField(
+            controller: _password,
+            autofocus: true,
+            obscureText: true,
+            decoration: InputDecoration(labelText: l10n.backupPasswordLabel),
+          ),
+          const SizedBox(height: AppSpacing.md),
+          TextField(
+            controller: _confirmation,
+            obscureText: true,
+            textInputAction: TextInputAction.done,
+            onSubmitted: (_) => _submit(),
+            decoration: InputDecoration(
+              labelText: l10n.backupPasswordConfirm,
+              errorText: _error,
+            ),
+          ),
+        ],
+      ),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.of(context).pop(),
+          child: Text(l10n.actionCancel),
+        ),
+        FilledButton(onPressed: _submit, child: Text(l10n.actionSave)),
+      ],
     );
   }
 }

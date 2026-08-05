@@ -7,9 +7,19 @@ import 'package:flutter/painting.dart';
 import 'package:flutter_image_compress/flutter_image_compress.dart';
 import 'package:meribiodata/features/photo/exif_scanner.dart';
 
-/// Turns a JPEG into a JPEG, via [Uint8List] of PNG. Injected so the pipeline
-/// can be tested without a platform channel.
-typedef JpegEncoder = Future<Uint8List> Function(Uint8List png, int quality);
+/// Encodes composed PNG pixels as JPEG. Injected so the pipeline can be tested
+/// without a platform channel.
+///
+/// [width] and [height] are the dimensions the image already has. They are
+/// passed rather than inferred because the underlying plugin insists on being
+/// told a size, and the only safe answer is the one it already is.
+typedef JpegEncoder =
+    Future<Uint8List> Function(
+      Uint8List png,
+      int quality,
+      int width,
+      int height,
+    );
 
 /// Crops, rotates, downscales and re-encodes a picked photo (9.3).
 ///
@@ -58,10 +68,10 @@ class PhotoProcessor {
     final rotated = await _rotate(decoded, quarterTurns);
     if (!identical(rotated, decoded)) decoded.dispose();
 
-    final png = await _cropAndScale(rotated, crop);
+    final (:png, :width, :height) = await _cropAndScale(rotated, crop);
     rotated.dispose();
 
-    final jpeg = await encodeJpeg(png, quality);
+    final jpeg = await encodeJpeg(png, quality, width, height);
 
     assert(
       !ExifScanner.hasPrivateMetadata(jpeg),
@@ -113,7 +123,10 @@ class PhotoProcessor {
     });
   }
 
-  static Future<Uint8List> _cropAndScale(ui.Image image, Rect? crop) async {
+  static Future<({Uint8List png, int width, int height})> _cropAndScale(
+    ui.Image image,
+    Rect? crop,
+  ) async {
     final source = crop == null
         ? Rect.fromLTWH(0, 0, image.width.toDouble(), image.height.toDouble())
         : Rect.fromLTWH(
@@ -148,7 +161,7 @@ class PhotoProcessor {
 
     final data = await output.toByteData(format: ui.ImageByteFormat.png);
     output.dispose();
-    return data!.buffer.asUint8List();
+    return (png: data!.buffer.asUint8List(), width: width, height: height);
   }
 
   static Future<ui.Image> _record(
@@ -164,18 +177,25 @@ class PhotoProcessor {
     return image;
   }
 
-  static Future<Uint8List> _compress(Uint8List png, int quality) =>
-      FlutterImageCompress.compressWithList(
-        png,
-        quality: quality,
-        // The image is already exactly the size we want; these bounds exist
-        // only to stop the plugin resizing it again on our behalf.
-        minWidth: 1,
-        minHeight: 1,
-        // Already the plugin's default. Stated anyway, because a silent
-        // default is a poor place to keep the one setting that decides
-        // whether a family's home coordinates travel with the photo.
-        // ignore: avoid_redundant_argument_values
-        keepExif: false,
-      );
+  static Future<Uint8List> _compress(
+    Uint8List png,
+    int quality,
+    int width,
+    int height,
+  ) => FlutterImageCompress.compressWithList(
+    png,
+    quality: quality,
+    // Despite the names, these are a *bounding box*, not a floor: the plugin
+    // scales the image down to fit inside them. Passing 1x1 to mean "do not
+    // resize" produced a one-pixel photograph on a device, and every unit test
+    // passed because they all stub the encoder. Handing it the size the image
+    // already has is the only value that reliably means "leave it alone".
+    minWidth: width,
+    minHeight: height,
+    // Already the plugin's default. Stated anyway, because a silent default is
+    // a poor place to keep the one setting that decides whether a family's
+    // home coordinates travel with the photo.
+    // ignore: avoid_redundant_argument_values
+    keepExif: false,
+  );
 }

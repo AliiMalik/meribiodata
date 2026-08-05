@@ -28,6 +28,35 @@ void main() {
       expect(ExifScanner.describe(bytes), 'APP1');
     });
 
+    test('an ICC colour profile in APP2 is not treated as private', () {
+      // Found on a device, not in a fixture: Android's JPEG encoder attaches
+      // an ICC profile to every image it writes, including one this app
+      // composed from scratch. It is colorimetry — primaries, gamma, a white
+      // point — so flagging it would fire the assertion on the app's own
+      // clean output.
+      final bytes = _jpeg(
+        app0: true,
+        segments: {
+          0xE2: Uint8List.fromList([...'ICC_PROFILE'.codeUnits, 0, 1, 1]),
+        },
+      );
+
+      expect(ExifScanner.markers(bytes), contains(0xE2));
+      expect(ExifScanner.hasPrivateMetadata(bytes), isFalse);
+    });
+
+    test('an APP2 that is not an ICC profile stays flagged', () {
+      // APP2 is shared with the FlashPix extension, so the exception has to be
+      // made on the payload signature rather than on the marker.
+      final bytes = _jpeg(
+        segments: {
+          0xE2: Uint8List.fromList([...'FPXR'.codeUnits, 0, 1, 2, 3]),
+        },
+      );
+
+      expect(ExifScanner.describe(bytes), 'APP2');
+    });
+
     test('a Photoshop block and a comment are caught too', () {
       final bytes = _jpeg(
         segments: {
@@ -65,7 +94,29 @@ void main() {
     // The real encoder is a platform channel. Passing the PNG through
     // unchanged keeps the pixel pipeline — the part that does the stripping —
     // under test without one.
-    final processor = PhotoProcessor(encodeJpeg: (png, _) async => png);
+    var encodedAt = <int>[];
+    final processor = PhotoProcessor(
+      encodeJpeg: (png, _, width, height) async {
+        encodedAt = [width, height];
+        return png;
+      },
+    );
+
+    setUp(() => encodedAt = <int>[]);
+
+    test('the encoder is told the size the image already is', () async {
+      // Regression, found on a device and invisible to every other test here
+      // because they all stub the encoder. flutter_image_compress treats
+      // minWidth/minHeight as a bounding box it scales *down* to, so the
+      // "do not resize me" value of 1x1 produced a one-pixel photograph.
+      final source = await _encodeSolid(3000, 2000, const Color(0xFF112233));
+
+      final processed = await processor.process(source);
+
+      final size = await _sizeOf(processed);
+      expect(encodedAt, [size.width.round(), size.height.round()]);
+      expect(encodedAt, [PhotoProcessor.longEdge, 800]);
+    });
 
     test('a real photo carrying GPS comes out with none of it', () async {
       // A genuine JPEG written by an imaging library, with an EXIF block
