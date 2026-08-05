@@ -439,7 +439,7 @@
   "@settingsUnitKilograms": {},
   "settingsUnitPounds": "Pounds",
   "@settingsUnitPounds": {},
-  "settingsUnitsHint": "Used for new biodatas. A biodata you have already set keeps its own choice.",
+  "settingsUnitsHint": "How height and weight are written on every biodata.",
   "@settingsUnitsHint": {},
   "settingsTheme": "Appearance",
   "@settingsTheme": {},
