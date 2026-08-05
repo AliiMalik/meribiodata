@@ -186,18 +186,72 @@ lands in the exported PDF, which is the artifact the user shares. Changing to 2 
 
 ---
 
+## D8 — Waitlist submits via a form opened in the browser
+
+**Date:** 2026-08-05 · **Decided by:** owner · **Milestone:** M4
+
+The waitlist opens a hosted form (Google Form or equivalent) in the device's browser via
+`url_launcher`. Not `mailto:` — too many budget Android phones have no mail app configured, so it
+fails silently — and not an embedded webview.
+
+**Why this shape matters for NFR-5.** The app never touches, stores or transmits the submitted
+data. The disclosure is therefore "this button opens a form hosted by a third party in your
+browser", not "we collect your name and number". No SDK, no webview, no HTTP client — so the
+NFR-1 CI guard stays intact and the one hole M4 opens is the AdMob SDK alone.
+
+**Consequences:** `url_launcher` becomes a direct dependency (it is already present transitively
+via `share_plus`). The form URL is a build-time constant, not a secret. The waitlist screen must
+still behave sanely with no browser and no connection — see §7.8's "work as a no-op with a
+message when offline".
+
+**Collected fields (D10):** name, WhatsApp number, city.
+
+---
+
+## D9 — App identity
+
+**Date:** 2026-08-05 · **Decided by:** owner · **Milestone:** M4
+
+- App name: **MeriBiodata**
+- Package id / applicationId: **`safarnamastudios.meribiodata.app`**
+
+**One note, not an objection.** That id is valid — Android only requires two or more segments,
+each starting with a letter — and Play will accept it. It does invert the usual reverse-DNS
+convention, where the domain you control comes first (`com.safarnamastudios.meribiodata`), so a
+reader may parse the last segment as the organisation. Nothing breaks either way, and it is the
+owner's call; recorded here so the reasoning is not relitigated later.
+
+**This is the last cheap moment to change it.** The applicationId is immutable once an app is
+published to Play, so it must be settled before the M6 upload.
+
+---
+
+## D10 — AdMob ships on test ad unit IDs until an account exists
+
+**Date:** 2026-08-05 · **Decided by:** owner · **Milestone:** M4
+
+No AdMob account yet. M4 is built entirely against Google's official test ad unit IDs, with the
+real ones injected at build time via `--dart-define` and never committed (§8). This is what §8
+mandates for debug/dev regardless, so the account is not a blocker — supplying real IDs later is a
+build-flag change, not a code change.
+
+The AdMob **App ID** also has to appear in `AndroidManifest.xml` or the app crashes at startup;
+the committed value is Google's test App ID for the same reason.
+
+---
+
 ## Still open
 
 | # | Question | Blocks |
 |---|---|---|
 | 1 | Who reviews Sindhi / Pashto / Punjabi translations? **Now blocking:** draft labels ship in `assets/i18n/field_labels.json` marked `draft`, and the export screen warns when an unreviewed language is selected. | M3 (open) |
-| 2 | Waitlist mechanism: `mailto:` vs embedded third-party form — changes the privacy policy text | M4 |
-| 3 | Photos: included by default in templates, or opt-in? | M5 |
-| 4 | Backup password policy: enforce minimum strength, or warn only? | M5 |
-| 5 | App name, package id, Play Console account — needed for real AdMob unit IDs | M4 |
-| 6 | Watermark wording and prominence. Currently the placeholder "Made with MeriBiodata", set at the export call site. | M3 (open) |
-| 7 | 9.6 Boy/Girl biodata presets — build or not? | M2 |
-| 8 | 9.7 Accessibility for older users — build or not? (strongly recommended) | M5.5 |
-
-Interim: the app id is `com.meribiodata.app` until question 5 is answered. It is cheap to change
-any time before the first Play upload.
+| 2 | **D7 ruling** — should a built-in field borrow another language's rename, or fall back to its shipped translation? Recommendation: option 2. | M3 (open) |
+| 3 | Native-reader sign-off on the Urdu/Sindhi/Pashto output — the last M0 exit criterion. | M0 (open) |
+| 4 | Real-device benchmark against NFR-2 (< 3 s on a 3 GB phone). | M0 / M6 |
+| 5 | Watermark wording and prominence. Currently the placeholder "Made with MeriBiodata", visible on every export today. | M3 (open) |
+| 6 | Photos: included by default in templates, or opt-in? | M5 |
+| 7 | Backup password policy: enforce minimum strength, or warn only? | M5 |
+| 8 | The waitlist form URL itself, once you create the form. | M4 |
+| 9 | Play Console account (needed only for the M6 upload). | M6 |
+| 10 | 9.6 Boy/Girl biodata presets — build or not? | M2 (deferred) |
+| 11 | 9.7 Accessibility for older users — build or not? (strongly recommended) | M5.5 |
