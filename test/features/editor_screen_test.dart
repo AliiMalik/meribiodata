@@ -6,12 +6,14 @@ import 'package:meribiodata/core/theme/app_theme.dart';
 import 'package:meribiodata/data/bundled_labels.dart';
 import 'package:meribiodata/data/profile_repository.dart';
 import 'package:meribiodata/domain/biodata/default_schema.dart';
+import 'package:meribiodata/features/ads/consent_gate.dart';
 import 'package:meribiodata/features/editor/editor_screen.dart';
 import 'package:meribiodata/features/home/profile_list_controller.dart';
 import 'package:meribiodata/l10n/generated/app_localizations.dart';
 import 'package:meribiodata/l10n/language_descriptor.dart';
 import 'package:provider/provider.dart';
 
+import '../support/fake_consent.dart';
 import '../support/in_memory_local_store.dart';
 
 void main() {
@@ -48,6 +50,11 @@ void main() {
           Provider<ProfileRepository>.value(value: repository),
           Provider<BundledLabels>.value(value: labels),
           ChangeNotifierProvider<AppPreferences>.value(value: preferences),
+          // The editor now carries a banner slot, which reads the gate. A
+          // resolved gate that refuses ads keeps the SDK out of unit tests.
+          ChangeNotifierProvider<ConsentGate>.value(
+            value: await resolvedGateWithoutAds(),
+          ),
         ],
         child: MaterialApp(
           theme: AppTheme.lightFor(AppLanguages.english),

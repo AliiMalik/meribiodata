@@ -72,6 +72,20 @@
   "@waitlistComingSoon": {},
   "waitlistBody": "Tools for professional matchmakers are in development. Leave your details and we will let you know when they are ready.",
   "@waitlistBody": {},
+  "waitlistOpenForm": "Open the form",
+  "@waitlistOpenForm": {},
+  "waitlistWhatWeAsk": "The form asks for your name, WhatsApp number and city — nothing else.",
+  "@waitlistWhatWeAsk": {},
+  "waitlistOpensInBrowser": "It opens in your browser and is hosted by Google Forms. Your biodatas are not part of it and are never sent anywhere.",
+  "@waitlistOpensInBrowser": {
+    "description": "Required by NFR-5: the waitlist is the one place a third party receives data, and it must be disclosed separately from the biodata privacy promise."
+  },
+  "waitlistNoBrowser": "No browser app was found to open the form.",
+  "@waitlistNoBrowser": {},
+  "waitlistOffline": "You appear to be offline. The form needs a connection — everything else in this app works without one.",
+  "@waitlistOffline": {},
+  "waitlistOpened": "The form is open in your browser.",
+  "@waitlistOpened": {},
 
   "actionCancel": "Cancel",
   "@actionCancel": {},

@@ -6,6 +6,7 @@ import 'package:meribiodata/core/storage/local_store.dart';
 import 'package:meribiodata/core/theme/app_theme.dart';
 import 'package:meribiodata/data/bundled_labels.dart';
 import 'package:meribiodata/data/profile_repository.dart';
+import 'package:meribiodata/features/ads/consent_gate.dart';
 import 'package:meribiodata/l10n/generated/app_localizations.dart';
 import 'package:meribiodata/l10n/language_descriptor.dart';
 import 'package:provider/provider.dart';
@@ -16,6 +17,7 @@ class MeriBiodataApp extends StatefulWidget {
     required this.preferences,
     required this.profiles,
     required this.labels,
+    required this.consent,
     super.key,
   });
 
@@ -23,6 +25,7 @@ class MeriBiodataApp extends StatefulWidget {
   final AppPreferences preferences;
   final ProfileRepository profiles;
   final BundledLabels labels;
+  final ConsentGate consent;
 
   @override
   State<MeriBiodataApp> createState() => _MeriBiodataAppState();
@@ -41,6 +44,7 @@ class _MeriBiodataAppState extends State<MeriBiodataApp> {
         ChangeNotifierProvider<AppPreferences>.value(
           value: widget.preferences,
         ),
+        ChangeNotifierProvider<ConsentGate>.value(value: widget.consent),
       ],
       child: Consumer<AppPreferences>(
         builder: (context, preferences, _) => MaterialApp.router(

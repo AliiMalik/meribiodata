@@ -41,6 +41,7 @@ a default.
 | flutter_secure_storage | 10.3.1 | BSD-3-Clause |
 | freezed_annotation | 3.1.0 | MIT |
 | go_router | 17.3.0 | BSD-3-Clause |
+| google_mobile_ads | 9.0.0 | Apache-2.0 |
 | hive_ce | 2.19.3 | Apache-2.0 |
 | hive_ce_flutter | 2.3.4 | Apache-2.0 |
 | intl | (resolved by flutter_localizations) | BSD-3-Clause |
@@ -50,7 +51,12 @@ a default.
 | printing | 5.15.0 | Apache-2.0 |
 | provider | 6.1.5+1 | MIT |
 | share_plus | 13.3.0 | BSD-3-Clause |
+| url_launcher | 6.3.2 | BSD-3-Clause |
 | uuid | 4.6.0 | MIT |
+
+**Transitive note:** `google_mobile_ads` pulls in `webview_flutter` (BSD-3-Clause), because ads
+render in a webview. The app itself never embeds one — the waitlist form opens in the external
+browser by design (`docs/decisions.md` D8), and CI enforces that.
 
 ### Build-time only (not shipped in the APK)
 
@@ -70,7 +76,7 @@ a default.
 
 ### Expected later
 
-`google_mobile_ads` at M4; image-picking and crypto packages at M5.
+Image-picking and crypto packages at M5.
 
 Note: `printing` is used only for its PDF plumbing. `Printing.convertHtml` — the M0
 Pipeline C route — is deprecated and broken on Android, and is not called anywhere.

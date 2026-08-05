@@ -9,6 +9,7 @@ import 'package:meribiodata/core/theme/app_spacing.dart';
 import 'package:meribiodata/core/widgets/text_prompt_dialog.dart';
 import 'package:meribiodata/data/profile_repository.dart';
 import 'package:meribiodata/domain/biodata/biodata_profile.dart';
+import 'package:meribiodata/features/ads/banner_slot.dart';
 import 'package:meribiodata/features/home/profile_list_controller.dart';
 import 'package:meribiodata/l10n/generated/app_localizations.dart';
 import 'package:provider/provider.dart';
@@ -92,7 +93,9 @@ class _HomeScreenState extends State<HomeScreen> {
             ListStatus.ready => _ProfileList(controller: controller),
           },
         ),
-        // The anchored adaptive banner (§8) takes reserved space here in M4.
+        // Reserved layout space, not an overlay (§8). Collapses to nothing when
+        // there is no consent, no fill or no network.
+        bottomNavigationBar: const BannerSlot(screenId: 'home'),
       ),
     );
   }

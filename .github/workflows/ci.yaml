@@ -53,9 +53,11 @@ jobs:
       - uses: actions/checkout@v4
 
       # NFR-1: biodata content must never be transmitted to a developer-owned
-      # server. The only permitted network callers are the AdMob SDK and the
-      # waitlist submission, neither of which is an HTTP client we write.
-      # Adding one is a deliberate architectural decision, so it fails CI and
+      # server. Exactly two things in this app touch the network, and neither is
+      # an HTTP client we wrote:
+      #   * the AdMob SDK (google_mobile_ads), and
+      #   * url_launcher handing the waitlist form to the user's browser (D8).
+      # Anything else is a deliberate architectural decision, so it fails CI and
       # has to be justified in review.
       - name: Reject HTTP client dependencies
         run: |
@@ -67,7 +69,28 @@ jobs:
       - name: Reject HTTP usage in application code
         run: |
           if grep -rnE "import 'package:(http|dio|chopper)/|import 'dart:io'.*HttpClient|HttpClient\(" lib/; then
-            echo "::error::Application code is making its own network calls. Nothing may leave the device except the AdMob SDK and the waitlist submission."
+            echo "::error::Application code is making its own network calls. Nothing may leave the device except the AdMob SDK and the waitlist form opening in the browser."
+            exit 1
+          fi
+
+      # D8: the waitlist form must open in the user's *browser*. Embedding it
+      # would put a third-party page inside the app and turn a narrow "we link
+      # you to a form" disclosure into a real data-sharing one. webview_flutter
+      # arrives transitively via the AdMob SDK, so this checks for our own use
+      # of it rather than for its presence in the lockfile.
+      - name: Reject in-app webviews
+        run: |
+          if grep -rn "package:webview_flutter" lib/; then
+            echo "::error::Application code is embedding a webview. The waitlist opens in the external browser by design (docs/decisions.md D8)."
+            exit 1
+          fi
+
+      # §8: real ad unit IDs are supplied at build time and never committed.
+      - name: Reject committed AdMob production IDs
+        run: |
+          if grep -rnE 'ca-app-pub-[0-9]+' lib/ android/ --include='*.dart' --include='*.xml' --include='*.kts' \
+               | grep -v 'ca-app-pub-3940256099942544'; then
+            echo "::error::A non-test AdMob ID is committed. Real IDs come from --dart-define / -PadmobAppId at build time (section 8)."
             exit 1
           fi
 

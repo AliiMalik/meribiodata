@@ -10,6 +10,7 @@ import 'package:meribiodata/data/bundled_labels.dart';
 import 'package:meribiodata/data/profile_repository.dart';
 import 'package:meribiodata/domain/biodata/biodata_schema.dart';
 import 'package:meribiodata/domain/biodata/label_resolver.dart';
+import 'package:meribiodata/features/ads/banner_slot.dart';
 import 'package:meribiodata/features/editor/profile_editor_controller.dart';
 import 'package:meribiodata/features/editor/widgets/field_card.dart';
 import 'package:meribiodata/l10n/generated/app_localizations.dart';
@@ -116,6 +117,9 @@ class _EditorBody extends StatelessWidget {
             ),
           ),
         ),
+        // Reserved space below the form, never over it (§8). The form scrolls
+        // above the banner rather than under it, so no field is ever covered.
+        bottomNavigationBar: const BannerSlot(screenId: 'editor'),
         body: ListView(
           padding: const EdgeInsets.all(AppSpacing.lg),
           children: [

@@ -1,4 +1,9 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- The only two things in this app that touch the network: the AdMob SDK
+         and opening the Matchmaker Pro waitlist form in the user's browser.
+         Biodata content never leaves the device (NFR-1). -->
+    <uses-permission android:name="android.permission.INTERNET"/>
+
     <application
         android:label="MeriBiodata"
         android:name="${applicationName}"
@@ -30,6 +35,14 @@
         <meta-data
             android:name="flutterEmbedding"
             android:value="2" />
+
+        <!-- The Mobile Ads SDK crashes at startup if this meta-data is absent,
+             so a value must always be present. It defaults to Google's official
+             *test* App ID; the production one is supplied at build time with
+             -PadmobAppId=... and is never committed (§8). -->
+        <meta-data
+            android:name="com.google.android.gms.ads.APPLICATION_ID"
+            android:value="${admobAppId}" />
     </application>
     <!-- Required to query activities that can process text, see:
          https://developer.android.com/training/package-visibility and
@@ -40,6 +53,13 @@
         <intent>
             <action android:name="android.intent.action.PROCESS_TEXT"/>
             <data android:mimeType="text/plain"/>
+        </intent>
+        <!-- Android 11+ hides other apps unless declared. Without this,
+             canLaunchUrl always returns false and the waitlist button would
+             look broken on every modern device (D8). -->
+        <intent>
+            <action android:name="android.intent.action.VIEW"/>
+            <data android:scheme="https"/>
         </intent>
     </queries>
 </manifest>

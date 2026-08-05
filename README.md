@@ -17,7 +17,7 @@ families. Android only.
 | M1 — Foundation | Complete. |
 | M2 — Schema & form engine | Complete. |
 | M3 — Templates & export | Complete; P1 label translations awaiting native review. |
-| M4 — Monetization & waitlist | Not started. |
+| M4 — Monetization & waitlist | Complete; running on AdMob test IDs and a placeholder form URL. |
 | M5 — Differentiators | Not started. |
 | M5.5 — Polish · M6 — Hardening | Not started. |
 
@@ -47,6 +47,12 @@ Golden images live in `test/render/goldens/`. After a deliberate rendering chang
 flutter test --update-goldens
 ```
 
+Release builds supply the real AdMob IDs and waitlist URL, none of which are committed:
+
+```bash
+flutter build appbundle -PadmobAppId=ca-app-pub-XXXX~YYYY --dart-define=ADMOB_BANNER_UNIT_ID=ca-app-pub-XXXX/ZZZZ --dart-define=WAITLIST_FORM_URL=https://forms.gle/...
+```
+
 ## Architecture
 
 ```
@@ -72,8 +78,11 @@ assets/
 
 Four rules that are load-bearing rather than stylistic:
 
-- **Nothing goes to a developer-owned server, ever.** CI fails the build if an HTTP client is
-  added. The only permitted network callers are the AdMob SDK and the waitlist submission.
+- **Nothing goes to a developer-owned server, ever.** Exactly two things touch the network: the
+  AdMob SDK, and handing the waitlist form to the user's browser. CI fails the build if an HTTP
+  client, an in-app webview, or a real AdMob ID is added.
+- **Ads are allowlisted per screen,** never denylisted — and never on Preview & Export, where an
+  ad beside the share buttons is an AdMob policy risk rather than a UX annoyance.
 - **No raw hex outside `AppColors`,** and every text-on-surface pair is contrast-tested.
 - **No user-facing string outside an ARB file.** Adding a language must be a data-only change:
   one ARB file plus one `LanguageDescriptor` entry.

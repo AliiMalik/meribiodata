@@ -5,9 +5,11 @@ import 'package:meribiodata/core/preferences/app_preferences.dart';
 import 'package:meribiodata/core/preferences/preferences_repository.dart';
 import 'package:meribiodata/data/bundled_labels.dart';
 import 'package:meribiodata/data/profile_repository.dart';
+import 'package:meribiodata/features/ads/consent_gate.dart';
 import 'package:meribiodata/l10n/generated/app_localizations.dart';
 import 'package:meribiodata/l10n/language_descriptor.dart';
 
+import 'support/fake_consent.dart';
 import 'support/in_memory_local_store.dart';
 
 Future<AppPreferences> _preferencesIn(InMemoryLocalStore store) async {
@@ -19,6 +21,7 @@ Future<AppPreferences> _preferencesIn(InMemoryLocalStore store) async {
 void main() {
   late InMemoryLocalStore store;
   late BundledLabels labels;
+  late ConsentGate consent;
 
   setUpAll(() async {
     TestWidgetsFlutterBinding.ensureInitialized();
@@ -30,6 +33,8 @@ void main() {
   setUp(() async {
     store = InMemoryLocalStore();
     await store.init();
+    // Ads stay off in widget tests: the real SDK would make a network call.
+    consent = await resolvedGateWithoutAds();
   });
 
   testWidgets('first run lands on onboarding', (tester) async {
@@ -41,6 +46,7 @@ void main() {
         preferences: preferences,
         profiles: ProfileRepository(store),
         labels: labels,
+        consent: consent,
       ),
     );
     await tester.pumpAndSettle();
@@ -59,6 +65,7 @@ void main() {
         preferences: preferences,
         profiles: ProfileRepository(store),
         labels: labels,
+        consent: consent,
       ),
     );
     await tester.pumpAndSettle();
@@ -79,6 +86,7 @@ void main() {
         preferences: preferences,
         profiles: ProfileRepository(store),
         labels: labels,
+        consent: consent,
       ),
     );
     await tester.pumpAndSettle();
@@ -103,6 +111,7 @@ void main() {
         preferences: preferences,
         profiles: ProfileRepository(store),
         labels: labels,
+        consent: consent,
       ),
     );
     await tester.pumpAndSettle();

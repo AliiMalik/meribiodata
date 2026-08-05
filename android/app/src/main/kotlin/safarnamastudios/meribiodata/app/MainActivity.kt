@@ -1,4 +1,4 @@
-package com.meribiodata.app
+package safarnamastudios.meribiodata.app
 
 import io.flutter.embedding.android.FlutterActivity
 
