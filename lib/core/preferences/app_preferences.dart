@@ -14,6 +14,7 @@ class AppPreferences extends ChangeNotifier {
   static const _keyDigitStyle = 'digitStyle';
   static const _keyOnboardingComplete = 'onboardingComplete';
   static const _keyExportModesExplained = 'exportModesExplained';
+  static const _keyRomanInput = 'romanInputDefault';
 
   final PreferencesRepository _repository;
 
@@ -21,6 +22,7 @@ class AppPreferences extends ChangeNotifier {
   DigitStyle _digitStyle = DigitStyle.western;
   bool _onboardingComplete = false;
   bool _exportModesExplained = false;
+  bool _romanInputDefault = false;
 
   LanguageDescriptor get uiLanguage => _uiLanguage;
   DigitStyle get digitStyle => _digitStyle;
@@ -31,6 +33,12 @@ class AppPreferences extends ChangeNotifier {
   /// it is shown once — and only once, because a repeating dialog gets
   /// dismissed unread.
   bool get exportModesExplained => _exportModesExplained;
+
+  /// Whether Roman typing starts switched on for Urdu-script fields (9.2).
+  ///
+  /// Off by default: a user who already has an Urdu keyboard should never be
+  /// pushed through a transliterator. Once they turn it on, it is remembered.
+  bool get romanInputDefault => _romanInputDefault;
 
   Future<void> load() async {
     final values = await _repository.load();
@@ -46,6 +54,7 @@ class AppPreferences extends ChangeNotifier {
     }
     _onboardingComplete = values[_keyOnboardingComplete] as bool? ?? false;
     _exportModesExplained = values[_keyExportModesExplained] as bool? ?? false;
+    _romanInputDefault = values[_keyRomanInput] as bool? ?? false;
 
     notifyListeners();
   }
@@ -78,10 +87,18 @@ class AppPreferences extends ChangeNotifier {
     await _persist();
   }
 
+  Future<void> setRomanInputDefault({required bool enabled}) async {
+    if (enabled == _romanInputDefault) return;
+    _romanInputDefault = enabled;
+    notifyListeners();
+    await _persist();
+  }
+
   Future<void> _persist() => _repository.save({
     _keyUiLocale: _uiLanguage.code,
     _keyDigitStyle: _digitStyle.name,
     _keyOnboardingComplete: _onboardingComplete,
     _keyExportModesExplained: _exportModesExplained,
+    _keyRomanInput: _romanInputDefault,
   });
 }

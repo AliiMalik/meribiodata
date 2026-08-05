@@ -4,7 +4,9 @@ import 'package:meribiodata/app.dart';
 import 'package:meribiodata/core/preferences/app_preferences.dart';
 import 'package:meribiodata/core/preferences/preferences_repository.dart';
 import 'package:meribiodata/data/bundled_labels.dart';
+import 'package:meribiodata/data/bundled_roman_urdu.dart';
 import 'package:meribiodata/data/profile_repository.dart';
+import 'package:meribiodata/domain/text/roman_urdu.dart';
 import 'package:meribiodata/features/ads/consent_gate.dart';
 import 'package:meribiodata/l10n/generated/app_localizations.dart';
 import 'package:meribiodata/l10n/language_descriptor.dart';
@@ -22,12 +24,16 @@ void main() {
   late InMemoryLocalStore store;
   late BundledLabels labels;
   late ConsentGate consent;
+  late RomanUrduTransliterator romanUrdu;
 
   setUpAll(() async {
     TestWidgetsFlutterBinding.ensureInitialized();
     // Loads the real asset, so a malformed field_labels.json fails a test
     // rather than only showing up on a device.
     labels = await BundledLabels.load();
+    romanUrdu = RomanUrduTransliterator(
+      await BundledRomanUrduDictionary.load(),
+    );
   });
 
   setUp(() async {
@@ -47,6 +53,7 @@ void main() {
         profiles: ProfileRepository(store),
         labels: labels,
         consent: consent,
+        romanUrdu: romanUrdu,
       ),
     );
     await tester.pumpAndSettle();
@@ -66,6 +73,7 @@ void main() {
         profiles: ProfileRepository(store),
         labels: labels,
         consent: consent,
+        romanUrdu: romanUrdu,
       ),
     );
     await tester.pumpAndSettle();
@@ -87,6 +95,7 @@ void main() {
         profiles: ProfileRepository(store),
         labels: labels,
         consent: consent,
+        romanUrdu: romanUrdu,
       ),
     );
     await tester.pumpAndSettle();
@@ -112,6 +121,7 @@ void main() {
         profiles: ProfileRepository(store),
         labels: labels,
         consent: consent,
+        romanUrdu: romanUrdu,
       ),
     );
     await tester.pumpAndSettle();

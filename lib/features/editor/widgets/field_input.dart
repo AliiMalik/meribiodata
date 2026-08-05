@@ -1,11 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:meribiodata/core/preferences/app_preferences.dart';
 import 'package:meribiodata/core/theme/app_spacing.dart';
 import 'package:meribiodata/domain/biodata/biodata_schema.dart';
 import 'package:meribiodata/domain/biodata/field_descriptor.dart';
 import 'package:meribiodata/domain/biodata/field_type.dart';
 import 'package:meribiodata/domain/biodata/field_values.dart';
+import 'package:meribiodata/features/editor/widgets/roman_urdu_field.dart';
 import 'package:meribiodata/l10n/generated/app_localizations.dart';
+import 'package:meribiodata/l10n/language_descriptor.dart';
+import 'package:provider/provider.dart';
 
 /// Renders the input for one field, chosen by its [FieldType].
 ///
@@ -17,6 +21,7 @@ class FieldInput extends StatelessWidget {
     required this.field,
     required this.value,
     required this.onChanged,
+    this.documentLanguage,
     super.key,
   });
 
@@ -24,18 +29,30 @@ class FieldInput extends StatelessWidget {
   final Object? value;
   final ValueChanged<Object?> onChanged;
 
+  /// Drives the Roman-typing offer (9.2). Null in contexts that have no
+  /// document, such as a repeatable group's inner fields.
+  final LanguageDescriptor? documentLanguage;
+
   @override
   Widget build(BuildContext context) => switch (field.type) {
-    FieldType.text => _TextInput(
-      field: field,
-      value: value as String?,
-      onChanged: onChanged,
+    FieldType.text => _maybeRoman(
+      context,
+      maxLines: 1,
+      fallback: () => _TextInput(
+        field: field,
+        value: value as String?,
+        onChanged: onChanged,
+      ),
     ),
-    FieldType.multiline => _TextInput(
-      field: field,
-      value: value as String?,
-      onChanged: onChanged,
+    FieldType.multiline => _maybeRoman(
+      context,
       maxLines: 4,
+      fallback: () => _TextInput(
+        field: field,
+        value: value as String?,
+        onChanged: onChanged,
+        maxLines: 4,
+      ),
     ),
     FieldType.number => _TextInput(
       field: field,
@@ -62,6 +79,31 @@ class FieldInput extends StatelessWidget {
       onChanged: onChanged,
     ),
   };
+
+  /// Offers Roman typing only where it helps: a text field in a document
+  /// written in a Perso-Arabic script.
+  Widget _maybeRoman(
+    BuildContext context, {
+    required int maxLines,
+    required Widget Function() fallback,
+  }) {
+    final language = documentLanguage;
+    if (language == null || !RomanUrduField.isOfferedFor(language)) {
+      return fallback();
+    }
+
+    final preferences = context.watch<AppPreferences>();
+    return RomanUrduField(
+      language: language,
+      value: value as String?,
+      onChanged: onChanged,
+      enabled: preferences.romanInputDefault,
+      onEnabledChanged: (enabled) =>
+          preferences.setRomanInputDefault(enabled: enabled),
+      maxLines: maxLines,
+      maxLength: field.validation?.maxLength,
+    );
+  }
 }
 
 class _TextInput extends StatefulWidget {

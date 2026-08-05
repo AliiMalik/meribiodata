@@ -14,6 +14,7 @@ import 'package:meribiodata/features/ads/banner_slot.dart';
 import 'package:meribiodata/features/editor/profile_editor_controller.dart';
 import 'package:meribiodata/features/editor/widgets/field_card.dart';
 import 'package:meribiodata/l10n/generated/app_localizations.dart';
+import 'package:meribiodata/l10n/language_descriptor.dart';
 import 'package:provider/provider.dart';
 
 /// The Form Editor (§7.3).
@@ -152,6 +153,7 @@ class _EditorBody extends StatelessWidget {
                     field.labels,
                     language,
                   ),
+                  documentLanguage: AppLanguages.byCode(language),
                   onValueChanged: (value) =>
                       controller.setValue(field.id, value),
                   onAction: (action) =>

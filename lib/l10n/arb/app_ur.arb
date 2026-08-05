@@ -178,5 +178,43 @@
   "exportSharePages": "{count, plural, =1{1 صفحہ} other{{count} صفحات}}",
   "@exportSharePages": {
     "placeholders": { "count": { "type": "int" } }
-  }
+  },
+
+  "romanInputOn": "رومن ٹائپنگ آن ہے — بند کرنے کے لیے دبائیں",
+  "romanInputOff": "رومن میں لکھیں، اردو حاصل کریں",
+  "romanInputHint": "جیسے رومن میں لکھتے ہیں ویسے لکھیں — \"Muhammad Ali\" — پھر تجویز پر دبائیں۔ آپ اردو کو خود بھی درست کر سکتے ہیں۔",
+  "settingsRomanInput": "اردو کے لیے رومن ٹائپنگ",
+
+  "backupTitle": "بیک اپ اور بحالی",
+  "backupCreate": "بیک اپ بنائیں",
+  "backupRestore": "بیک اپ سے بحال کریں",
+  "backupExplain": "بیک اپ آپ کے تمام بایوڈیٹا، خانے اور ترتیبات ایک پاس ورڈ سے محفوظ فائل میں رکھ دیتا ہے۔ اسے جہاں چاہیں محفوظ کریں — فون میں، ایس ڈی کارڈ پر، یا خود کو بھیج دیں۔",
+  "backupPasswordLabel": "پاس ورڈ منتخب کریں",
+  "backupPasswordConfirm": "دوبارہ لکھیں",
+  "backupPasswordEnter": "بیک اپ کا پاس ورڈ درج کریں",
+  "backupNoRecovery": "اگر آپ یہ پاس ورڈ بھول گئے تو بیک اپ نہیں کھل سکے گا۔ نہ ہم سے، نہ کسی اور سے۔ اسے واپس حاصل کرنے کا کوئی طریقہ نہیں۔",
+  "backupPasswordTooShort": "کم از کم 8 حروف استعمال کریں۔",
+  "backupPasswordMismatch": "دونوں پاس ورڈ ایک جیسے نہیں ہیں۔",
+  "backupCreated": "بیک اپ بن گیا۔",
+  "backupShare": "فائل محفوظ کریں یا بھیجیں",
+  "backupChooseFile": "بیک اپ فائل منتخب کریں",
+  "backupContains": "{count, plural, =1{1 بایوڈیٹا} other{{count} بایوڈیٹا}}، {date} کو محفوظ ہوا",
+  "@backupContains": {
+    "placeholders": {
+      "count": { "type": "int" },
+      "date": { "type": "String" }
+    }
+  },
+  "backupMerge": "موجودہ کے ساتھ شامل کریں",
+  "backupReplace": "سب کچھ بدل دیں",
+  "backupReplaceConfirmTitle": "موجودہ بایوڈیٹا حذف کریں؟",
+  "backupReplaceConfirmBody": "اس فون کا سب کچھ ہٹا کر بیک اپ والا ڈیٹا رکھ دیا جائے گا۔ اسے واپس نہیں لایا جا سکتا۔",
+  "backupRestored": "{count, plural, =1{1 بایوڈیٹا بحال ہوا} other{{count} بایوڈیٹا بحال ہوئے}}",
+  "@backupRestored": {
+    "placeholders": { "count": { "type": "int" } }
+  },
+  "backupErrorNotABackup": "یہ فائل میری بایوڈیٹا کا بیک اپ نہیں ہے۔",
+  "backupErrorFutureVersion": "یہ بیک اپ ایپ کے نئے ورژن سے بنایا گیا ہے۔ ایپ اپ ڈیٹ کر کے دوبارہ کوشش کریں۔",
+  "backupErrorWrongPassword": "یہ پاس ورڈ اس فائل کو نہیں کھولتا۔ اگر پاس ورڈ درست ہے تو ممکن ہے فائل خراب یا تبدیل ہو چکی ہو۔",
+  "backupErrorCorrupt": "یہ بیک اپ فائل خراب ہے اور پڑھی نہیں جا سکتی۔"
 }

@@ -6,7 +6,9 @@ import 'package:meribiodata/core/preferences/app_preferences.dart';
 import 'package:meribiodata/core/preferences/preferences_repository.dart';
 import 'package:meribiodata/core/storage/hive_local_store.dart';
 import 'package:meribiodata/data/bundled_labels.dart';
+import 'package:meribiodata/data/bundled_roman_urdu.dart';
 import 'package:meribiodata/data/profile_repository.dart';
+import 'package:meribiodata/domain/text/roman_urdu.dart';
 import 'package:meribiodata/features/ads/consent_gate.dart';
 
 Future<void> main() async {
@@ -41,6 +43,9 @@ Future<void> _start() async {
       profiles: ProfileRepository(store),
       labels: await BundledLabels.load(),
       consent: consent,
+      romanUrdu: RomanUrduTransliterator(
+        await BundledRomanUrduDictionary.load(),
+      ),
     ),
   );
 }

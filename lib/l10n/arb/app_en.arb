@@ -317,5 +317,72 @@
   "exportSharePages": "{count, plural, =1{1 page} other{{count} pages}}",
   "@exportSharePages": {
     "placeholders": { "count": { "type": "int" } }
-  }
+  },
+
+  "romanInputOn": "Roman typing is on — tap to turn off",
+  "@romanInputOn": {},
+  "romanInputOff": "Type in Roman, get Urdu",
+  "@romanInputOff": {},
+  "romanInputHint": "Type as you would in Roman — \"Muhammad Ali\" — then tap a suggestion. You can always edit the Urdu directly.",
+  "@romanInputHint": {
+    "description": "9.2 — the feature is an input aid, never a lock, and users should know they can correct it."
+  },
+  "settingsRomanInput": "Roman typing for Urdu",
+  "@settingsRomanInput": {},
+
+  "backupTitle": "Backup & Restore",
+  "@backupTitle": {},
+  "backupCreate": "Create a backup",
+  "@backupCreate": {},
+  "backupRestore": "Restore from a backup",
+  "@backupRestore": {},
+  "backupExplain": "A backup saves every biodata, all your fields and your settings into one password-protected file. Keep it wherever you like — your phone, an SD card, or send it to yourself.",
+  "@backupExplain": {},
+  "backupPasswordLabel": "Choose a password",
+  "@backupPasswordLabel": {},
+  "backupPasswordConfirm": "Type it again",
+  "@backupPasswordConfirm": {},
+  "backupPasswordEnter": "Enter the backup password",
+  "@backupPasswordEnter": {},
+  "backupNoRecovery": "If you forget this password, the backup cannot be opened. Not by us, not by anyone. There is no way to recover it.",
+  "@backupNoRecovery": {
+    "description": "9.5 requires being blunt about this. A vague error later reads as data loss caused by the app."
+  },
+  "backupPasswordTooShort": "Please use at least 8 characters.",
+  "@backupPasswordTooShort": {},
+  "backupPasswordMismatch": "The two passwords do not match.",
+  "@backupPasswordMismatch": {},
+  "backupCreated": "Backup created.",
+  "@backupCreated": {},
+  "backupShare": "Save or send the file",
+  "@backupShare": {},
+  "backupChooseFile": "Choose a backup file",
+  "@backupChooseFile": {},
+  "backupContains": "{count, plural, =1{1 biodata} other{{count} biodatas}}, saved {date}",
+  "@backupContains": {
+    "placeholders": {
+      "count": { "type": "int" },
+      "date": { "type": "String" }
+    }
+  },
+  "backupMerge": "Add to what is here",
+  "@backupMerge": {},
+  "backupReplace": "Replace everything",
+  "@backupReplace": {},
+  "backupReplaceConfirmTitle": "Delete your current biodatas?",
+  "@backupReplaceConfirmTitle": {},
+  "backupReplaceConfirmBody": "Everything on this phone will be removed and replaced with what is in the backup. This cannot be undone.",
+  "@backupReplaceConfirmBody": {},
+  "backupRestored": "{count, plural, =1{1 biodata restored} other{{count} biodatas restored}}",
+  "@backupRestored": {
+    "placeholders": { "count": { "type": "int" } }
+  },
+  "backupErrorNotABackup": "That file is not a MeriBiodata backup.",
+  "@backupErrorNotABackup": {},
+  "backupErrorFutureVersion": "This backup was made by a newer version of the app. Update MeriBiodata and try again.",
+  "@backupErrorFutureVersion": {},
+  "backupErrorWrongPassword": "That password does not open this file. If the password is right, the file may have been damaged or altered.",
+  "@backupErrorWrongPassword": {},
+  "backupErrorCorrupt": "That backup file is damaged and cannot be read.",
+  "@backupErrorCorrupt": {}
 }

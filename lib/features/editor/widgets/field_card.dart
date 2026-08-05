@@ -4,6 +4,7 @@ import 'package:meribiodata/core/theme/app_spacing.dart';
 import 'package:meribiodata/domain/biodata/field_descriptor.dart';
 import 'package:meribiodata/features/editor/widgets/field_input.dart';
 import 'package:meribiodata/l10n/generated/app_localizations.dart';
+import 'package:meribiodata/l10n/language_descriptor.dart';
 
 /// What the per-field overflow menu can do (§7.3).
 enum FieldAction {
@@ -22,6 +23,7 @@ class FieldCard extends StatelessWidget {
     required this.label,
     required this.value,
     required this.isLabelBorrowed,
+    required this.documentLanguage,
     required this.onValueChanged,
     required this.onAction,
     super.key,
@@ -33,6 +35,9 @@ class FieldCard extends StatelessWidget {
 
   /// The label came from another language's override (§6.1 / D7).
   final bool isLabelBorrowed;
+
+  /// Drives the Roman-typing offer on text fields (9.2).
+  final LanguageDescriptor documentLanguage;
 
   final ValueChanged<Object?> onValueChanged;
   final ValueChanged<FieldAction> onAction;
@@ -138,6 +143,7 @@ class FieldCard extends StatelessWidget {
             field: field,
             value: value,
             onChanged: onValueChanged,
+            documentLanguage: documentLanguage,
           ),
         ],
       ),
