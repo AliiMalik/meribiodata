@@ -128,28 +128,43 @@ cannot be skipped by accident.
 
 ## How it gets published
 
-`.github/workflows/publish-privacy.yml` deploys `docs/privacy/` — and only that folder — to GitHub
-Pages on every push that touches it. The page is a single self-contained HTML file with no build
-step, so it works anywhere that serves static files.
-
-To turn it on:
+Firebase Hosting, under the `meribiodata` project on `alihmalik2003@gmail.com`:
 
 ```bash
-git remote add origin git@github.com:<you>/meribiodata.git
-git push -u origin master
+firebase deploy --only hosting
 ```
 
-Then in the repository: **Settings → Pages → Source → GitHub Actions**. The workflow runs and prints
-the URL.
+`firebase.json` serves `docs/privacy/` and nothing else. The page is one
+self-contained HTML file with no build step.
 
-**If this repository stays private,** GitHub Pages needs a paid plan. The cheaper route is a
-separate small public repo holding just the contents of `docs/privacy/`, with Pages enabled on it.
-Nothing about the page changes.
+**Live at <https://meribiodata.web.app>** (and `meribiodata.firebaseapp.com`).
+
+### Why not GitHub Pages
+
+It was tried first and abandoned after a long fight. Both of its deployment
+mechanisms failed in different ways on this repository:
+
+| Path | Result |
+|---|---|
+| Actions (`deploy-pages`) | deployment created, then sat at `deployment_queued` until the 10-minute timeout |
+| Branch builder (`gh-pages`) | build and artifact upload succeeded, deployment cancelled ~5s later |
+
+Everything checkable was correct — Pages site provisioned, branch policy
+allowing the deploying branch, `pages: write` permission present, artifact
+uploaded, no GitHub incident open. The failure was server-side and never
+produced a diagnosable error. Firebase served the identical file first time.
+
+The repo's Pages config, the `gh-pages` branch, the `github-pages` environment
+and the publish workflow have all been removed, so there is only one hosting
+setup to reason about.
 
 Once the URL exists:
 
-1. Set it as the default in `lib/core/config/legal_links.dart`, or pass
-   `--dart-define=PRIVACY_POLICY_URL=…` at build time.
-2. Delete `test/core/legal_links_test.dart`, which exists to fail at exactly this moment.
-3. Put the same URL in the Play Console listing **and** in the Data Safety form. Play checks that
-   the two agree.
+1. ~~Set it as the default in `lib/core/config/legal_links.dart`~~ — done.
+2. ~~Replace the placeholder guard test~~ — done; it now asserts the URL is real.
+3. **Still to do:** put the same URL in the Play Console listing **and** in the Data Safety form.
+   Play checks that the two agree.
+
+Note the accounts differ on purpose and harmlessly: hosting is on
+`alihmalik2003@gmail.com`, Play Console is on `alihmalik49@gmail.com`. The policy is
+a public URL and does not need to share an account with anything.
