@@ -8,6 +8,7 @@ import 'package:meribiodata/data/bundled_labels.dart';
 import 'package:meribiodata/data/profile_repository.dart';
 import 'package:meribiodata/domain/text/roman_urdu.dart';
 import 'package:meribiodata/features/ads/consent_gate.dart';
+import 'package:meribiodata/features/sync/sync_controller.dart';
 import 'package:meribiodata/l10n/generated/app_localizations.dart';
 import 'package:meribiodata/l10n/language_descriptor.dart';
 import 'package:provider/provider.dart';
@@ -20,6 +21,7 @@ class MeriBiodataApp extends StatefulWidget {
     required this.labels,
     required this.consent,
     required this.romanUrdu,
+    required this.sync,
     super.key,
   });
 
@@ -29,6 +31,7 @@ class MeriBiodataApp extends StatefulWidget {
   final BundledLabels labels;
   final ConsentGate consent;
   final RomanUrduTransliterator romanUrdu;
+  final SyncController sync;
 
   @override
   State<MeriBiodataApp> createState() => _MeriBiodataAppState();
@@ -49,6 +52,7 @@ class _MeriBiodataAppState extends State<MeriBiodataApp> {
         ),
         ChangeNotifierProvider<ConsentGate>.value(value: widget.consent),
         Provider<RomanUrduTransliterator>.value(value: widget.romanUrdu),
+        ChangeNotifierProvider<SyncController>.value(value: widget.sync),
       ],
       child: Consumer<AppPreferences>(
         builder: (context, preferences, _) => MaterialApp.router(

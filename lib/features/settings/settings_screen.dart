@@ -149,14 +149,14 @@ class SettingsScreen extends StatelessWidget {
                 preferences.setRomanInputDefault(enabled: enabled),
           ),
           ListTile(
-            leading: const Icon(Icons.backup_outlined),
-            title: Text(l10n.backupTitle),
+            leading: const Icon(Icons.cloud_outlined),
+            title: Text(l10n.syncTitle),
             subtitle: Text(
-              l10n.backupExplain,
+              l10n.syncExplain,
               maxLines: 2,
               overflow: TextOverflow.ellipsis,
             ),
-            onTap: () => context.push(AppRoutes.backup),
+            onTap: () => context.push(AppRoutes.sync),
           ),
           const Divider(),
           ListTile(

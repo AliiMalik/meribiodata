@@ -10,6 +10,11 @@ import 'package:meribiodata/data/bundled_roman_urdu.dart';
 import 'package:meribiodata/data/profile_repository.dart';
 import 'package:meribiodata/domain/text/roman_urdu.dart';
 import 'package:meribiodata/features/ads/consent_gate.dart';
+import 'package:meribiodata/features/sync/backup_service.dart';
+import 'package:meribiodata/features/sync/drive_auth.dart';
+import 'package:meribiodata/features/sync/sync_config.dart';
+import 'package:meribiodata/features/sync/sync_controller.dart';
+import 'package:meribiodata/features/sync/sync_service.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -36,16 +41,29 @@ Future<void> _start() async {
   final consent = ConsentGate();
   unawaited(consent.resolve());
 
+  // Reads any existing Google session without prompting, so a returning
+  // user is simply already connected. Not awaited: it can touch the
+  // network, and first paint must not wait on Drive any more than on ads.
+  final profiles = ProfileRepository(store);
+  final sync = SyncController(
+    SyncService(
+      backups: BackupService(store),
+      auth: GoogleDriveAuth(serverClientId: SyncConfig.webClientId),
+    ),
+  );
+  unawaited(sync.load());
+
   runApp(
     MeriBiodataApp(
       store: store,
       preferences: preferences,
-      profiles: ProfileRepository(store),
+      profiles: profiles,
       labels: await BundledLabels.load(),
       consent: consent,
       romanUrdu: RomanUrduTransliterator(
         await BundledRomanUrduDictionary.load(),
       ),
+      sync: sync,
     ),
   );
 }

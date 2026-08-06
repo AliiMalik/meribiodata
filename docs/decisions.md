@@ -331,6 +331,38 @@ question 5). Only the treatment is settled here.
 
 ---
 
+## D15 — Google Drive sync replaces the local backup file
+
+**Decision.** The `.mbd` file is no longer written to the phone and handed to the share sheet. It is
+written to the user's own Google Drive, automatically, a few seconds after edits settle. It stays
+encrypted with a password the user chooses.
+
+**What changed and what did not.** The container is untouched: AES-256-GCM with an Argon2id-derived
+key, the same code and the same fifteen tests. Only the transport moved. The reason to keep the
+encryption rather than upload plaintext is that it is the difference between "Google holds a file it
+cannot read" and "Google holds your biodata" — and for rishta data, naming income, address, date of
+birth and a young woman's photograph, that difference is the product.
+
+**The scope is `drive.file`, deliberately.** It grants access only to files this app created. The app
+*cannot* read the user's other documents, and this is enforced by Google rather than by our good
+behaviour. It is also non-sensitive, so it needs no OAuth verification review — `drive.appdata`, the
+hidden-folder alternative, is sensitive and would have added weeks.
+
+**The layering is the safety property.** `DriveClient` moves opaque bytes and has no access to
+storage. `BackupService` produces ciphertext and has no access to the network. `SyncService` is the
+only class that knows both exist. A CI guard asserts the transport never imports `LocalStore`, so
+"the uploader cannot see plaintext" is checked rather than remembered.
+
+**Signing out does not delete the Drive file.** It is the user's file, in the user's account.
+Deleting somebody's only backup because they signed out of a phone would be indefensible.
+
+**Cost accepted.** NFR-1 is amended: something now leaves the device. The privacy policy was
+rewritten to say so plainly (v1.1), and the CI network guard now permits `http` inside
+`lib/features/sync/` and nowhere else. Two secrets instead of one — a Google account and a password
+— and a forgotten password means an unopenable backup the user can see sitting in their Drive.
+
+---
+
 ## Still open
 
 | # | Question | Blocks |

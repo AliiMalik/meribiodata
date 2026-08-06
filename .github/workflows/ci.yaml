@@ -54,24 +54,41 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      # NFR-1: biodata content must never be transmitted to a developer-owned
-      # server. Exactly two things in this app touch the network, and neither is
-      # an HTTP client we wrote:
-      #   * the AdMob SDK (google_mobile_ads), and
-      #   * url_launcher handing the waitlist form to the user's browser (D8).
-      # Anything else is a deliberate architectural decision, so it fails CI and
-      # has to be justified in review.
-      - name: Reject HTTP client dependencies
+      # NFR-1, as amended by D15. Three things may reach the network:
+      #   * the AdMob SDK (google_mobile_ads),
+      #   * url_launcher handing the waitlist form to the user's browser (D8),
+      #   * Google Drive sync, writing an encrypted blob to the *user's own*
+      #     Drive.
+      #
+      # What still holds absolutely: no developer-owned backend, and nothing
+      # readable leaves the device. Drive receives ciphertext it cannot open.
+      - name: Reject unsanctioned HTTP clients
         run: |
-          if grep -nE '^\s*(http|dio|chopper|retrofit|graphql_flutter|web_socket_channel):' pubspec.yaml; then
-            echo "::error::An HTTP client was added to pubspec.yaml. See NFR-1 in the build prompt and docs/decisions.md before allowing this."
+          if grep -nE '^[[:space:]]*(dio|chopper|retrofit|graphql_flutter|web_socket_channel):' pubspec.yaml; then
+            echo "::error::An HTTP client was added to pubspec.yaml. See NFR-1 and docs/decisions.md D15 before allowing this."
             exit 1
           fi
 
-      - name: Reject HTTP usage in application code
+      # `http` is permitted, but only where Drive sync lives. Anywhere else it
+      # is the beginning of a backend.
+      - name: Confine network calls to the sync layer
         run: |
-          if grep -rnE "import 'package:(http|dio|chopper)/|import 'dart:io'.*HttpClient|HttpClient\(" lib/; then
-            echo "::error::Application code is making its own network calls. Nothing may leave the device except the AdMob SDK and the waitlist form opening in the browser."
+          if grep -rlE "import 'package:(http|dio|chopper)/" lib/ | grep -v '^lib/features/sync/'; then
+            echo "::error::Network code outside lib/features/sync/. Only Drive sync, the ads SDK and the browser hand-off may touch the network."
+            exit 1
+          fi
+          if grep -rnE "import 'dart:io'.*HttpClient|HttpClient\(" lib/; then
+            echo "::error::Application code is opening its own HttpClient."
+            exit 1
+          fi
+
+      # Drive must only ever receive the encrypted container. If the sync layer
+      # could reach the database directly it could upload plaintext, so the
+      # dependency runs one way: sync -> BackupService -> store.
+      - name: Drive transport must not touch the database
+        run: |
+          if grep -n "LocalStore\|Collections\." lib/features/sync/drive_client.dart lib/features/sync/drive_auth.dart; then
+            echo "::error::The Drive transport reached for storage. It must only ever move opaque bytes."
             exit 1
           fi
 

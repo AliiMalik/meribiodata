@@ -1,32 +1,27 @@
 {
   "@@locale": "en",
-
   "appName": "MeriBiodata",
   "@appName": {
     "description": "The product name. Not translated."
   },
-
   "navHome": "My Biodatas",
   "@navHome": {
     "description": "Home screen title — the list of saved biodata profiles."
   },
   "navSettings": "Settings",
   "@navSettings": {},
-
   "onboardingWelcomeTitle": "Beautiful biodatas, in your own language",
   "@onboardingWelcomeTitle": {
     "description": "First onboarding screen headline."
   },
   "onboardingWelcomeBody": "Fill in a simple form and get a clean, print-ready marriage biodata as a PDF or an image.",
   "@onboardingWelcomeBody": {},
-
   "onboardingPrivacyTitle": "Your information stays on this phone",
   "@onboardingPrivacyTitle": {
     "description": "Privacy promise screen headline. Must read plainly, not as legal text."
   },
   "onboardingPrivacyBody": "MeriBiodata has no account and no server. Everything you type is stored only on this device, and nothing is ever uploaded.",
   "@onboardingPrivacyBody": {},
-
   "onboardingLanguageTitle": "Choose your language",
   "@onboardingLanguageTitle": {},
   "onboardingSkip": "Skip",
@@ -35,14 +30,12 @@
   "@onboardingNext": {},
   "onboardingStart": "Get started",
   "@onboardingStart": {},
-
   "homeEmptyTitle": "No biodatas yet",
   "@homeEmptyTitle": {},
   "homeEmptyBody": "Create your first biodata — it takes about ten minutes.",
   "@homeEmptyBody": {},
   "homeCreate": "Create biodata",
   "@homeCreate": {},
-
   "settingsUiLanguage": "App language",
   "@settingsUiLanguage": {
     "description": "The language of the interface, as distinct from the document language."
@@ -65,7 +58,6 @@
   "@settingsLicenses": {},
   "settingsAbout": "About",
   "@settingsAbout": {},
-
   "waitlistTitle": "Matchmaker Pro",
   "@waitlistTitle": {},
   "waitlistComingSoon": "Coming soon",
@@ -86,7 +78,6 @@
   "@waitlistOffline": {},
   "waitlistOpened": "The form is open in your browser.",
   "@waitlistOpened": {},
-
   "actionCancel": "Cancel",
   "@actionCancel": {},
   "actionDelete": "Delete",
@@ -95,12 +86,10 @@
   "@actionSave": {},
   "actionRetry": "Try again",
   "@actionRetry": {},
-
   "errorGenericTitle": "Something went wrong",
   "@errorGenericTitle": {},
   "errorStorageBody": "Your biodatas could not be opened. Restarting the app usually fixes this.",
   "@errorStorageBody": {},
-
   "editorTitle": "Edit biodata",
   "@editorTitle": {},
   "editorUntitled": "Untitled biodata",
@@ -113,7 +102,11 @@
   "@editorProfileNameHint": {},
   "editorProgress": "{percent}% complete",
   "@editorProgress": {
-    "placeholders": { "percent": { "type": "int" } }
+    "placeholders": {
+      "percent": {
+        "type": "int"
+      }
+    }
   },
   "editorSaving": "Saving…",
   "@editorSaving": {},
@@ -123,12 +116,15 @@
   "@editorSaveFailed": {},
   "editorNotFound": "This biodata no longer exists.",
   "@editorNotFound": {},
-
   "fieldChooseDate": "Choose a date",
   "@fieldChooseDate": {},
   "fieldAgeYears": "{years} years",
   "@fieldAgeYears": {
-    "placeholders": { "years": { "type": "int" } }
+    "placeholders": {
+      "years": {
+        "type": "int"
+      }
+    }
   },
   "fieldOther": "Other…",
   "@fieldOther": {
@@ -142,7 +138,6 @@
   "@fieldRenamedInOtherLanguage": {
     "description": "Chip shown when a label is borrowed from a different language's override."
   },
-
   "unitFeet": "Feet",
   "@unitFeet": {},
   "unitInches": "Inches",
@@ -153,14 +148,12 @@
   "@periodMonth": {},
   "periodYear": "Yearly",
   "@periodYear": {},
-
   "groupTotal": "How many",
   "@groupTotal": {},
   "groupMarried": "Married",
   "@groupMarried": {},
   "groupAddPerson": "Add details for one person",
   "@groupAddPerson": {},
-
   "menuRename": "Rename label",
   "@menuRename": {},
   "menuResetLabel": "Use the standard label",
@@ -179,7 +172,6 @@
   "@menuMarkNotSensitive": {},
   "menuDeleteField": "Delete field",
   "@menuDeleteField": {},
-
   "schemaEditorTitle": "Fields & sections",
   "@schemaEditorTitle": {},
   "schemaAddField": "Add a field",
@@ -196,14 +188,21 @@
   "@schemaFieldLabel": {},
   "schemaFieldType": "Type",
   "@schemaFieldType": {},
-
   "errorFieldLimit": "A biodata can have at most {max} fields.",
   "@errorFieldLimit": {
-    "placeholders": { "max": { "type": "int" } }
+    "placeholders": {
+      "max": {
+        "type": "int"
+      }
+    }
   },
   "errorSectionLimit": "A biodata can have at most {max} sections.",
   "@errorSectionLimit": {
-    "placeholders": { "max": { "type": "int" } }
+    "placeholders": {
+      "max": {
+        "type": "int"
+      }
+    }
   },
   "errorFieldNotDeletable": "This field cannot be removed.",
   "@errorFieldNotDeletable": {},
@@ -213,7 +212,6 @@
   "@errorLabelEmpty": {},
   "errorLabelTooLong": "That label is too long.",
   "@errorLabelTooLong": {},
-
   "homeSearch": "Search biodatas",
   "@homeSearch": {},
   "homeNoMatches": "No biodatas match that search.",
@@ -222,26 +220,36 @@
   "@homeDuplicate": {},
   "homeCopySuffix": "{name} (copy)",
   "@homeCopySuffix": {
-    "placeholders": { "name": { "type": "String" } }
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
   },
   "homeDeleteTitle": "Delete this biodata?",
   "@homeDeleteTitle": {},
   "homeDeleteBody": "{name} will be permanently deleted from this phone. This cannot be undone.",
   "@homeDeleteBody": {
-    "placeholders": { "name": { "type": "String" } }
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
   },
   "homeUpdatedAt": "Edited {date}",
   "@homeUpdatedAt": {
-    "placeholders": { "date": { "type": "String" } }
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
   },
-
   "templatePickerTitle": "Choose a template",
   "@templatePickerTitle": {},
   "templateMonochrome": "Prints in black & white",
   "@templateMonochrome": {
     "description": "Badge on the print-shop template — many users print at a corner shop."
   },
-
   "exportTitle": "Preview & Export",
   "@exportTitle": {},
   "exportDocumentLanguage": "Document language",
@@ -264,22 +272,29 @@
   "@exportWorking": {},
   "exportSaved": "Saved to {location}",
   "@exportSaved": {
-    "placeholders": { "location": { "type": "String" } }
+    "placeholders": {
+      "location": {
+        "type": "String"
+      }
+    }
   },
   "exportFailed": "The export could not be created.",
   "@exportFailed": {},
   "exportPageOf": "Page {page} of {total}",
   "@exportPageOf": {
     "placeholders": {
-      "page": { "type": "int" },
-      "total": { "type": "int" }
+      "page": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
     }
   },
   "exportDraftLanguageWarning": "The labels for this language are still being reviewed by native speakers.",
   "@exportDraftLanguageWarning": {
     "description": "Shown when the document language's built-in labels are marked draft."
   },
-
   "exportMode": "Who is this for?",
   "@exportMode": {
     "description": "Heading for the Full vs Shareable choice. Phrased as the question the user is actually answering, not as jargon."
@@ -294,11 +309,14 @@
   "@exportModeFullHint": {},
   "exportModeHiddenCount": "{count, plural, =1{1 private detail is hidden or shortened} other{{count} private details are hidden or shortened}}",
   "@exportModeHiddenCount": {
-    "placeholders": { "count": { "type": "int" } }
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
   },
   "exportModeFullWarning": "This copy includes private details.",
   "@exportModeFullWarning": {},
-
   "exportExplainTitle": "Two ways to share a biodata",
   "@exportExplainTitle": {},
   "exportExplainBody": "A biodata gets forwarded on. You choose what travels with it.\n\nWide sharing leaves out private details like your phone number and exact address, and shows only your city and age. Use it for WhatsApp groups and rishta contacts.\n\nOne family includes everything. Use it when you are sending to a specific family you trust.\n\nYou can mark any field as private yourself — look for the lock icon while filling the form.",
@@ -307,7 +325,6 @@
   },
   "exportExplainGotIt": "Got it",
   "@exportExplainGotIt": {},
-
   "exportWhatsApp": "Share on WhatsApp",
   "@exportWhatsApp": {},
   "exportWhatsAppDocumentHint": "Tip: in WhatsApp, choose Document rather than Photo to send it at full quality. Sent as a photo, WhatsApp shrinks it.",
@@ -316,9 +333,12 @@
   },
   "exportSharePages": "{count, plural, =1{1 page} other{{count} pages}}",
   "@exportSharePages": {
-    "placeholders": { "count": { "type": "int" } }
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
   },
-
   "romanInputOn": "Roman typing is on — tap to turn off",
   "@romanInputOn": {},
   "romanInputOff": "Type in Roman, get Urdu",
@@ -329,15 +349,6 @@
   },
   "settingsRomanInput": "Roman typing for Urdu",
   "@settingsRomanInput": {},
-
-  "backupTitle": "Backup & Restore",
-  "@backupTitle": {},
-  "backupCreate": "Create a backup",
-  "@backupCreate": {},
-  "backupRestore": "Restore from a backup",
-  "@backupRestore": {},
-  "backupExplain": "A backup saves every biodata, all your fields and your settings into one password-protected file. Keep it wherever you like — your phone, an SD card, or send it to yourself.",
-  "@backupExplain": {},
   "backupPasswordLabel": "Choose a password",
   "@backupPasswordLabel": {},
   "backupPasswordConfirm": "Type it again",
@@ -352,19 +363,6 @@
   "@backupPasswordTooShort": {},
   "backupPasswordMismatch": "The two passwords do not match.",
   "@backupPasswordMismatch": {},
-  "backupCreated": "Backup created.",
-  "@backupCreated": {},
-  "backupShare": "Save or send the file",
-  "@backupShare": {},
-  "backupChooseFile": "Choose a backup file",
-  "@backupChooseFile": {},
-  "backupContains": "{count, plural, =1{1 biodata} other{{count} biodatas}}, saved {date}",
-  "@backupContains": {
-    "placeholders": {
-      "count": { "type": "int" },
-      "date": { "type": "String" }
-    }
-  },
   "backupMerge": "Add to what is here",
   "@backupMerge": {},
   "backupReplace": "Replace everything",
@@ -375,7 +373,11 @@
   "@backupReplaceConfirmBody": {},
   "backupRestored": "{count, plural, =1{1 biodata restored} other{{count} biodatas restored}}",
   "@backupRestored": {
-    "placeholders": { "count": { "type": "int" } }
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
   },
   "backupErrorNotABackup": "That file is not a MeriBiodata backup.",
   "@backupErrorNotABackup": {},
@@ -450,5 +452,68 @@
   "settingsThemeDark": "Dark",
   "@settingsThemeDark": {},
   "settingsThemeHint": "The biodata itself always prints on white paper.",
-  "@settingsThemeHint": {}
+  "@settingsThemeHint": {},
+  "syncTitle": "Google Drive backup",
+  "@syncTitle": {},
+  "syncExplain": "Your biodatas are locked with your password and kept in your own Google Drive. Change phone, sign in, and everything comes back.",
+  "@syncExplain": {},
+  "syncNotConnected": "Not backed up",
+  "@syncNotConnected": {},
+  "syncConnect": "Connect Google Drive",
+  "@syncConnect": {},
+  "syncDisconnect": "Disconnect",
+  "@syncDisconnect": {},
+  "syncDisconnectConfirmTitle": "Disconnect Google Drive?",
+  "@syncDisconnectConfirmTitle": {},
+  "syncDisconnectConfirmBody": "This phone will stop backing up. The backup already in your Drive is not deleted — you can reconnect any time.",
+  "@syncDisconnectConfirmBody": {},
+  "syncNow": "Back up now",
+  "@syncNow": {},
+  "syncStatusIdle": "Backed up",
+  "@syncStatusIdle": {},
+  "syncStatusPending": "Changes not saved yet",
+  "@syncStatusPending": {},
+  "syncStatusSyncing": "Backing up…",
+  "@syncStatusSyncing": {},
+  "syncStatusFailed": "Backup failed",
+  "@syncStatusFailed": {},
+  "syncLastSynced": "Last backed up {when}",
+  "@syncLastSynced": {
+    "placeholders": {
+      "when": {
+        "type": "String"
+      }
+    }
+  },
+  "syncNever": "Never backed up",
+  "@syncNever": {},
+  "syncRestore": "Restore from Drive",
+  "@syncRestore": {},
+  "syncRestoreFound": "{count, plural, =1{1 biodata} other{{count} biodatas}}, backed up {date}",
+  "@syncRestoreFound": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "syncRestoreNothing": "There is no backup in this Google account.",
+  "@syncRestoreNothing": {},
+  "syncPasswordTitle": "Choose a backup password",
+  "@syncPasswordTitle": {},
+  "syncPasswordExplain": "This password locks your backup. Google cannot read it, and neither can we.",
+  "@syncPasswordExplain": {},
+  "syncErrorNeedsSignIn": "Sign in to Google Drive to back up.",
+  "@syncErrorNeedsSignIn": {},
+  "syncErrorNeedsPassword": "Choose a password to finish setting up backup.",
+  "@syncErrorNeedsPassword": {},
+  "syncErrorDriveUnavailable": "Could not reach Google Drive. It will try again by itself.",
+  "@syncErrorDriveUnavailable": {},
+  "syncErrorWrongPassword": "That password does not open this backup.",
+  "@syncErrorWrongPassword": {},
+  "syncErrorUnreadable": "That backup could not be read. It may be damaged, or made by a newer version of the app.",
+  "@syncErrorUnreadable": {}
 }

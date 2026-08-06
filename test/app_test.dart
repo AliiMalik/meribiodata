@@ -3,15 +3,20 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:meribiodata/app.dart';
 import 'package:meribiodata/core/preferences/app_preferences.dart';
 import 'package:meribiodata/core/preferences/preferences_repository.dart';
+import 'package:meribiodata/core/storage/local_store.dart';
 import 'package:meribiodata/data/bundled_labels.dart';
 import 'package:meribiodata/data/bundled_roman_urdu.dart';
 import 'package:meribiodata/data/profile_repository.dart';
 import 'package:meribiodata/domain/text/roman_urdu.dart';
 import 'package:meribiodata/features/ads/consent_gate.dart';
+import 'package:meribiodata/features/sync/backup_service.dart';
+import 'package:meribiodata/features/sync/sync_controller.dart';
+import 'package:meribiodata/features/sync/sync_service.dart';
 import 'package:meribiodata/l10n/generated/app_localizations.dart';
 import 'package:meribiodata/l10n/language_descriptor.dart';
 
 import 'support/fake_consent.dart';
+import 'support/fake_drive.dart';
 import 'support/in_memory_local_store.dart';
 
 Future<AppPreferences> _preferencesIn(InMemoryLocalStore store) async {
@@ -19,6 +24,17 @@ Future<AppPreferences> _preferencesIn(InMemoryLocalStore store) async {
   await preferences.load();
   return preferences;
 }
+
+/// Sync wired to fakes. The app requires a SyncController, but none of these
+/// tests are about Drive — this keeps them from needing a network or an
+/// account.
+SyncController buildSync(LocalStore store) => SyncController(
+  SyncService(
+    backups: BackupService(store),
+    auth: FakeDriveAuth(),
+    passwords: FakeSyncPasswordStore(),
+  ),
+);
 
 void main() {
   late InMemoryLocalStore store;
@@ -54,6 +70,7 @@ void main() {
         labels: labels,
         consent: consent,
         romanUrdu: romanUrdu,
+        sync: buildSync(store),
       ),
     );
     await tester.pumpAndSettle();
@@ -74,6 +91,7 @@ void main() {
         labels: labels,
         consent: consent,
         romanUrdu: romanUrdu,
+        sync: buildSync(store),
       ),
     );
     await tester.pumpAndSettle();
@@ -96,6 +114,7 @@ void main() {
         labels: labels,
         consent: consent,
         romanUrdu: romanUrdu,
+        sync: buildSync(store),
       ),
     );
     await tester.pumpAndSettle();
@@ -122,6 +141,7 @@ void main() {
         labels: labels,
         consent: consent,
         romanUrdu: romanUrdu,
+        sync: buildSync(store),
       ),
     );
     await tester.pumpAndSettle();

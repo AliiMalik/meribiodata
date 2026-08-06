@@ -3,12 +3,14 @@ import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 
-/// The two things this app asks the Android platform for directly (9.1, 9.5).
+/// The one thing this app asks the Android platform for directly (9.1).
 ///
-/// Both exist because the obvious packages did not fit: `share_plus` cannot
-/// target WhatsApp, and `file_picker` pins an older `win32` than `share_plus`
-/// allows while still referencing the dead `jcenter()` repository in its
-/// Android build.
+/// It exists because `share_plus` cannot target a specific app, and a biodata
+/// in Pakistan travels on WhatsApp more than by any other route.
+///
+/// A document picker used to live here too, for choosing a `.mbd` backup file.
+/// Drive sync replaced that flow, so it went with it rather than staying as
+/// code nothing calls.
 ///
 /// Every method degrades to a null or false result rather than throwing, so
 /// callers always have a sensible fallback.
@@ -39,10 +41,6 @@ class PlatformBridge {
         }) ??
         false;
   }
-
-  /// Opens the system document picker. Null means the user backed out, which
-  /// is not an error.
-  Future<Uint8List?> openDocument() => _invoke<Uint8List>('openDocument');
 
   Future<T?> _invoke<T>(String method, [Object? arguments]) async {
     try {

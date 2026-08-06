@@ -75,38 +75,11 @@ void main() {
     });
   });
 
-  group('openDocument', () {
-    test('returns the chosen bytes', () async {
-      respond((_) => Uint8List.fromList([1, 2, 3]));
-
-      expect(
-        await const PlatformBridge().openDocument(),
-        Uint8List.fromList([1, 2, 3]),
-      );
-    });
-
-    test('returns null when the user cancels', () async {
-      respond((_) => null);
-
-      expect(await const PlatformBridge().openDocument(), isNull);
-    });
-
-    test(
-      'swallows a platform error rather than throwing at the caller',
-      () async {
-        respond((_) => throw PlatformException(code: 'read_failed'));
-
-        expect(await const PlatformBridge().openDocument(), isNull);
-      },
-    );
-  });
-
   test('every method degrades quietly with no channel registered', () async {
     // The state in a widget test, and on any platform that is not Android.
     const bridge = PlatformBridge();
 
     expect(await bridge.isWhatsAppAvailable(), isFalse);
-    expect(await bridge.openDocument(), isNull);
     expect(
       await bridge.shareToWhatsApp(
         files: [File('/tmp/a.jpg')],

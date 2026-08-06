@@ -3,7 +3,7 @@ abstract final class AppRoutes {
   static const onboarding = '/onboarding';
   static const home = '/';
   static const settings = '/settings';
-  static const backup = '/settings/backup';
+  static const sync = '/settings/backup';
 
   /// Phase 2 teaser. Captures interest only — no CRM screen may be reachable
   /// from here (build prompt §0.1, §7.8).

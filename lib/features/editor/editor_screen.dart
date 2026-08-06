@@ -14,6 +14,7 @@ import 'package:meribiodata/features/ads/banner_slot.dart';
 import 'package:meribiodata/features/editor/profile_editor_controller.dart';
 import 'package:meribiodata/features/editor/widgets/field_card.dart';
 import 'package:meribiodata/features/photo/photo_card.dart';
+import 'package:meribiodata/features/sync/sync_controller.dart';
 import 'package:meribiodata/l10n/generated/app_localizations.dart';
 import 'package:meribiodata/l10n/language_descriptor.dart';
 import 'package:provider/provider.dart';
@@ -84,7 +85,14 @@ class _EditorBody extends StatelessWidget {
     final language = profile.documentLanguageCode;
 
     return PopScope(
-      onPopInvokedWithResult: (didPop, _) => controller.flush(),
+      // Flush the autosave, then hand the change to sync. Leaving the editor is
+      // the natural moment: the user has finished a thought, and a phone lost
+      // after this point loses nothing. scheduleSync is a no-op when Drive is
+      // not connected, so there is nothing to check first.
+      onPopInvokedWithResult: (didPop, _) {
+        unawaited(controller.flush());
+        context.read<SyncController>().scheduleSync();
+      },
       child: Scaffold(
         appBar: AppBar(
           title: Text(profile.profileName ?? l10n.editorTitle),

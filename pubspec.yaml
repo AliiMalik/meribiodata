@@ -22,8 +22,12 @@ dependencies:
   # Local storage. See docs/decisions.md D2 — Hive CE, storing JSON documents so
   # no Hive type ever leaks past the repository boundary.
   google_mobile_ads: ^9.0.0
+  google_sign_in: ^7.2.0
+  googleapis: ^16.0.0
+  googleapis_auth: ^2.3.3
   hive_ce: ^2.19.3
   hive_ce_flutter: ^2.3.4
+  http: ^1.6.0
   image_picker: ^1.2.3
   intl: any
   json_annotation: ^4.12.0

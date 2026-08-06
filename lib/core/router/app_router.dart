@@ -1,13 +1,13 @@
 import 'package:go_router/go_router.dart';
 import 'package:meribiodata/core/preferences/app_preferences.dart';
 import 'package:meribiodata/core/router/app_routes.dart';
-import 'package:meribiodata/features/backup/backup_screen.dart';
 import 'package:meribiodata/features/editor/editor_screen.dart';
 import 'package:meribiodata/features/export/export_screen.dart';
 import 'package:meribiodata/features/home/home_screen.dart';
 import 'package:meribiodata/features/onboarding/onboarding_screen.dart';
 import 'package:meribiodata/features/schema/schema_editor_screen.dart';
 import 'package:meribiodata/features/settings/settings_screen.dart';
+import 'package:meribiodata/features/sync/sync_screen.dart';
 import 'package:meribiodata/features/templates/template_picker_screen.dart';
 import 'package:meribiodata/features/waitlist/waitlist_screen.dart';
 
@@ -43,8 +43,8 @@ GoRouter buildRouter(AppPreferences preferences) {
         builder: (context, state) => const SettingsScreen(),
       ),
       GoRoute(
-        path: AppRoutes.backup,
-        builder: (context, state) => const BackupScreen(),
+        path: AppRoutes.sync,
+        builder: (context, state) => const SyncScreen(),
       ),
       GoRoute(
         path: AppRoutes.matchmakerPro,

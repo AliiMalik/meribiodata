@@ -5,8 +5,8 @@ import 'dart:typed_data';
 import 'package:cryptography/cryptography.dart';
 import 'package:meribiodata/core/storage/local_store.dart';
 import 'package:meribiodata/domain/biodata/biodata_profile.dart';
-import 'package:meribiodata/features/backup/backup_format.dart';
 import 'package:meribiodata/features/photo/photo_store.dart';
+import 'package:meribiodata/features/sync/backup_format.dart';
 
 /// What a restore should do with what is already on the device.
 enum RestoreStrategy {

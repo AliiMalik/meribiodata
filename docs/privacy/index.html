@@ -75,16 +75,17 @@
 <header>
   <div class="wrap">
     <h1>MeriBiodata — Privacy Policy</h1>
-    <p>Effective 6 August 2026 · Version 1.0</p>
+    <p>Effective 7 August 2026 · Version 1.1</p>
   </div>
 </header>
 
 <main>
 
 <p class="lede">
-  <strong>MeriBiodata has no account and no server.</strong>
-  Every biodata you write, every photo you add and every setting you change stays on your phone. We
-  never see any of it, because there is nowhere for it to go.
+  <strong>We run no server, and we never see your biodata.</strong>
+  Everything you write stays on your phone. If you switch on Google Drive backup, a copy also goes
+  to <em>your own</em> Google Drive — locked with a password only you know, which means even Google
+  cannot read it.
 </p>
 
 <h2>1. Who we are</h2>
@@ -101,13 +102,12 @@
 </p>
 <p>
   <strong>None of it reaches us.</strong> It is written to an encrypted database inside the app's own
-  private storage on your phone and read back only by the app. There is no upload, no sync, no
-  account and no backup to our servers, because we do not run any. The app's internet permission is
-  used by exactly two things, both described below, and our build system fails if a third one is ever
-  added.
+  private storage on your phone and read back only by the app. We operate no server, so there is
+  nowhere for your biodata to be sent to us even in principle. The app's internet permission is used
+  by exactly three things, all described below, and our build system fails if a fourth is ever added.
 </p>
 
-<h2>3. The two things that do use the internet</h2>
+<h2>3. The three things that use the internet</h2>
 
 <h3>Google AdMob</h3>
 <p>
@@ -135,6 +135,30 @@
   company that hosts the form, not into the app.
 </p>
 <p><em>The form provider and its own privacy policy will be named here once the form is live.</em></p>
+
+<h3>Google Drive backup</h3>
+<p>
+  This is off until you switch it on. If you do, the app signs you in to your Google account and
+  keeps one backup file in your own Google Drive, so that a lost or replaced phone does not mean a
+  lost biodata.
+</p>
+<ul>
+  <li><strong>The file is locked with a password you choose.</strong> Everything inside is encrypted
+      on your phone before it is uploaded. Google stores the file but cannot read what is in it, and
+      neither can we.</li>
+  <li><strong>If you forget that password, the backup cannot be opened.</strong> Not by us, not by
+      Google, not by anyone. There is no recovery.</li>
+  <li>The app asks for the narrowest Google Drive permission that exists
+      (<code>drive.file</code>). It can only see the one file it created. It cannot read your
+      documents, your photos, or anything else in your Drive — not by choice, but because Google
+      does not give it access.</li>
+  <li>The file is visible in your Drive, named <code>MeriBiodata-backup.mbd</code>. It is yours: you
+      can move it, copy it or delete it.</li>
+  <li>If you disconnect, this phone stops backing up. <strong>The file already in your Drive is not
+      deleted</strong> — it is yours to remove if you want it gone.</li>
+  <li>What Google does with files you store in Drive is covered by the
+      <a href="https://policies.google.com/privacy" rel="noopener">Google Privacy Policy</a>.</li>
+</ul>
 
 <h2>4. When you share a biodata</h2>
 <p>
@@ -164,10 +188,12 @@
 
 <h2>6. Backups</h2>
 <p>
-  A backup file is locked with a password that only you know. Without that password the file cannot
-  be opened — not by us, not by anyone, and there is no way to recover it. Once you save the backup
-  somewhere, for example a cloud drive or a message to yourself, that service's own privacy policy
-  applies to the copy you put there.
+  A backup is locked with a password only you know, and the locking happens on your phone before
+  anything is uploaded. Without that password the file cannot be opened — not by us, not by Google,
+  not by anyone — and there is no way to recover it.
+</p>
+<p>
+  Photos are inside the backup too, and are encrypted with everything else.
 </p>
 
 <h2>7. Permissions</h2>
@@ -175,7 +201,8 @@
 <div class="scroll">
 <table>
   <tr><th>Permission</th><th>Do we ask for it?</th></tr>
-  <tr><td>Internet</td><td>Yes — for ads and for opening the waitlist form. Nothing else.</td></tr>
+  <tr><td>Internet</td><td>Yes — for ads, for opening the waitlist form, and for Google Drive backup if you switch it on. Nothing else.</td></tr>
+  <tr><td>Google account</td><td>Only if you switch on Drive backup, and only for the one file the app creates in your Drive.</td></tr>
   <tr><td>Photos and media</td><td>No. Photos come through your phone's own picker, which gives the app only the one picture you choose.</td></tr>
   <tr><td>Camera</td><td>No. Taking a photo uses your phone's camera app.</td></tr>
   <tr><td>Storage</td><td>No.</td></tr>
@@ -199,9 +226,13 @@
 </p>
 <p>
   <strong>Uninstalling MeriBiodata removes all of it</strong> — every biodata, every photo, every
-  setting. That is the complete answer, which is why there is no separate "delete my data" button
-  inside the app; there would be nothing left for it to reach that uninstalling does not already
-  cover. Any backup file you saved elsewhere is yours to delete wherever you put it.
+  setting. That is the complete answer for what is on the phone, which is why there is no separate
+  "delete my data" button inside the app.
+</p>
+<p>
+  If you switched on Drive backup, one more thing exists: the backup file in your own Google Drive.
+  Uninstalling the app does not remove it, because it is your file in your account and deleting it
+  is not ours to do. Delete it from Drive whenever you want it gone.
 </p>
 
 <h2>10. Changes to this policy</h2>

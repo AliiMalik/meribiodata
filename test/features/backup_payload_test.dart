@@ -7,9 +7,9 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:meribiodata/core/storage/local_store.dart';
 import 'package:meribiodata/data/profile_repository.dart';
 import 'package:meribiodata/domain/biodata/default_schema.dart';
-import 'package:meribiodata/features/backup/backup_format.dart';
-import 'package:meribiodata/features/backup/backup_service.dart';
 import 'package:meribiodata/features/photo/photo_store.dart';
+import 'package:meribiodata/features/sync/backup_format.dart';
+import 'package:meribiodata/features/sync/backup_service.dart';
 
 import '../support/in_memory_local_store.dart';
 
