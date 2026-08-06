@@ -7,10 +7,15 @@
 #   keytool -genkey -v -keystore upload-keystore.jks \
 #     -keyalg RSA -keysize 2048 -validity 10000 -alias upload
 #
-# Losing this file means the app can never be updated on Play under
-# safarnamastudios.meribiodata.app again. Google cannot reset it for you unless
-# you enrolled in Play App Signing, and even then only the app signing key is
-# recoverable, not this one.
+# Guard it, but know the actual failure mode. With Play App Signing — the
+# default for new apps — Google holds the *app signing* key and this is only the
+# *upload* key, so losing it means asking support to register a new one rather
+# than losing the app forever. Without Play App Signing there is no recovery at
+# all: the app could never be updated under safarnamastudios.meribiodata.app
+# again, by anyone.
+#
+# Back up three things or it is not a backup: the .jks file, the password, and
+# the alias.
 
 storePassword=
 keyPassword=

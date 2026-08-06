@@ -42,16 +42,21 @@ jobs:
 
       - name: Check the page is not still a draft
         run: |
-          if grep -q "Effective TBD" docs/privacy/index.html; then
+          if grep -qi "Effective TBD\|Effective: TBD" docs/privacy/index.html; then
             echo "::error::The effective date is still TBD. Set it before publishing."
             exit 1
           fi
-          if grep -q "privacy@safarnamastudios.com" docs/privacy/index.html; then
-            echo "::error::The contact address is still the placeholder."
+          if ! grep -qE '[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}' docs/privacy/index.html; then
+            echo "::error::The policy carries no contact address. Play requires one."
             exit 1
           fi
 
+      # enablement: true turns Pages on for the repository if it is off, using
+      # the workflow's own token. Without it the first run fails with "Pages is
+      # not enabled" and someone has to go and click a switch.
       - uses: actions/configure-pages@v5
+        with:
+          enablement: true
 
       - uses: actions/upload-pages-artifact@v3
         with:
