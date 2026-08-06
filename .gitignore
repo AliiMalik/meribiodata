@@ -32,3 +32,6 @@ Thumbs.db
 # Spike artifacts pulled off the device — regenerate by running the spike.
 # The curated subset referenced by docs/spike-nastaliq.md lives in docs/spike-assets/.
 spike/artifacts/
+
+# Firebase Hosting deploy cache — local build state, not source.
+.firebase/
