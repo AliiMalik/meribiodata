@@ -43,8 +43,10 @@ jobs:
       - name: Format check
         run: dart format --output=none --set-exit-if-changed lib test
 
+      # Goldens are excluded because they are platform-specific bitmaps; see
+      # dart_test.yaml for why, and for how to make CI authoritative instead.
       - name: Test
-        run: flutter test
+        run: flutter test --exclude-tags golden
 
   privacy-guard:
     name: NFR-1 — no network clients
