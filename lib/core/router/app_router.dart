@@ -5,11 +5,11 @@ import 'package:meribiodata/features/editor/editor_screen.dart';
 import 'package:meribiodata/features/export/export_screen.dart';
 import 'package:meribiodata/features/home/home_screen.dart';
 import 'package:meribiodata/features/onboarding/onboarding_screen.dart';
+import 'package:meribiodata/features/premium/premium_screen.dart';
 import 'package:meribiodata/features/schema/schema_editor_screen.dart';
 import 'package:meribiodata/features/settings/settings_screen.dart';
 import 'package:meribiodata/features/sync/sync_screen.dart';
 import 'package:meribiodata/features/templates/template_picker_screen.dart';
-import 'package:meribiodata/features/waitlist/waitlist_screen.dart';
 
 /// Builds the app router.
 ///
@@ -47,8 +47,8 @@ GoRouter buildRouter(AppPreferences preferences) {
         builder: (context, state) => const SyncScreen(),
       ),
       GoRoute(
-        path: AppRoutes.matchmakerPro,
-        builder: (context, state) => const WaitlistScreen(),
+        path: AppRoutes.premium,
+        builder: (context, state) => const PremiumScreen(),
       ),
       GoRoute(
         path: AppRoutes.editor,

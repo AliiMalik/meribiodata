@@ -42,3 +42,14 @@ Future<ConsentGate> resolvedGateWithoutAds() async {
   await gate.resolve();
   return gate;
 }
+
+/// A gate that is resolved and permitting ads, with the real SDK still stubbed
+/// out. Only for tests that are specifically about ad behaviour.
+Future<ConsentGate> resolvedGateWithAds() async {
+  final gate = ConsentGate(
+    platform: FakeConsentPlatform(permitted: true),
+    initialiseAds: () async {},
+  );
+  await gate.resolve();
+  return gate;
+}

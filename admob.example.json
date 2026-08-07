@@ -1,0 +1,22 @@
+{
+  "_comment": [
+    "Copy to admob.json and fill in the real IDs. That file is gitignored:",
+    "section 8 requires production ad unit IDs to be supplied at build time and",
+    "never committed, and CI fails if one appears in lib/ or android/.",
+    "",
+    "Build with:",
+    "  flutter build appbundle --release \\",
+    "    --dart-define-from-file=admob.json \\",
+    "    -PadmobAppId=ca-app-pub-XXXXXXXXXXXXXXXX~YYYYYYYYYY",
+    "",
+    "The App ID needs its own flag because it lives in AndroidManifest.xml as a",
+    "Gradle manifest placeholder, which a Dart define cannot reach.",
+    "",
+    "The values below are Google's official test units. They show a test ad on",
+    "any device and can never earn or spend real money, so a build that forgets",
+    "the file is obviously wrong rather than silently broken."
+  ],
+  "ADMOB_BANNER_UNIT_ID": "ca-app-pub-3940256099942544/6300978111",
+  "ADMOB_INTERSTITIAL_UNIT_ID": "ca-app-pub-3940256099942544/1033173712",
+  "ADMOB_REWARDED_UNIT_ID": "ca-app-pub-3940256099942544/5224354917"
+}

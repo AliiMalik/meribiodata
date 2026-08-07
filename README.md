@@ -17,7 +17,7 @@ families. Android only.
 | M1 — Foundation | Complete. |
 | M2 — Schema & form engine | Complete. |
 | M3 — Templates & export | Complete; P1 label translations awaiting native review. |
-| M4 — Monetization & waitlist | Complete; running on AdMob test IDs and a placeholder form URL. |
+| M4 — Monetization | Complete. Banner, interstitial and Premium are wired to real AdMob and Play Billing IDs, supplied at build time. |
 | M5 — Differentiators | Not started. |
 | M5.5 — Polish · M6 — Hardening | Not started. |
 
@@ -47,11 +47,21 @@ Golden images live in `test/render/goldens/`. After a deliberate rendering chang
 flutter test --update-goldens
 ```
 
-Release builds supply the real AdMob IDs and waitlist URL, none of which are committed:
+Release builds supply the real AdMob IDs, which are never committed. Copy
+`admob.example.json` to `admob.json` (gitignored) and fill in the three unit IDs, then:
 
 ```bash
-flutter build appbundle -PadmobAppId=ca-app-pub-XXXX~YYYY --dart-define=ADMOB_BANNER_UNIT_ID=ca-app-pub-XXXX/ZZZZ --dart-define=WAITLIST_FORM_URL=https://forms.gle/...
+flutter build appbundle --release --dart-define-from-file=admob.json -PadmobAppId=ca-app-pub-XXXX~YYYY
 ```
+
+The App ID needs its own Gradle flag rather than a Dart define because it is read from
+`AndroidManifest.xml` by the Play services SDK before any Dart runs. Omit the flags and the build
+falls back to Google's test units, which show a "Test Ad" label and can never earn money —
+`AdConfig.isUsingTestUnits` exposes that so a release built without them is catchable.
+
+`app-ads.txt` is served from `docs/privacy/` alongside the privacy policy, at
+<https://meribiodata.web.app/app-ads.txt>. Google only crawls it once the Play listing names that
+URL as the developer website.
 
 ## Architecture
 
@@ -78,9 +88,10 @@ assets/
 
 Four rules that are load-bearing rather than stylistic:
 
-- **Nothing goes to a developer-owned server, ever.** Exactly two things touch the network: the
-  AdMob SDK, and handing the waitlist form to the user's browser. CI fails the build if an HTTP
-  client, an in-app webview, or a real AdMob ID is added.
+- **Nothing goes to a developer-owned server, ever.** Three things touch the network, all of them
+  Google's: the AdMob SDK, Play Billing, and Drive sync — which uploads only ciphertext, to the
+  user's own account. CI fails the build if an HTTP client outside `lib/features/sync/`, an in-app
+  webview, or a real AdMob ID is added.
 - **Ads are allowlisted per screen,** never denylisted — and never on Preview & Export, where an
   ad beside the share buttons is an AdMob policy risk rather than a UX annoyance.
 - **No raw hex outside `AppColors`,** and every text-on-surface pair is contrast-tested.
@@ -100,6 +111,6 @@ Four rules that are load-bearing rather than stylistic:
 
 ## Scope
 
-Phase 1 only. Matchmaker Pro exists solely as a "coming soon" waitlist screen; no CRM surface is
-reachable. There is no matching, no discovery, no server-side sharing, and no account system —
-these are out of scope by design, not yet to be built.
+Phase 1 only. The Matchmaker Pro waitlist was withdrawn in favour of Premium (D17); no CRM surface
+exists or is reachable. There is no matching, no discovery, no server-side sharing, and no account
+system — these are out of scope by design, not yet to be built.

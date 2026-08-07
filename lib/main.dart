@@ -9,7 +9,12 @@ import 'package:meribiodata/data/bundled_labels.dart';
 import 'package:meribiodata/data/bundled_roman_urdu.dart';
 import 'package:meribiodata/data/profile_repository.dart';
 import 'package:meribiodata/domain/text/roman_urdu.dart';
+import 'package:meribiodata/features/ads/ad_pacing.dart';
 import 'package:meribiodata/features/ads/consent_gate.dart';
+import 'package:meribiodata/features/ads/interstitial_ads.dart';
+import 'package:meribiodata/features/premium/billing.dart';
+import 'package:meribiodata/features/premium/entitlements.dart';
+import 'package:meribiodata/features/premium/premium_prompts.dart';
 import 'package:meribiodata/features/sync/backup_service.dart';
 import 'package:meribiodata/features/sync/drive_auth.dart';
 import 'package:meribiodata/features/sync/sync_config.dart';
@@ -34,12 +39,24 @@ Future<void> _start() async {
   final preferences = AppPreferences(PreferencesRepository(store));
   await preferences.load();
 
+  // load() reads the cached entitlement before it consults Play, so a paying
+  // user never sees a frame of ads while the check runs (D17).
+  final entitlements = Entitlements(billing: PlayBilling(), store: store);
+  unawaited(entitlements.load());
+
   // Consent is resolved in the background rather than awaited: it can involve a
   // network round trip, and blocking first paint on an ad-related call would
   // make the app feel broken offline. The banner appears if and when consent
   // permits (§8, NFR-3).
   final consent = ConsentGate();
-  unawaited(consent.resolve());
+  final interstitials = InterstitialAds(
+    consent: consent,
+    pacing: AdPacing(store),
+    isPremium: () => entitlements.isPremium,
+  );
+  // Fetch the first interstitial as soon as ads are permitted, so the create
+  // that eventually earns one does not wait for a network round trip (#30).
+  unawaited(consent.resolve().then((_) => interstitials.warmUp()));
 
   // Reads any existing Google session without prompting, so a returning
   // user is simply already connected. Not awaited: it can touch the
@@ -60,6 +77,9 @@ Future<void> _start() async {
       profiles: profiles,
       labels: await BundledLabels.load(),
       consent: consent,
+      interstitials: interstitials,
+      entitlements: entitlements,
+      premiumPrompts: PremiumPrompts(store),
       romanUrdu: RomanUrduTransliterator(
         await BundledRomanUrduDictionary.load(),
       ),

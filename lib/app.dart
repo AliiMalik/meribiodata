@@ -8,6 +8,9 @@ import 'package:meribiodata/data/bundled_labels.dart';
 import 'package:meribiodata/data/profile_repository.dart';
 import 'package:meribiodata/domain/text/roman_urdu.dart';
 import 'package:meribiodata/features/ads/consent_gate.dart';
+import 'package:meribiodata/features/ads/interstitial_ads.dart';
+import 'package:meribiodata/features/premium/entitlements.dart';
+import 'package:meribiodata/features/premium/premium_prompts.dart';
 import 'package:meribiodata/features/sync/sync_controller.dart';
 import 'package:meribiodata/l10n/generated/app_localizations.dart';
 import 'package:meribiodata/l10n/language_descriptor.dart';
@@ -20,6 +23,9 @@ class MeriBiodataApp extends StatefulWidget {
     required this.profiles,
     required this.labels,
     required this.consent,
+    required this.interstitials,
+    required this.entitlements,
+    required this.premiumPrompts,
     required this.romanUrdu,
     required this.sync,
     super.key,
@@ -30,6 +36,9 @@ class MeriBiodataApp extends StatefulWidget {
   final ProfileRepository profiles;
   final BundledLabels labels;
   final ConsentGate consent;
+  final InterstitialAds interstitials;
+  final Entitlements entitlements;
+  final PremiumPrompts premiumPrompts;
   final RomanUrduTransliterator romanUrdu;
   final SyncController sync;
 
@@ -51,6 +60,13 @@ class _MeriBiodataAppState extends State<MeriBiodataApp> {
           value: widget.preferences,
         ),
         ChangeNotifierProvider<ConsentGate>.value(value: widget.consent),
+        Provider<InterstitialAds>.value(value: widget.interstitials),
+        ChangeNotifierProvider<Entitlements>.value(
+          value: widget.entitlements,
+        ),
+        ChangeNotifierProvider<PremiumPrompts>.value(
+          value: widget.premiumPrompts,
+        ),
         Provider<RomanUrduTransliterator>.value(value: widget.romanUrdu),
         ChangeNotifierProvider<SyncController>.value(value: widget.sync),
       ],

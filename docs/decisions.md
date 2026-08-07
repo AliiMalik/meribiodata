@@ -238,6 +238,11 @@ build-flag change, not a code change.
 The AdMob **App ID** also has to appear in `AndroidManifest.xml` or the app crashes at startup;
 the committed value is Google's test App ID for the same reason.
 
+**Update, 2026-08-07.** The account now exists, with a banner, an interstitial and a rewarded unit,
+and `app-ads.txt` is served from <https://meribiodata.web.app/app-ads.txt>. Nothing in the code
+changed, which was the point of this decision: the real IDs live in a gitignored `admob.json` read
+by `--dart-define-from-file`, and the committed defaults are still the test units.
+
 ---
 
 ## D11 — Shareable is the default export mode, and the choice does not persist
@@ -363,6 +368,86 @@ rewritten to say so plainly (v1.1), and the CI network guard now permits `http` 
 
 ---
 
+## D16 — The create interstitial is capped three ways, and never blocks the create
+
+**Date:** 2026-08-07 · **Decided by:** owner · **Milestone:** M6 (#30)
+
+**Decision.** A full-screen ad may appear between tapping "Create biodata" and the editor opening.
+It is governed by three independent limits, all of which must pass (`AdConfig`):
+
+| Limit | Value | Why |
+|---|---|---|
+| Free creates | first **2**, lifetime | A first-run user is deciding whether the app is worth their time. An ad before they have seen the form answers that badly, and a first-run uninstall costs more than the impression is worth. |
+| Minimum interval | **3 minutes** | Stops a burst of creates from becoming a burst of ads. |
+| Daily cap | **4** | A matchmaker entering twenty biodatas in an afternoon clears the interval every time. Twenty full-screen ads in one sitting is "interfering with normal use" whatever the interval says — the exact language AdMob suspends accounts over. |
+
+**The ad never blocks the create.** No consent, no network, no fill, a slow load, an ad that fails
+to present — every one of those paths ends with the editor opening. The wait for a still-loading ad
+is bounded at 1.5 s, after which the impression is dropped rather than the user's action. Ads are
+preloaded, so in the normal case there is no wait at all.
+
+**Ordering.** The profile is written to disk *before* the ad is shown. An interstitial is a
+plausible moment to force-close an app, and losing someone's tap to an ad would be the worst
+possible trade.
+
+**Pacing state is persisted**, in its own storage document rather than in the preferences one —
+`PreferencesRepository` rewrites that document wholesale, so sharing it would race the user's
+settings. An in-memory counter would reset on every process death, which on the mid-range Android
+phones this app targets means the caps would quietly stop applying for exactly the users whose
+phones are already struggling.
+
+**Not built: an unskippable ad.** Interstitials are dismissible after ~5 s by format; making one
+mandatory would mean a *rewarded* ad framed as "watch this to continue", gating the app's core
+action behind a completed ad view. That is a different product, and a worse one.
+
+---
+
+## D17 — Premium replaces the Matchmaker Pro waitlist
+
+**Date:** 2026-08-08 · **Decided by:** owner · **Milestone:** M6 (#33)
+
+**Decision.** The Matchmaker Pro waitlist screen, its form URL and its strings are deleted. In its
+place, the Home header icon opens a **Premium** screen selling two products through Google Play:
+
+| Product | Play type | What it grants |
+|---|---|---|
+| `premium_monthly` | Subscription | No ads, no export watermark |
+| `premium_lifetime` | In-app product | The same, permanently |
+
+Both grant exactly the same thing. There is deliberately no feature one has and the other does not:
+a tier matrix at this price buys confusion, not revenue.
+
+**Nothing is gated.** Premium removes ads and the watermark. It unlocks no feature, and no feature
+is withheld to create a reason to buy one. That constraint is what keeps promise 3 — that a parent
+can finish a biodata in ten minutes — true for everybody rather than for payers.
+
+**Prices are never in the app.** What is displayed is the localised string Play returns for the
+user's own country and currency. The default price is set in **PKR** and Play converts outward, so
+a buyer in Karachi sees rupees. Hard-coding "$1" would have been wrong in Pakistan on day one and
+wrong everywhere else by the next exchange-rate move.
+
+**There is no server-side receipt verification, and there will not be.** Verifying properly means
+posting Play's receipt to a backend the developer controls, and this app has none by design
+(NFR-1). A rooted phone can therefore claim Premium it never paid for. Accepted: standing up a
+server to protect a rupee or two would undo the promise the entire app is built on.
+
+**Revocation is deliberately asymmetric.** Play says owned → Premium, cached. Play is reachable and
+says nothing → not Premium, cache cleared. Play is *unreachable* → the cached answer stands. Wrongly
+granting Premium costs an ad impression; wrongly revoking it serves ads to somebody who paid this
+morning and is on a train. Only one of those gets written up in a review.
+
+**Why the waitlist went.** It collected interest in a Phase 2 product that does not exist, through a
+form that was never created — open question 8 had been unanswered since M4. Premium occupies the
+same single entry point and earns money now. D8 survives it: external links still open in the user's
+own browser, never an in-app webview, and CI still enforces that.
+
+**Play Console consequences.** A payments profile is now required before launch — tax details and a
+bank account, verified on Google's timetable. The content rating questionnaire gains a digital
+purchases answer, and the listing gains an in-app purchases badge. `Financial features` stays
+"none": that section is about lending and banking, not IAP.
+
+---
+
 ## Still open
 
 | # | Question | Blocks |
@@ -374,7 +459,7 @@ rewritten to say so plainly (v1.1), and the CI network guard now permits `http` 
 | 5 | Watermark **wording**. The treatment is settled by D14 (a translucent band across the lower third of every page); the words are still the M3 placeholder "Made with MeriBiodata". | M6 |
 | ~~6~~ | ~~Photos: included by default in templates, or opt-in?~~ **Answered by D12: opt-in per export, reset on every mode change.** | closed |
 | 7 | Backup password policy: enforce minimum strength, or warn only? **M5 ships a minimum of 8 characters and nothing more.** | M6 |
-| 8 | The waitlist form URL itself, once you create the form. | M4 |
-| 9 | Play Console account (needed only for the M6 upload). | M6 |
+| ~~8~~ | ~~The waitlist form URL itself, once you create the form.~~ **Moot: the waitlist is withdrawn (D17).** | closed |
+| ~~9~~ | ~~Play Console account (needed only for the M6 upload).~~ **Registered, fee paid, on alihmalik49@gmail.com. The AdMob account is on the same address.** | closed |
 | 10 | 9.6 Boy/Girl biodata presets — build or not? | M2 (deferred) |
 | 11 | 9.7 Accessibility for older users — build or not? (strongly recommended) | M5.5 |

@@ -5,6 +5,7 @@ import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:meribiodata/core/theme/app_colors.dart';
 import 'package:meribiodata/features/ads/ad_config.dart';
 import 'package:meribiodata/features/ads/consent_gate.dart';
+import 'package:meribiodata/features/premium/entitlements.dart';
 import 'package:provider/provider.dart';
 
 /// An anchored adaptive banner (§8).
@@ -51,6 +52,7 @@ class _BannerSlotState extends State<BannerSlot> {
       debugPrint('BannerSlot(${widget.screenId}): not an ad screen (§8)');
       return;
     }
+    if (context.read<Entitlements>().isPremium) return;
     if (!context.read<ConsentGate>().canShowAds) return;
 
     _requested = true;
@@ -96,8 +98,11 @@ class _BannerSlotState extends State<BannerSlot> {
   @override
   Widget build(BuildContext context) {
     // Rebuild when consent resolves so the slot can appear without a
-    // navigation event.
-    final canShowAds = context.select<ConsentGate, bool>((g) => g.canShowAds);
+    // navigation event — and when a purchase completes, so it disappears the
+    // moment Premium is bought rather than at the next navigation.
+    final isPremium = context.select<Entitlements, bool>((e) => e.isPremium);
+    final canShowAds =
+        !isPremium && context.select<ConsentGate, bool>((g) => g.canShowAds);
     if (canShowAds && !_requested) unawaited(_maybeLoad());
 
     final ad = _ad;

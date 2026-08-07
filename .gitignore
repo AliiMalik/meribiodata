@@ -35,3 +35,10 @@ spike/artifacts/
 
 # Firebase Hosting deploy cache — local build state, not source.
 .firebase/
+
+# Real AdMob unit IDs, supplied at build time (section 8). The .example file is
+# the committed template.
+/admob.json
+
+# Kotlin compiler session files, written during Gradle builds.
+android/.kotlin/

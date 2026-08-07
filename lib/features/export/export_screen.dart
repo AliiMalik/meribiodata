@@ -19,6 +19,7 @@ import 'package:meribiodata/features/export/export_service.dart';
 import 'package:meribiodata/features/export/widgets/document_preview.dart';
 import 'package:meribiodata/features/export/widgets/export_mode_selector.dart';
 import 'package:meribiodata/features/photo/photo_store.dart';
+import 'package:meribiodata/features/premium/entitlements.dart';
 import 'package:meribiodata/l10n/generated/app_localizations.dart';
 import 'package:meribiodata/l10n/language_descriptor.dart';
 import 'package:provider/provider.dart';
@@ -170,7 +171,13 @@ class _ExportScreenState extends State<ExportScreen> {
           final document = builder.build(
             profile,
             mode: _mode,
-            watermark: 'Made with MeriBiodata',
+            // Null suppresses the band entirely — the one thing Premium
+            // removes that the user can see in the document itself. The
+            // preview is the document, so a paying user sees it gone here
+            // before they export.
+            watermark: context.watch<Entitlements>().isPremium
+                ? null
+                : 'Made with MeriBiodata',
             // The single point at which a photo can enter a document. If this
             // is null the renderers have nothing to draw, so "excluded" is
             // structural rather than a flag someone has to remember to check.
@@ -229,6 +236,18 @@ class _ExportScreenState extends State<ExportScreen> {
                   if (_includePhoto && _mode == ExportMode.shareable)
                     _Notice(l10n.photoIncludeShareableWarning),
                 ],
+
+                // Offered where the limitation is actually felt — the band is
+                // visible in the preview directly above this (D17). Absent for
+                // anyone who has already paid.
+                if (!context.watch<Entitlements>().isPremium)
+                  ListTile(
+                    contentPadding: EdgeInsets.zero,
+                    leading: const Icon(Icons.branding_watermark_outlined),
+                    title: Text(l10n.premiumWatermarkPrompt),
+                    trailing: const Icon(Icons.chevron_right),
+                    onTap: () => context.push(AppRoutes.premium),
+                  ),
                 const SizedBox(height: AppSpacing.xl),
 
                 if (!labels.isReviewed(document.language.code))

@@ -5,9 +5,9 @@ abstract final class AppRoutes {
   static const settings = '/settings';
   static const sync = '/settings/backup';
 
-  /// Phase 2 teaser. Captures interest only — no CRM screen may be reachable
-  /// from here (build prompt §0.1, §7.8).
-  static const matchmakerPro = '/matchmaker-pro';
+  /// Where ads and the export watermark are bought away (D17). Took the place
+  /// of the Matchmaker Pro waitlist, which was withdrawn.
+  static const premium = '/premium';
 
   static const editor = '/biodata/:id/edit';
   static const schemaEditor = '/biodata/:id/schema';

@@ -56,7 +56,8 @@ jobs:
 
       # NFR-1, as amended by D15. Three things may reach the network:
       #   * the AdMob SDK (google_mobile_ads),
-      #   * url_launcher handing the waitlist form to the user's browser (D8),
+      #   * url_launcher opening the privacy policy in the user's browser,
+      #   * Google Play Billing, which is platform channels rather than HTTP,
       #   * Google Drive sync, writing an encrypted blob to the *user's own*
       #     Drive.
       #
@@ -92,15 +93,15 @@ jobs:
             exit 1
           fi
 
-      # D8: the waitlist form must open in the user's *browser*. Embedding it
-      # would put a third-party page inside the app and turn a narrow "we link
-      # you to a form" disclosure into a real data-sharing one. webview_flutter
+      # D8, kept by D17: anything the app links out to opens in the user's own
+      # *browser*. Embedding a page would put a third party inside the app and
+      # turn "we link you somewhere" into real data sharing. webview_flutter
       # arrives transitively via the AdMob SDK, so this checks for our own use
       # of it rather than for its presence in the lockfile.
       - name: Reject in-app webviews
         run: |
           if grep -rn "package:webview_flutter" lib/; then
-            echo "::error::Application code is embedding a webview. The waitlist opens in the external browser by design (docs/decisions.md D8)."
+            echo "::error::Application code is embedding a webview. External links open in the user's browser by design (docs/decisions.md D8)."
             exit 1
           fi
 

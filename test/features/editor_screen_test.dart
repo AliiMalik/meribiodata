@@ -9,10 +9,12 @@ import 'package:meribiodata/domain/biodata/default_schema.dart';
 import 'package:meribiodata/features/ads/consent_gate.dart';
 import 'package:meribiodata/features/editor/editor_screen.dart';
 import 'package:meribiodata/features/home/profile_list_controller.dart';
+import 'package:meribiodata/features/premium/entitlements.dart';
 import 'package:meribiodata/l10n/generated/app_localizations.dart';
 import 'package:meribiodata/l10n/language_descriptor.dart';
 import 'package:provider/provider.dart';
 
+import '../support/fake_ads.dart';
 import '../support/fake_consent.dart';
 import '../support/in_memory_local_store.dart';
 
@@ -54,6 +56,10 @@ void main() {
           // resolved gate that refuses ads keeps the SDK out of unit tests.
           ChangeNotifierProvider<ConsentGate>.value(
             value: await resolvedGateWithoutAds(),
+          ),
+          // The same slot asks whether Premium has removed ads (D17).
+          ChangeNotifierProvider<Entitlements>.value(
+            value: freeEntitlements(store),
           ),
         ],
         child: MaterialApp(

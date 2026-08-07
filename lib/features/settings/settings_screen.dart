@@ -187,8 +187,9 @@ class SettingsScreen extends StatelessWidget {
   }
 }
 
-/// Opens in the browser rather than a webview: D8 rules out in-app webviews,
-/// and the policy is a public page with no reason to be embedded.
+/// Opens in the browser rather than a webview: in-app webviews are ruled out
+/// (D8, kept by D17), and the policy is a public page with no reason to be
+/// embedded.
 Future<void> _openPrivacyPolicy(BuildContext context) async {
   final l10n = AppL10n.of(context);
   final messenger = ScaffoldMessenger.of(context);
@@ -199,7 +200,7 @@ Future<void> _openPrivacyPolicy(BuildContext context) async {
   ).onError((_, _) => false);
 
   if (!opened) {
-    messenger.showSnackBar(SnackBar(content: Text(l10n.waitlistNoBrowser)));
+    messenger.showSnackBar(SnackBar(content: Text(l10n.errorNoBrowser)));
   }
 }
 
