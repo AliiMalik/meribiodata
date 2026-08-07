@@ -11,20 +11,17 @@ class PageSpec {
     required this.height,
   });
 
+  /// The only page size (D18).
+  ///
+  /// US Letter and a 4x6 card were offered until M6 and removed: nobody in the
+  /// target market asks for them, and every decorated template would have had
+  /// to be drawn or safely croppable at three different aspect ratios. One
+  /// shape means template artwork is one file that fits exactly.
   static const a4 = PageSpec(id: 'a4', width: 595, height: 842);
-  static const letter = PageSpec(id: 'letter', width: 612, height: 792);
-
-  /// 4x6 inches — the card format families hand over in person.
-  static const card = PageSpec(id: 'card', width: 288, height: 432);
-
-  static const all = <PageSpec>[a4, letter, card];
 
   final String id;
   final double width;
   final double height;
-
-  static PageSpec byId(String id) =>
-      all.firstWhere((p) => p.id == id, orElse: () => a4);
 }
 
 /// Everything a renderer needs to draw a template's blocks.

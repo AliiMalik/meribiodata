@@ -159,7 +159,8 @@ class _ExportScreenState extends State<ExportScreen> {
           }
 
           final template = Templates.byId(profile.templateId);
-          final page = PageSpec.byId(profile.pageSizeId);
+          // A4 always (D18).
+          const page = PageSpec.a4;
           final builder = DocumentBuilder(
             labels: labels,
             stringsFor: labels.stringsFor,
@@ -269,24 +270,6 @@ class _ExportScreenState extends State<ExportScreen> {
                   ],
                 ),
                 const SizedBox(height: AppSpacing.lg),
-
-                _Setting(label: l10n.exportPageSize),
-                Wrap(
-                  spacing: AppSpacing.sm,
-                  children: [
-                    for (final spec in PageSpec.all)
-                      ChoiceChip(
-                        label: Text(switch (spec.id) {
-                          'a4' => l10n.exportPageA4,
-                          'letter' => l10n.exportPageLetter,
-                          _ => l10n.exportPageCard,
-                        }),
-                        selected: spec.id == page.id,
-                        onSelected: (_) => controller.setPageSize(spec.id),
-                      ),
-                  ],
-                ),
-                const SizedBox(height: AppSpacing.xl),
 
                 // Three co-equal actions (§7.6). PDF is not privileged over
                 // image: in Pakistan a biodata circulates on WhatsApp far more

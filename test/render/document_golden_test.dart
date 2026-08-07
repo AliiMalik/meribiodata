@@ -35,9 +35,11 @@ void main() {
     WidgetTester tester,
     RenderedDocument document,
     DocumentTemplate template, {
-    PageSpec page = PageSpec.a4,
     Map<Uint8List, ui.Image> images = const {},
   }) async {
+    // A4 is the only page size (D18), so this is no longer a parameter.
+    const page = PageSpec.a4;
+
     tester.view
       ..physicalSize = Size(page.width, page.height)
       ..devicePixelRatio = 1.0;
@@ -137,20 +139,6 @@ void main() {
       await expectLater(
         find.byType(DocumentPage),
         matchesGoldenFile('goldens/edge-long-label.png'),
-      );
-    });
-
-    testWidgets('the card page size still reads', (tester) async {
-      await pumpPage(
-        tester,
-        sampleDocument('ur', labels: labels),
-        Templates.compact,
-        page: PageSpec.card,
-      );
-
-      await expectLater(
-        find.byType(DocumentPage),
-        matchesGoldenFile('goldens/card-ur.png'),
       );
     });
   });

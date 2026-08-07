@@ -36,7 +36,6 @@ abstract class BiodataProfile with _$BiodataProfile {
 
     /// Chosen page size id (`a4`, `letter`, `card`). Remembered per profile
     /// because a card-sized biodata is a deliberate, repeated choice.
-    @Default('a4') String pageSizeId,
 
     /// Optional title printed above the biodata — a Bismillah line, a family
     /// name, a Quranic reference (§6.2, optional extras). A document-level

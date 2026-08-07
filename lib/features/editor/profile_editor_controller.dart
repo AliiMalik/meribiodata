@@ -108,13 +108,6 @@ class ProfileEditorController extends ChangeNotifier {
     _scheduleSave();
   }
 
-  void setPageSize(String pageId) {
-    final current = _profile;
-    if (current == null || current.pageSizeId == pageId) return;
-    _profile = current.copyWith(pageSizeId: pageId);
-    _scheduleSave();
-  }
-
   /// The old file is deleted here rather than left behind: a photo the user
   /// removed must actually leave the device, not linger in app storage where a
   /// later backup would pick it up (9.3).

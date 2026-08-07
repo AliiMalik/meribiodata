@@ -448,6 +448,27 @@ purchases answer, and the listing gains an in-app purchases badge. `Financial fe
 
 ---
 
+## D18 — A4 is the only page size
+
+**Date:** 2026-08-08 · **Decided by:** owner · **Milestone:** M6
+
+**Decision.** US Letter and the 4x6 card are removed. `PageSpec` holds one constant, the page-size
+chooser is gone from the export screen, and `pageSizeId` is dropped from `BiodataProfile`.
+
+**Why.** Nobody in the target market asks for Letter — it is a North American paper size, and this
+app's users print in Pakistani shops on A4. The card format was a nice idea that nothing pointed at.
+
+**What actually forced it** was the decorated templates (#32). Three page sizes are three *aspect
+ratios* — 1:1.41, 1:1.29 and 1:1.50 — and full-page template artwork cannot fit all three without
+being redrawn per size or cropped in a way that clips the ornament off the corners. One shape means
+one artwork file that fits exactly, which is the difference between templates being data and
+templates being a per-size design exercise.
+
+**Old profiles are fine.** `pageSizeId` simply stops being read; the JSON key is ignored on load, so
+a biodata saved when Letter was selectable opens on A4 with everything else intact.
+
+---
+
 ## Still open
 
 | # | Question | Blocks |
