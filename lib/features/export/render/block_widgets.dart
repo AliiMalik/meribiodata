@@ -209,6 +209,7 @@ class DocumentPage extends StatelessWidget {
     required this.offsetY,
     required this.height,
     this.watermark,
+    this.background,
     this.images = const {},
     super.key,
   });
@@ -227,6 +228,15 @@ class DocumentPage extends StatelessWidget {
   /// Painted behind the content, on every page. Null suppresses it.
   final String? watermark;
 
+  /// The template's border artwork, already sized by the caller.
+  ///
+  /// A widget rather than an asset path or decoded image, because the two
+  /// callers have opposite needs: the picker wants thirteen small thumbnails
+  /// that Flutter's own image cache can evict, and the exporter wants one
+  /// full-resolution image decoded before the frame is painted. Handing this
+  /// widget in lets each pick, and keeps this class ignorant of both.
+  final Widget? background;
+
   final Map<Uint8List, ui.Image> images;
 
   @override
@@ -239,6 +249,9 @@ class DocumentPage extends StatelessWidget {
       color: Colors.white,
       child: Stack(
         children: [
+          // Bottom of the stack: the artwork is behind the watermark, which is
+          // behind the text. Border art must never sit over a value.
+          if (background case final Widget art) Positioned.fill(child: art),
           if (watermark case final String mark when mark.isNotEmpty)
             Positioned.fill(
               child: DocumentWatermark(

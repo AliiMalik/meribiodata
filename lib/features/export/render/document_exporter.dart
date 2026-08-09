@@ -1,9 +1,9 @@
 import 'dart:async';
-import 'dart:typed_data';
 import 'dart:ui' as ui;
 
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
+import 'package:flutter/services.dart';
 import 'package:meribiodata/domain/render/doc_block.dart';
 import 'package:meribiodata/domain/render/rendered_document.dart';
 import 'package:meribiodata/domain/render/template.dart';
@@ -58,6 +58,10 @@ class DocumentExporter {
     // decodes asynchronously and paints a frame or two late, which is
     // invisible on screen and produces a blank rectangle in a captured page.
     final images = await _decodePhotos(blocks);
+    // Same reasoning as the photos above, and it matters more here: a late
+    // background decode loses the border on every page of the export rather
+    // than one rectangle on one page.
+    final background = await _decodeBackground(template, page, dpi);
 
     final job = _ExportJob(
       blocks: blocks,
@@ -67,6 +71,9 @@ class DocumentExporter {
       pixelRatio: ratioForDpi(dpi),
       images: images,
       watermark: document.watermark,
+      background: background == null
+          ? null
+          : RawImage(image: background, fit: BoxFit.cover),
     );
 
     final entry = OverlayEntry(
@@ -87,6 +94,37 @@ class DocumentExporter {
       for (final image in images.values) {
         image.dispose();
       }
+      background?.dispose();
+    }
+  }
+
+  /// Decodes the template's artwork at the size this export will draw it.
+  ///
+  /// `targetWidth` rather than the file's own 1654px: an export at screen dpi
+  /// needs a fraction of that, and a full decode is ~15 MB of bitmap on a phone
+  /// this app promises to run on with 3 GB (NFR-2).
+  static Future<ui.Image?> _decodeBackground(
+    DocumentTemplate template,
+    PageSpec page,
+    double dpi,
+  ) async {
+    final asset = template.backgroundAsset;
+    if (asset == null) return null;
+
+    try {
+      final data = await rootBundle.load(asset);
+      final codec = await ui.instantiateImageCodec(
+        data.buffer.asUint8List(),
+        targetWidth: (page.width * ratioForDpi(dpi)).round(),
+      );
+      final frame = await codec.getNextFrame();
+      codec.dispose();
+      return frame.image;
+    } on Object catch (error) {
+      // A missing asset must not fail the export. The page renders plain,
+      // which is exactly what every template did before backgrounds existed.
+      debugPrint('Template background $asset failed to decode: $error');
+      return null;
     }
   }
 
@@ -116,6 +154,7 @@ class _ExportJob {
     required this.pixelRatio,
     required this.images,
     required this.watermark,
+    required this.background,
   }) : blockKeys = List.generate(blocks.length, (_) => GlobalKey());
 
   final List<DocBlock> blocks;
@@ -125,6 +164,7 @@ class _ExportJob {
   final double pixelRatio;
   final Map<Uint8List, ui.Image> images;
   final String? watermark;
+  final Widget? background;
 
   final List<GlobalKey> blockKeys;
   final Completer<List<RenderedPage>> completer = Completer();
@@ -260,6 +300,7 @@ class _ExportStageState extends State<_ExportStage> {
                 height: job.slices[_pageIndex].height,
                 images: job.images,
                 watermark: job.watermark,
+                background: job.background,
               ),
             ),
           ),

@@ -60,6 +60,8 @@ flutter:
     - assets/fonts/
     - assets/i18n/
     - assets/data/
+    # Border artwork for the decorated templates (D20).
+    - assets/templates/
 
   fonts:
     # UI chrome (Latin). SIL OFL.

@@ -102,6 +102,19 @@ abstract class DocumentTemplate {
   /// Which heading the picker files this under.
   TemplateCategory get category => TemplateCategory.standard;
 
+  /// Full-page border artwork drawn behind the content, or null for a plain
+  /// page.
+  ///
+  /// An asset path rather than bytes, so a template stays a `const` value and
+  /// each renderer decodes it at the size it actually needs — a decoded A4
+  /// background is about 15 MB, and the picker shows thirteen of them at once
+  /// (NFR-2 targets 3 GB phones).
+  String? get backgroundAsset => null;
+
+  /// True when the page is not plain white, which the watermark needs to know:
+  /// a translucent band that reads well on white can vanish on a tinted page.
+  bool get hasBackground => backgroundAsset != null;
+
   /// Whether this one carries a lock in the picker (D19).
   ///
   /// A locked template is still rendered in the picker at full fidelity — the

@@ -1,10 +1,10 @@
 @Tags(['golden'])
 library;
 
-import 'dart:typed_data';
 import 'dart:ui' as ui;
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:meribiodata/data/bundled_labels.dart';
 import 'package:meribiodata/domain/biodata/field_type.dart';
@@ -40,6 +40,13 @@ void main() {
     // A4 is the only page size (D18), so this is no longer a parameter.
     const page = PageSpec.a4;
 
+    // Decoded through runAsync and handed in as a RawImage, exactly as
+    // DocumentExporter does it. Image.asset would never finish here — widget
+    // tests run on fake async, so an asset load simply does not complete, and
+    // every one of these goldens would have quietly captured a blank page
+    // while appearing to cover the artwork.
+    final background = await _background(tester, template, page);
+
     tester.view
       ..physicalSize = Size(page.width, page.height)
       ..devicePixelRatio = 1.0;
@@ -59,6 +66,7 @@ void main() {
             height: page.height - template.style.margin * 2,
             images: images,
             watermark: document.watermark,
+            background: background,
           ),
         ),
       ),
@@ -326,4 +334,29 @@ void main() {
       );
     });
   });
+}
+
+/// The template's border artwork, decoded for real.
+Future<Widget?> _background(
+  WidgetTester tester,
+  DocumentTemplate template,
+  PageSpec page,
+) async {
+  final asset = template.backgroundAsset;
+  if (asset == null) return null;
+
+  final image = await tester.runAsync(() async {
+    final data = await rootBundle.load(asset);
+    final codec = await ui.instantiateImageCodec(
+      data.buffer.asUint8List(),
+      targetWidth: page.width.round(),
+    );
+    final frame = await codec.getNextFrame();
+    codec.dispose();
+    return frame.image;
+  });
+  if (image == null) return null;
+
+  addTearDown(image.dispose);
+  return RawImage(image: image, fit: BoxFit.cover);
 }

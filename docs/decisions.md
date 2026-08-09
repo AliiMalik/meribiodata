@@ -525,6 +525,61 @@ expected to change once the commissioned designs land.
 
 ---
 
+## D20 — Templates are border artwork plus type chosen to sit inside it
+
+**Date:** 2026-08-09 · **Decided by:** owner · **Milestone:** M6 (#32)
+
+**Decision.** A template may carry `backgroundAsset`, a full-page A4 image drawn
+behind the content. Thirteen shipped, taking the app from 4 templates to 17.
+
+**Why an image rather than drawn ornament.** The alternative was expressing
+borders in the `DocBlock` IR and implementing each one twice — once in Flutter
+widgets, once in `pdf` widgets. Every new design would then be code in two
+places, and none of the supplied artwork could be expressed that way at all.
+As an asset, a template is *data*: an image, a category, a margin and a colour.
+
+**The margin is the load-bearing number.** It has to clear the artwork's frame,
+and every border sits at a different inset. Two designs proved it — `leaf-sprig`
+and `olive` hang a sprig *inside* the page rather than framing its edge, and at
+a normal margin the leaves ran straight through the label column. Both got wide
+margins and a narrowed label column to buy the space back.
+
+**Four of the eighteen supplied files were not used:** a photograph of a
+physical picture frame, two mockups of a page floating on a backdrop, and one
+carrying tiled stock-preview watermarks across its blank centre.
+
+**Originals are kept** in `tool/template-originals/` and `tool/make_templates.py`
+rebuilds every shipped asset from them — centre-cropped to A4 (D18 is what makes
+one crop enough), upscaled to 1654x2339, JPEG at quality 88. The supplied art was
+~600-736px wide, about 63 dpi on an A4 page; upscaling adds no detail but Lanczos
+on linework degrades far better than leaving each renderer to interpolate.
+1.3 MB for thirteen backgrounds.
+
+**Memory, not file size, was the real constraint.** A decoded A4 background is
+~15 MB, and the picker shows thirteen at once — 200 MB on a phone this app
+promises to run on with 3 GB (NFR-2). So `DocumentPage` takes a background
+*widget* rather than a path or a decoded image, and each caller sizes its own:
+the picker uses `Image.asset` with `cacheWidth`, the exporter decodes once at
+export resolution and disposes it.
+
+**The goldens were nearly worthless here.** `Image.asset` never completes under
+a widget test's fake async, so the first regenerated set captured blank pages
+while appearing to cover the artwork. The harness now decodes through
+`tester.runAsync` exactly as the exporter does — which also means the goldens
+exercise the export path rather than a lookalike. Cost: the golden set is now
+11 MB, which is accepted as the price of the M3 script-regression defence.
+
+**Categories.** Classic, Geometric, Thematic and Creative. **There is no
+Religious set** — nothing in the supplied artwork is Islamic, and the picker
+simply omits any category with no templates in it. For this audience that is
+the most conspicuous gap in the collection.
+
+**Locking.** The strongest design in each category is locked: Filigree, Deco,
+Green Flower and Navy Wedge. `Elegant` was unlocked again, having been locked
+only as a placeholder while there was no real artwork to put behind the ad.
+
+---
+
 ## Still open
 
 | # | Question | Blocks |

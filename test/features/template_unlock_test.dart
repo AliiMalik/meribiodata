@@ -12,7 +12,12 @@ void main() {
   late DateTime clock;
 
   final start = DateTime(2026, 8, 8, 9);
-  const locked = 'elegant';
+
+  /// Whichever template is locked today rather than a hardcoded id, so
+  /// re-locking a different design does not quietly turn these into tests of
+  /// a free template that always pass.
+  final lockedTemplate = Templates.all.firstWhere((t) => t.isLocked);
+  final locked = lockedTemplate.id;
 
   setUp(() async {
     store = InMemoryLocalStore();
@@ -38,8 +43,12 @@ void main() {
 
       expect(u.isUnlocked(locked), isTrue);
       // The owner's choice over my recommendation: one ad buys one template,
-      // not the set.
-      expect(u.isUnlocked('compact'), isFalse);
+      // not the set. Asserted against another *locked* template, since a free
+      // one would pass this trivially.
+      final otherLocked = Templates.all
+          .where((t) => t.isLocked && t.id != locked)
+          .first;
+      expect(u.isUnlocked(otherLocked.id), isFalse);
 
       clock = start.add(const Duration(hours: 23, minutes: 59));
       expect(u.isUnlocked(locked), isTrue);
@@ -123,7 +132,7 @@ void main() {
       // Still true a year later — Premium does not run out the way an ad does.
       clock = start.add(const Duration(days: 365));
       expect(
-        canUseTemplate(Templates.elegant, isPremium: true, unlocks: u),
+        canUseTemplate(lockedTemplate, isPremium: true, unlocks: u),
         isTrue,
       );
     });
@@ -131,10 +140,10 @@ void main() {
     test('an ad unlock expires where Premium would not', () async {
       final u = unlocks();
       await u.load();
-      await u.grant(Templates.elegant.id);
+      await u.grant(locked);
 
       expect(
-        canUseTemplate(Templates.elegant, isPremium: false, unlocks: u),
+        canUseTemplate(lockedTemplate, isPremium: false, unlocks: u),
         isTrue,
       );
 
@@ -142,7 +151,7 @@ void main() {
       // The strict rule: it locks everywhere, including for a biodata already
       // using it. The export screen enforces the same check.
       expect(
-        canUseTemplate(Templates.elegant, isPremium: false, unlocks: u),
+        canUseTemplate(lockedTemplate, isPremium: false, unlocks: u),
         isFalse,
       );
     });

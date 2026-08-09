@@ -54,9 +54,33 @@ class DocumentPreview extends StatelessWidget {
             offsetY: 0,
             height: page.height - template.style.margin * 2,
             watermark: document.watermark,
+            background: templateBackground(template, width: maxWidth),
           ),
         ),
       ),
     );
   }
+}
+
+/// The template's artwork, decoded no larger than it will be drawn.
+///
+/// `cacheWidth` is the whole point. A full A4 background decodes to about
+/// 15 MB, and the picker shows thirteen at once — without this the template
+/// screen alone would ask a 3 GB phone for 200 MB of bitmaps (NFR-2).
+Widget? templateBackground(DocumentTemplate template, {required double width}) {
+  final asset = template.backgroundAsset;
+  if (asset == null) return null;
+
+  final devicePixels = (width * 3).round();
+  return Image.asset(
+    asset,
+    fit: BoxFit.cover,
+    cacheWidth: devicePixels,
+    // A missing or corrupt asset must not take the preview down with it. The
+    // page simply renders plain, which is what every template did until now.
+    errorBuilder: (context, error, stack) {
+      debugPrint('Template background $asset failed to load: $error');
+      return const SizedBox.shrink();
+    },
+  );
 }

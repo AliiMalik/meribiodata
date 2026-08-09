@@ -1,6 +1,7 @@
 import 'dart:typed_data';
 import 'dart:ui' show Color;
 
+import 'package:flutter/foundation.dart' show debugPrint;
 import 'package:flutter/services.dart' show rootBundle;
 import 'package:meribiodata/domain/render/doc_block.dart';
 import 'package:meribiodata/domain/render/rendered_document.dart';
@@ -43,6 +44,22 @@ abstract final class PdfRenderer {
   /// collapsed glyph piles, tofu and reversed digits — M0 measured exactly how
   /// badly — so `ExportService` routes by script rather than offering this as
   /// a choice.
+  /// The template's border artwork as a PDF image, or null for a plain page.
+  static Future<pw.ImageProvider?> _background(
+    DocumentTemplate template,
+  ) async {
+    final asset = template.backgroundAsset;
+    if (asset == null) return null;
+    try {
+      final data = await rootBundle.load(asset);
+      return pw.MemoryImage(data.buffer.asUint8List());
+    } on Object catch (error) {
+      // A plain page beats a failed export.
+      debugPrint('Template background $asset unavailable for PDF: $error');
+      return null;
+    }
+  }
+
   static Future<Uint8List> vector({
     required RenderedDocument document,
     required DocumentTemplate template,
@@ -60,6 +77,11 @@ abstract final class PdfRenderer {
     final pdf = pw.Document(
       theme: pw.ThemeData.withFont(base: regular, bold: bold),
     );
+
+    // Vector text over a raster border. The artwork is the only rasterised
+    // thing in a Pipeline A document, so the text stays selectable and sharp
+    // at any zoom while the frame is a picture — which is what it is.
+    final background = await _background(template);
 
     pw.Widget draw(DocBlock block) => switch (block) {
       DocHeader(:final text) => pw.Center(
@@ -146,11 +168,19 @@ abstract final class PdfRenderer {
           // background rather than a block: it repeats on every page, costs
           // pagination nothing, and — the point of it — cannot be cropped off
           // the way a footer line can.
-          buildBackground: (context) => _watermark(
-            document.watermark,
-            style,
-            page,
-            bold,
+          buildBackground: (context) => pw.Stack(
+            children: [
+              // Artwork first, watermark over it, content over both — the same
+              // order the raster backend stacks them in, which is what keeps
+              // the two pipelines producing the same document.
+              if (background case final pw.ImageProvider art)
+                pw.Positioned.fill(
+                  child: pw.Image(art, fit: pw.BoxFit.cover),
+                ),
+              pw.Positioned.fill(
+                child: _watermark(document.watermark, style, page, bold),
+              ),
+            ],
           ),
         ),
         // MultiPage paginates for free here — the raster path has to do it

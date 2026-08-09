@@ -1,5 +1,6 @@
 import 'dart:ui' show Color;
 
+import 'package:meribiodata/domain/render/decorated_templates.dart';
 import 'package:meribiodata/domain/render/doc_block.dart';
 import 'package:meribiodata/domain/render/rendered_document.dart';
 import 'package:meribiodata/domain/render/template.dart';
@@ -99,16 +100,7 @@ class ElegantTemplate extends DocumentTemplate {
   String get name => 'Elegant';
 
   @override
-  TemplateCategory get category => TemplateCategory.creative;
-
-  /// The first locked template (D19).
-  ///
-  /// Provisional: it is the nicest of the four shipped layouts, so it is the
-  /// honest one to put behind the lock while the commissioned artwork is still
-  /// being made. Which templates are locked is data, and this flag is expected
-  /// to move once the decorated designs land.
-  @override
-  bool get isLocked => true;
+  TemplateCategory get category => TemplateCategory.standard;
 
   @override
   TemplateStyle get style => const TemplateStyle(
@@ -206,7 +198,15 @@ abstract final class Templates {
   static const elegant = ElegantTemplate();
   static const compact = CompactTemplate();
 
-  static const all = <DocumentTemplate>[classic, printShop, elegant, compact];
+  /// Plain layouts, then the border-art designs. Order here is picker order
+  /// within a category.
+  static final all = <DocumentTemplate>[
+    classic,
+    printShop,
+    elegant,
+    compact,
+    ...DecoratedTemplates.all,
+  ];
 
   static const defaultId = 'classic';
 
