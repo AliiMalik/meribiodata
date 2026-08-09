@@ -77,9 +77,20 @@ void main() {
   group('every template renders every P0/P1 script', () {
     // Punjabi shares the Nastaliq path with Urdu, so Urdu covers it; Sindhi
     // and Pashto are the Naskh cases with the extended letters.
-    const languages = ['en', 'ur', 'sd', 'ps'];
+    const allScripts = ['en', 'ur', 'sd', 'ps'];
 
+    // Decorated templates cover Latin and Nastaliq only, and that is a
+    // principle rather than a saving. Script rendering is a property of the
+    // language, the fonts and the block widgets — none of which a border image
+    // touches. The plain templates exercise every script through the same code
+    // paths, and they are the ones that differ in layout: margins, uppercase
+    // section titles, rules, and Compact's own block stream. Covering all four
+    // scripts against thirteen identical layouts would add 26 bitmaps that can
+    // only fail when a plain template's golden has already failed.
     for (final template in Templates.all) {
+      final languages = template.hasBackground
+          ? const ['en', 'ur']
+          : allScripts;
       for (final language in languages) {
         testWidgets('${template.id} / $language', (tester) async {
           await pumpPage(
