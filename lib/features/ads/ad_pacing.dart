@@ -105,6 +105,18 @@ class AdPacing {
     await _save();
   }
 
+  /// Starts the interval clock without spending a day's allowance.
+  ///
+  /// Called when a *rewarded* ad has played. The user asked for that one, so it
+  /// must not eat the interstitial cap — but they have just watched a
+  /// full-screen ad, and following it moments later with one they did not ask
+  /// for is how an app earns the word "spammy".
+  Future<void> recordFullScreenAd() async {
+    await load();
+    _lastShown = _now();
+    await _save();
+  }
+
   Future<void> recordInterstitialShown() async {
     final now = _now();
     _shownToday = _sameDay ? _shownToday + 1 : 1;

@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:meribiodata/core/theme/app_colors.dart';
 import 'package:meribiodata/core/theme/app_spacing.dart';
@@ -6,6 +8,7 @@ import 'package:meribiodata/features/premium/entitlements.dart';
 import 'package:meribiodata/features/premium/premium_products.dart';
 import 'package:meribiodata/l10n/generated/app_localizations.dart';
 import 'package:provider/provider.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 /// Where Premium is bought (#33).
 ///
@@ -255,18 +258,40 @@ class _AlreadyPremium extends StatelessWidget {
     return Card(
       child: Padding(
         padding: const EdgeInsets.all(AppSpacing.lg),
-        child: Row(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            const Icon(Icons.check_circle, color: AppColors.secondaryGreen),
-            const SizedBox(width: AppSpacing.md),
-            Expanded(
-              child: Text(
-                plan == PremiumPlan.monthly
-                    ? l10n.premiumActiveMonthly
-                    : l10n.premiumActiveLifetime,
-                style: Theme.of(context).textTheme.bodyLarge,
-              ),
+            Row(
+              children: [
+                const Icon(Icons.check_circle, color: AppColors.secondaryGreen),
+                const SizedBox(width: AppSpacing.md),
+                Expanded(
+                  child: Text(
+                    plan == PremiumPlan.monthly
+                        ? l10n.premiumActiveMonthly
+                        : l10n.premiumActiveLifetime,
+                    style: Theme.of(context).textTheme.bodyLarge,
+                  ),
+                ),
+              ],
             ),
+            // Required by Play policy for a subscription: there has to be a way
+            // to cancel from inside the app, and it has to lead to Play rather
+            // than to anything of ours. Absent for lifetime, which cannot be
+            // cancelled because it does not recur.
+            if (plan == PremiumPlan.monthly) ...[
+              const SizedBox(height: AppSpacing.sm),
+              TextButton.icon(
+                onPressed: () => unawaited(
+                  launchUrl(
+                    Uri.parse(PremiumPlan.monthly.manageUrl),
+                    mode: LaunchMode.externalApplication,
+                  ),
+                ),
+                icon: const Icon(Icons.open_in_new, size: 18),
+                label: Text(l10n.premiumManage),
+              ),
+            ],
           ],
         ),
       ),

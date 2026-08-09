@@ -205,13 +205,18 @@ class _ExportScreenState extends State<ExportScreen> {
             );
           }
 
-          final template = Templates.byId(profile.templateId);
+          final preferences = context.watch<AppPreferences>();
+          // Text size is applied to the template, so the preview, the PDF and
+          // the images all read it from one place and cannot disagree (#34).
+          final template = Templates.byId(
+            profile.templateId,
+          ).resized(preferences.documentTextSize);
           // A4 always (D18).
           const page = PageSpec.a4;
           final builder = DocumentBuilder(
             labels: labels,
             stringsFor: labels.stringsFor,
-            units: context.watch<AppPreferences>().documentUnits,
+            units: preferences.documentUnits,
           );
 
           // Built in the selected mode, so the preview *is* the document —
@@ -284,6 +289,53 @@ class _ExportScreenState extends State<ExportScreen> {
                   if (_includePhoto && _mode == ExportMode.shareable)
                     _Notice(l10n.photoIncludeShareableWarning),
                 ],
+
+                // Sits with the other things that change the document, right
+                // under the preview that shows the effect (#34). Three steps of
+                // one point: enough to matter to someone who needs it, small
+                // enough that no template's border has to move.
+                _Setting(label: l10n.exportTextSize),
+                SegmentedButton<DocumentTextSize>(
+                  showSelectedIcon: false,
+                  segments: [
+                    ButtonSegment(
+                      value: DocumentTextSize.normal,
+                      label: Text(l10n.exportTextSizeNormal),
+                    ),
+                    ButtonSegment(
+                      value: DocumentTextSize.large,
+                      label: Text(l10n.exportTextSizeLarge),
+                    ),
+                    ButtonSegment(
+                      value: DocumentTextSize.largest,
+                      label: Text(l10n.exportTextSizeLargest),
+                    ),
+                  ],
+                  selected: {preferences.documentTextSize},
+                  onSelectionChanged: (selection) => unawaited(
+                    preferences.setDocumentTextSize(selection.first),
+                  ),
+                ),
+                const SizedBox(height: AppSpacing.lg),
+
+                // The way back to the picker once a template has been chosen,
+                // so re-exporting never forces the whole flow again (D19).
+                ListTile(
+                  contentPadding: EdgeInsets.zero,
+                  leading: const Icon(Icons.dashboard_outlined),
+                  title: Text(l10n.templateChange),
+                  subtitle: Text(template.name),
+                  trailing: const Icon(Icons.chevron_right),
+                  onTap: () async {
+                    await controller.flush();
+                    if (context.mounted) {
+                      await context.push(
+                        AppRoutes.templatePickerFor(profile.id),
+                      );
+                    }
+                    await controller.load();
+                  },
+                ),
 
                 // Offered where the limitation is actually felt — the band is
                 // visible in the preview directly above this (D17). Absent for

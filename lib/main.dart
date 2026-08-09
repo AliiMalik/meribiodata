@@ -51,9 +51,12 @@ Future<void> _start() async {
   // make the app feel broken offline. The banner appears if and when consent
   // permits (§8, NFR-3).
   final consent = ConsentGate();
+  // One AdPacing shared by both full-screen formats, so a rewarded ad and an
+  // interstitial can never land back to back.
+  final pacing = AdPacing(store);
   final interstitials = InterstitialAds(
     consent: consent,
-    pacing: AdPacing(store),
+    pacing: pacing,
     isPremium: () => entitlements.isPremium,
   );
   // Fetch the first interstitial as soon as ads are permitted, so the create
@@ -82,7 +85,7 @@ Future<void> _start() async {
       interstitials: interstitials,
       entitlements: entitlements,
       premiumPrompts: PremiumPrompts(store),
-      rewarded: RewardedAds(consent: consent),
+      rewarded: RewardedAds(consent: consent, pacing: pacing),
       templateUnlocks: TemplateUnlocks(store),
       romanUrdu: RomanUrduTransliterator(
         await BundledRomanUrduDictionary.load(),

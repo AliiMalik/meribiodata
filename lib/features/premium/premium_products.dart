@@ -22,6 +22,18 @@ enum PremiumPlan {
   /// `notFoundIDs` and the offer never appears.
   final String productId;
 
+  /// Deep link to Play's own subscription management, for this product.
+  ///
+  /// Play policy requires a route to cancel or change a subscription from
+  /// inside the app, and it must go to Play rather than to anything we build:
+  /// Google took the money, so Google shows the terms and handles the refund.
+  /// Meaningless for [lifetime], which has nothing to manage.
+  String get manageUrl =>
+      'https://play.google.com/store/account/subscriptions'
+      '?sku=$productId&package=$_packageName';
+
+  static const _packageName = 'safarnamastudios.meribiodata.app';
+
   static const productIds = <String>{
     'premium_monthly',
     'premium_lifetime',

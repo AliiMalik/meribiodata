@@ -1,5 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:meribiodata/domain/render/templates.dart';
+import 'package:meribiodata/features/ads/ad_config.dart';
+import 'package:meribiodata/features/ads/ad_pacing.dart';
 import 'package:meribiodata/features/ads/rewarded_ads.dart';
 import 'package:meribiodata/features/templates/template_unlocks.dart';
 
@@ -198,6 +200,40 @@ void main() {
       // The failure that would matter is this returning `earned` — a reward
       // for an ad that never played.
       expect(await ads.show(), RewardOutcome.unavailable);
+    });
+  });
+
+  group('the two full-screen formats do not stack', () {
+    test('a rewarded ad starts the interstitial cooldown', () async {
+      final pacing = AdPacing(store, now: () => clock);
+      // Well past the free creates, so only the interval can stop an ad.
+      for (var i = 0; i < AdConfig.interstitialFreeCreates + 1; i++) {
+        await pacing.recordCreate();
+      }
+      expect(pacing.allowsInterstitial, isTrue);
+
+      await RewardedAds(
+        consent: await resolvedGateWithAds(),
+        pacing: pacing,
+        loader: FakeRewardedLoader(),
+      ).show();
+
+      // Having just watched a full-screen ad they asked for, the user must not
+      // immediately get one they did not.
+      expect(pacing.allowsInterstitial, isFalse);
+
+      clock = clock.add(AdConfig.interstitialInterval * 2);
+      expect(pacing.allowsInterstitial, isTrue);
+    });
+
+    test('but it does not spend the daily interstitial allowance', () async {
+      final pacing = AdPacing(store, now: () => clock);
+      await pacing.recordCreate();
+      await pacing.recordFullScreenAd();
+
+      // The user asked for the rewarded ad; charging it against the cap on
+      // unasked-for ads would punish them for choosing to unlock a template.
+      expect(pacing.shownToday, 0);
     });
   });
 }

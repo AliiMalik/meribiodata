@@ -17,9 +17,9 @@ families. Android only.
 | M1 — Foundation | Complete. |
 | M2 — Schema & form engine | Complete. |
 | M3 — Templates & export | Complete; P1 label translations awaiting native review. |
-| M4 — Monetization | Complete. Banner, interstitial and Premium are wired to real AdMob and Play Billing IDs, supplied at build time. |
-| M5 — Differentiators | Not started. |
-| M5.5 — Polish · M6 — Hardening | Not started. |
+| M4 — Monetization | Complete. Banner, interstitial, rewarded and Premium wired to real AdMob and Play Billing IDs, supplied at build time. |
+| M5 — Differentiators | Complete. Encrypted Google Drive sync (D15), photos with metadata stripped, WhatsApp share. |
+| M6 — Launch | In progress. 17 templates, Premium, plain-text share. Blocked on the Play Console listing and a payments profile. |
 
 Per-milestone write-ups are in [`docs/progress/`](docs/progress/).
 

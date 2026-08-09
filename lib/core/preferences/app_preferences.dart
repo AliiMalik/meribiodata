@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:meribiodata/core/preferences/preferences_repository.dart';
 import 'package:meribiodata/domain/biodata/field_type.dart';
 import 'package:meribiodata/domain/render/document_builder.dart';
+import 'package:meribiodata/domain/render/template.dart';
 import 'package:meribiodata/l10n/language_descriptor.dart';
 
 /// App-wide user preferences.
@@ -20,6 +21,7 @@ class AppPreferences extends ChangeNotifier {
   static const _keyHeightUnit = 'heightUnit';
   static const _keyWeightUnit = 'weightUnit';
   static const _keyThemeMode = 'themeMode';
+  static const _keyDocumentTextSize = 'documentTextSize';
 
   final PreferencesRepository _repository;
 
@@ -31,10 +33,18 @@ class AppPreferences extends ChangeNotifier {
   LengthUnit _heightUnit = LengthUnit.feetInches;
   MassUnit _weightUnit = MassUnit.kilograms;
   ThemeMode _themeMode = ThemeMode.system;
+  DocumentTextSize _documentTextSize = DocumentTextSize.normal;
 
   LanguageDescriptor get uiLanguage => _uiLanguage;
   DigitStyle get digitStyle => _digitStyle;
   bool get onboardingComplete => _onboardingComplete;
+
+  /// How large the biodata's own text is (#34).
+  ///
+  /// Remembered rather than reset per export: someone who needs larger type
+  /// needs it every time, and making them reset it on each biodata would be a
+  /// small cruelty aimed at exactly the users it exists for.
+  DocumentTextSize get documentTextSize => _documentTextSize;
 
   /// Whether the Full vs Shareable explanation has been shown. It is the app's
   /// most valuable idea and users will not discover it on their own (9.4), so
@@ -91,6 +101,9 @@ class AppPreferences extends ChangeNotifier {
         orElse: () => MassUnit.kilograms,
       );
     }
+    _documentTextSize = DocumentTextSize.byName(
+      values[_keyDocumentTextSize] as String?,
+    );
     if (values[_keyThemeMode] case final String name) {
       _themeMode = ThemeMode.values.firstWhere(
         (m) => m.name == name,
@@ -143,6 +156,13 @@ class AppPreferences extends ChangeNotifier {
     await _persist();
   }
 
+  Future<void> setDocumentTextSize(DocumentTextSize size) async {
+    if (_documentTextSize == size) return;
+    _documentTextSize = size;
+    notifyListeners();
+    await _persist();
+  }
+
   Future<void> markExportModesExplained() async {
     if (_exportModesExplained) return;
     _exportModesExplained = true;
@@ -166,5 +186,6 @@ class AppPreferences extends ChangeNotifier {
     _keyHeightUnit: _heightUnit.wire,
     _keyWeightUnit: _weightUnit.wire,
     _keyThemeMode: _themeMode.name,
+    _keyDocumentTextSize: _documentTextSize.name,
   });
 }

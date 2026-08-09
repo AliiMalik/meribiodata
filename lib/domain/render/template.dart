@@ -69,6 +69,57 @@ class TemplateStyle {
   final bool showSectionRule;
 
   bool get isMonochrome => accent == null;
+
+  /// The same style with every text size moved by [delta] points.
+  ///
+  /// Gaps and margins are deliberately untouched. That is what keeps a larger
+  /// setting safely inside the template's border artwork — the frame clearance
+  /// is a function of the margin, and the margin does not move. Bigger text
+  /// simply uses more of the column and may run to another page, which is the
+  /// honest consequence and not a layout failure.
+  TemplateStyle withTextDelta(double delta) {
+    if (delta == 0) return this;
+    return TemplateStyle(
+      margin: margin,
+      titleSize: titleSize + delta,
+      sectionTitleSize: sectionTitleSize + delta,
+      labelSize: labelSize + delta,
+      valueSize: valueSize + delta,
+      labelColumnWidth: labelColumnWidth,
+      rowGap: rowGap,
+      sectionGap: sectionGap,
+      ink: ink,
+      mutedInk: mutedInk,
+      rule: rule,
+      accent: accent,
+      sectionTitleUppercase: sectionTitleUppercase,
+      titleCentred: titleCentred,
+      showSectionRule: showSectionRule,
+    );
+  }
+}
+
+/// How large the document's text is (#34).
+///
+/// Three steps of one point each, and no more. The constraint is the artwork:
+/// every decorated template's margin is measured against its own border, so
+/// text that grew appreciably would either overrun the frame or force the
+/// margins to move and spoil the design. One point is enough to matter to a
+/// reader who needs it, and small enough that no template has to be redrawn.
+enum DocumentTextSize {
+  normal(0),
+  large(1),
+  largest(2);
+
+  const DocumentTextSize(this.delta);
+
+  /// Points added to every text size in the template.
+  final double delta;
+
+  static DocumentTextSize byName(String? name) => values.firstWhere(
+    (size) => size.name == name,
+    orElse: () => normal,
+  );
 }
 
 /// Picker headings, in display order.
@@ -162,6 +213,13 @@ abstract class DocumentTemplate {
     ];
   }
 
+  /// This template with its text at [size].
+  ///
+  /// Returns `this` at the normal size, so the common case allocates nothing
+  /// and every existing golden keeps comparing against the identical object.
+  DocumentTemplate resized(DocumentTextSize size) =>
+      size == DocumentTextSize.normal ? this : _ResizedTemplate(this, size);
+
   /// Turns a document into the block stream both renderers consume.
   List<DocBlock> blocks(RenderedDocument document) {
     final blocks = <DocBlock>[];
@@ -208,4 +266,39 @@ abstract class DocumentTemplate {
     blocks.addAll(photoPage(document));
     return blocks;
   }
+}
+
+/// A template wearing a different text size.
+///
+/// Delegates `blocks` to the original rather than reimplementing it, which is
+/// safe precisely because [TemplateStyle.withTextDelta] leaves gaps alone: the
+/// block stream embeds spacer heights, so identical gaps mean an identical
+/// stream. Had the delta touched `rowGap`, this delegation would silently
+/// desync the spacing from the type.
+class _ResizedTemplate extends DocumentTemplate {
+  const _ResizedTemplate(this._base, this._size);
+
+  final DocumentTemplate _base;
+  final DocumentTextSize _size;
+
+  @override
+  String get id => _base.id;
+
+  @override
+  String get name => _base.name;
+
+  @override
+  TemplateCategory get category => _base.category;
+
+  @override
+  bool get isLocked => _base.isLocked;
+
+  @override
+  String? get backgroundAsset => _base.backgroundAsset;
+
+  @override
+  TemplateStyle get style => _base.style.withTextDelta(_size.delta);
+
+  @override
+  List<DocBlock> blocks(RenderedDocument document) => _base.blocks(document);
 }

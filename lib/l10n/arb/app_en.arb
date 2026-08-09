@@ -28,8 +28,6 @@
   "@onboardingSkip": {},
   "onboardingNext": "Next",
   "@onboardingNext": {},
-  "onboardingStart": "Get started",
-  "@onboardingStart": {},
   "homeEmptyTitle": "No biodatas yet",
   "@homeEmptyTitle": {},
   "homeEmptyBody": "Create your first biodata — it takes about ten minutes.",
@@ -40,18 +38,12 @@
   "@settingsUiLanguage": {
     "description": "The language of the interface, as distinct from the document language."
   },
-  "settingsDocumentLanguage": "Biodata language",
-  "@settingsDocumentLanguage": {
-    "description": "The language the biodata document itself is generated in."
-  },
   "settingsDigitStyle": "Number style",
   "@settingsDigitStyle": {},
   "settingsDigitWestern": "1 2 3",
   "@settingsDigitWestern": {},
   "settingsDigitEastern": "١ ٢ ٣",
   "@settingsDigitEastern": {},
-  "settingsDeleteAll": "Delete all my data",
-  "@settingsDeleteAll": {},
   "settingsPrivacyPolicy": "Privacy policy",
   "@settingsPrivacyPolicy": {},
   "settingsLicenses": "Open source licenses",
@@ -164,10 +156,6 @@
   "@schemaResetBody": {},
   "schemaReset": "Reset fields",
   "@schemaReset": {},
-  "schemaFieldLabel": "Label",
-  "@schemaFieldLabel": {},
-  "schemaFieldType": "Type",
-  "@schemaFieldType": {},
   "errorFieldLimit": "A biodata can have at most {max} fields.",
   "@errorFieldLimit": {
     "placeholders": {
@@ -240,8 +228,6 @@
   "@exportImage": {},
   "exportShare": "Share",
   "@exportShare": {},
-  "exportWorking": "Preparing…",
-  "@exportWorking": {},
   "exportSaved": "Saved to {location}",
   "@exportSaved": {
     "placeholders": {
@@ -252,17 +238,6 @@
   },
   "exportFailed": "The export could not be created.",
   "@exportFailed": {},
-  "exportPageOf": "Page {page} of {total}",
-  "@exportPageOf": {
-    "placeholders": {
-      "page": {
-        "type": "int"
-      },
-      "total": {
-        "type": "int"
-      }
-    }
-  },
   "exportDraftLanguageWarning": "The labels for this language are still being reviewed by native speakers.",
   "@exportDraftLanguageWarning": {
     "description": "Shown when the document language's built-in labels are marked draft."
@@ -287,8 +262,6 @@
       }
     }
   },
-  "exportModeFullWarning": "This copy includes private details.",
-  "@exportModeFullWarning": {},
   "exportExplainTitle": "Two ways to share a biodata",
   "@exportExplainTitle": {},
   "exportExplainBody": "A biodata gets forwarded on. You choose what travels with it.\n\nWide sharing leaves out private details like your phone number and exact address, and shows only your city and age. Use it for WhatsApp groups and rishta contacts.\n\nOne family includes everything. Use it when you are sending to a specific family you trust.\n\nYou can mark any field as private yourself — look for the lock icon while filling the form.",
@@ -302,14 +275,6 @@
   "exportWhatsAppDocumentHint": "Tip: in WhatsApp, choose Document rather than Photo to send it at full quality. Sent as a photo, WhatsApp shrinks it.",
   "@exportWhatsAppDocumentHint": {
     "description": "9.1 — most users do not know WhatsApp preserves fidelity for documents but recompresses photos."
-  },
-  "exportSharePages": "{count, plural, =1{1 page} other{{count} pages}}",
-  "@exportSharePages": {
-    "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    }
   },
   "romanInputOn": "Roman typing is on — tap to turn off",
   "@romanInputOn": {},
@@ -351,14 +316,6 @@
       }
     }
   },
-  "backupErrorNotABackup": "That file is not a MeriBiodata backup.",
-  "@backupErrorNotABackup": {},
-  "backupErrorFutureVersion": "This backup was made by a newer version of the app. Update MeriBiodata and try again.",
-  "@backupErrorFutureVersion": {},
-  "backupErrorWrongPassword": "That password does not open this file. If the password is right, the file may have been damaged or altered.",
-  "@backupErrorWrongPassword": {},
-  "backupErrorCorrupt": "That backup file is damaged and cannot be read.",
-  "@backupErrorCorrupt": {},
   "photoTitle": "Photo",
   "@photoTitle": {},
   "photoAdd": "Add a photo",
@@ -472,8 +429,6 @@
       }
     }
   },
-  "syncRestoreNothing": "There is no backup in this Google account.",
-  "@syncRestoreNothing": {},
   "syncPasswordTitle": "Choose a backup password",
   "@syncPasswordTitle": {},
   "syncPasswordExplain": "This password locks your backup. Google cannot read it, and neither can we.",
@@ -549,7 +504,13 @@
   "templateLocked": "Locked",
   "@templateLocked": {},
   "templateUnlockTitle": "Unlock {name}",
-  "@templateUnlockTitle": {"placeholders": {"name": {"type": "String"}}},
+  "@templateUnlockTitle": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
   "templateUnlockBody": "Watch a short ad to use this template for 24 hours — or get Premium and keep every template, with no ads at all.",
   "@templateUnlockBody": {},
   "templateUnlockWatch": "Watch an ad — 24 hours",
@@ -563,13 +524,17 @@
   "templateUnlockUnavailable": "No ad is available just now. Check your connection and try again.",
   "@templateUnlockUnavailable": {},
   "templateUnlockedHoursLeft": "Unlocked · {hours}h left",
-  "@templateUnlockedHoursLeft": {"placeholders": {"hours": {"type": "int"}}},
+  "@templateUnlockedHoursLeft": {
+    "placeholders": {
+      "hours": {
+        "type": "int"
+      }
+    }
+  },
   "templateExpiredTitle": "This template has locked again",
   "@templateExpiredTitle": {},
   "templateExpiredBody": "The 24 hours have run out. Unlock it again, or pick another template — your biodata is untouched either way.",
   "@templateExpiredBody": {},
-  "templateChoose": "Choose a template",
-  "@templateChoose": {},
   "templateChange": "Change template",
   "@templateChange": {},
   "editorNextTemplate": "Next: choose a template",
@@ -591,5 +556,13 @@
   "exportShareText": "Share as text",
   "@exportShareText": {},
   "exportTextCopied": "Biodata copied. Paste it wherever you like.",
-  "@exportTextCopied": {}
+  "@exportTextCopied": {},
+  "exportTextSize": "Text size",
+  "@exportTextSize": {},
+  "exportTextSizeNormal": "Normal",
+  "@exportTextSizeNormal": {},
+  "exportTextSizeLarge": "Larger",
+  "@exportTextSizeLarge": {},
+  "exportTextSizeLargest": "Largest",
+  "@exportTextSizeLargest": {}
 }

@@ -10,16 +10,13 @@
   "onboardingLanguageTitle": "اپنی زبان منتخب کریں",
   "onboardingSkip": "چھوڑ دیں",
   "onboardingNext": "آگے",
-  "onboardingStart": "شروع کریں",
   "homeEmptyTitle": "ابھی کوئی بایوڈیٹا نہیں",
   "homeEmptyBody": "اپنا پہلا بایوڈیٹا بنائیں — اس میں تقریباً دس منٹ لگتے ہیں۔",
   "homeCreate": "بایوڈیٹا بنائیں",
   "settingsUiLanguage": "ایپ کی زبان",
-  "settingsDocumentLanguage": "بایوڈیٹا کی زبان",
   "settingsDigitStyle": "ہندسوں کا انداز",
   "settingsDigitWestern": "1 2 3",
   "settingsDigitEastern": "١ ٢ ٣",
-  "settingsDeleteAll": "میرا تمام ڈیٹا حذف کریں",
   "settingsPrivacyPolicy": "پرائیویسی پالیسی",
   "settingsLicenses": "اوپن سورس لائسنس",
   "settingsAbout": "ایپ کے بارے میں",
@@ -81,8 +78,6 @@
   "schemaResetTitle": "عام خانوں پر واپس جائیں؟",
   "schemaResetBody": "یہ بایوڈیٹا دوبارہ عام خانوں اور حصوں پر چلا جائے گا، اور اس میں لکھی گئی ہر بات مٹ جائے گی۔ آپ کے دوسرے بایوڈیٹا پر کوئی اثر نہیں پڑے گا۔",
   "schemaReset": "خانے دوبارہ ترتیب دیں",
-  "schemaFieldLabel": "عنوان",
-  "schemaFieldType": "قسم",
   "errorFieldLimit": "ایک بایوڈیٹا میں زیادہ سے زیادہ {max} خانے ہو سکتے ہیں۔",
   "@errorFieldLimit": {
     "placeholders": {
@@ -138,7 +133,6 @@
   "exportPdf": "پی ڈی ایف بنائیں",
   "exportImage": "تصویر محفوظ کریں",
   "exportShare": "بھیجیں",
-  "exportWorking": "تیار ہو رہا ہے…",
   "exportSaved": "{location} میں محفوظ ہو گیا",
   "@exportSaved": {
     "placeholders": {
@@ -148,17 +142,6 @@
     }
   },
   "exportFailed": "دستاویز تیار نہیں ہو سکی۔",
-  "exportPageOf": "صفحہ {page} از {total}",
-  "@exportPageOf": {
-    "placeholders": {
-      "page": {
-        "type": "int"
-      },
-      "total": {
-        "type": "int"
-      }
-    }
-  },
   "exportDraftLanguageWarning": "اس زبان کے عنوانات کا ابھی مقامی ماہرین جائزہ لے رہے ہیں۔",
   "exportMode": "یہ کس کے لیے ہے؟",
   "exportModeShareable": "عام اشتراک",
@@ -173,20 +156,11 @@
       }
     }
   },
-  "exportModeFullWarning": "اس نقل میں نجی تفصیلات شامل ہیں۔",
   "exportExplainTitle": "بایوڈیٹا بھیجنے کے دو طریقے",
   "exportExplainBody": "بایوڈیٹا آگے سے آگے پھیلتا ہے۔ اس کے ساتھ کیا جائے گا، یہ آپ طے کرتے ہیں۔\n\nعام اشتراک میں فون نمبر اور مکمل پتہ جیسی نجی تفصیلات شامل نہیں ہوتیں، صرف شہر اور عمر دکھائی جاتی ہے۔ واٹس ایپ گروپس اور رشتہ کروانے والوں کے لیے یہی استعمال کریں۔\n\nایک خاندان میں سب کچھ شامل ہوتا ہے۔ یہ اسی وقت استعمال کریں جب آپ کسی مخصوص، قابلِ اعتماد خاندان کو بھیج رہے ہوں۔\n\nآپ خود بھی کسی خانے کو نجی قرار دے سکتے ہیں — فارم بھرتے وقت تالے کا نشان دیکھیں۔",
   "exportExplainGotIt": "سمجھ گیا",
   "exportWhatsApp": "واٹس ایپ پر بھیجیں",
   "exportWhatsAppDocumentHint": "مشورہ: واٹس ایپ میں تصویر کے بجائے دستاویز (Document) منتخب کریں تاکہ پوری صفائی برقرار رہے۔ تصویر کے طور پر بھیجنے سے واٹس ایپ اسے چھوٹا کر دیتا ہے۔",
-  "exportSharePages": "{count, plural, =1{1 صفحہ} other{{count} صفحات}}",
-  "@exportSharePages": {
-    "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    }
-  },
   "romanInputOn": "رومن ٹائپنگ آن ہے — بند کرنے کے لیے دبائیں",
   "romanInputOff": "رومن میں لکھیں، اردو حاصل کریں",
   "romanInputHint": "جیسے رومن میں لکھتے ہیں ویسے لکھیں — \"Muhammad Ali\" — پھر تجویز پر دبائیں۔ آپ اردو کو خود بھی درست کر سکتے ہیں۔",
@@ -209,10 +183,6 @@
       }
     }
   },
-  "backupErrorNotABackup": "یہ فائل میری بایوڈیٹا کا بیک اپ نہیں ہے۔",
-  "backupErrorFutureVersion": "یہ بیک اپ ایپ کے نئے ورژن سے بنایا گیا ہے۔ ایپ اپ ڈیٹ کر کے دوبارہ کوشش کریں۔",
-  "backupErrorWrongPassword": "یہ پاس ورڈ اس فائل کو نہیں کھولتا۔ اگر پاس ورڈ درست ہے تو ممکن ہے فائل خراب یا تبدیل ہو چکی ہو۔",
-  "backupErrorCorrupt": "یہ بیک اپ فائل خراب ہے اور پڑھی نہیں جا سکتی۔",
   "photoTitle": "تصویر",
   "photoAdd": "تصویر شامل کریں",
   "photoChange": "تصویر تبدیل کریں",
@@ -261,7 +231,6 @@
   "syncNever": "کبھی بیک اپ نہیں ہوا",
   "syncRestore": "ڈرائیو سے بحال کریں",
   "syncRestoreFound": "{count, plural, =1{1 بایوڈیٹا} other{{count} بایوڈیٹا}}، بیک اپ {date}",
-  "syncRestoreNothing": "اس گوگل اکاؤنٹ میں کوئی بیک اپ نہیں۔",
   "syncPasswordTitle": "بیک اپ کا پاس ورڈ منتخب کریں",
   "syncPasswordExplain": "یہ پاس ورڈ آپ کے بیک اپ کو محفوظ کرتا ہے۔ گوگل بھی اسے نہیں پڑھ سکتا، اور ہم بھی نہیں۔",
   "syncErrorNeedsSignIn": "بیک اپ کے لیے گوگل ڈرائیو میں سائن ان کریں۔",
@@ -330,7 +299,13 @@
   "templateLocked": "لاک",
   "@templateLocked": {},
   "templateUnlockTitle": "{name} کھولیں",
-  "@templateUnlockTitle": {"placeholders": {"name": {"type": "String"}}},
+  "@templateUnlockTitle": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
   "templateUnlockBody": "ایک مختصر اشتہار دیکھ کر یہ ٹیمپلیٹ 24 گھنٹے کے لیے استعمال کریں — یا پریمیم لے لیں اور سارے ٹیمپلیٹ ہمیشہ کے لیے، بغیر کسی اشتہار کے۔",
   "@templateUnlockBody": {},
   "templateUnlockWatch": "اشتہار دیکھیں — 24 گھنٹے",
@@ -344,13 +319,17 @@
   "templateUnlockUnavailable": "ابھی کوئی اشتہار دستیاب نہیں۔ انٹرنیٹ دیکھ کر دوبارہ کوشش کریں۔",
   "@templateUnlockUnavailable": {},
   "templateUnlockedHoursLeft": "کھلا ہوا · {hours} گھنٹے باقی",
-  "@templateUnlockedHoursLeft": {"placeholders": {"hours": {"type": "int"}}},
+  "@templateUnlockedHoursLeft": {
+    "placeholders": {
+      "hours": {
+        "type": "int"
+      }
+    }
+  },
   "templateExpiredTitle": "یہ ٹیمپلیٹ دوبارہ لاک ہو گیا ہے",
   "@templateExpiredTitle": {},
   "templateExpiredBody": "24 گھنٹے ختم ہو گئے۔ دوبارہ کھول لیں یا کوئی اور ٹیمپلیٹ چن لیں — آپ کا بائیوڈیٹا محفوظ ہے۔",
   "@templateExpiredBody": {},
-  "templateChoose": "ٹیمپلیٹ منتخب کریں",
-  "@templateChoose": {},
   "templateChange": "ٹیمپلیٹ بدلیں",
   "@templateChange": {},
   "editorNextTemplate": "اگلا: ٹیمپلیٹ منتخب کریں",
@@ -372,5 +351,13 @@
   "exportShareText": "ٹیکسٹ بھیجیں",
   "@exportShareText": {},
   "exportTextCopied": "بائیوڈیٹا کاپی ہو گیا۔ جہاں چاہیں پیسٹ کر لیں۔",
-  "@exportTextCopied": {}
+  "@exportTextCopied": {},
+  "exportTextSize": "لکھائی کا سائز",
+  "@exportTextSize": {},
+  "exportTextSizeNormal": "عام",
+  "@exportTextSizeNormal": {},
+  "exportTextSizeLarge": "بڑا",
+  "@exportTextSizeLarge": {},
+  "exportTextSizeLargest": "سب سے بڑا",
+  "@exportTextSizeLargest": {}
 }

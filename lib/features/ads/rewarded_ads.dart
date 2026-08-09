@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/foundation.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:meribiodata/features/ads/ad_config.dart';
+import 'package:meribiodata/features/ads/ad_pacing.dart';
 import 'package:meribiodata/features/ads/consent_gate.dart';
 
 /// How a rewarded ad ended.
@@ -32,15 +33,24 @@ enum RewardOutcome {
 class RewardedAds {
   RewardedAds({
     required ConsentGate consent,
+    AdPacing? pacing,
     @visibleForTesting RewardedLoader? loader,
   }) : _loader = loader ?? const _MobileAdsRewardedLoader(),
-       // A named parameter cannot be written `this._consent`, so the lint's
-       // suggested fix does not compile.
+       // A named parameter cannot be written `this._pacing` — named parameters
+       // may not start with an underscore — so the lint's suggested fix does
+       // not compile.
+       // ignore: prefer_initializing_formals
+       _pacing = pacing,
+       // Same false positive.
        // ignore: prefer_initializing_formals
        _consent = consent;
 
   final ConsentGate _consent;
   final RewardedLoader _loader;
+
+  /// Shared with the interstitial so the two cannot stack. Optional because
+  /// most tests are about the reward itself, not about pacing.
+  final AdPacing? _pacing;
 
   RewardedHandle? _ready;
   Future<RewardedHandle?>? _loading;
@@ -85,6 +95,9 @@ class RewardedAds {
       _ready = null;
       try {
         final earned = await handle.show();
+        // Recorded whether or not the reward was earned: the user saw a
+        // full-screen ad either way, and that is what the cooldown is about.
+        await _pacing?.recordFullScreenAd();
         return earned ? RewardOutcome.earned : RewardOutcome.dismissed;
       } on Object catch (error) {
         debugPrint('Rewarded ad failed to present: $error');

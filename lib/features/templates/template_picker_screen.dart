@@ -132,29 +132,46 @@ class _TemplatePickerScreenState extends State<TemplatePickerScreen> {
                 ),
               ),
             ),
-            body: ListView(
-              padding: const EdgeInsets.all(AppSpacing.lg),
-              children: [
+            // Slivers rather than a ListView of shrink-wrapped grids. A
+            // shrink-wrapped grid lays out every child to measure itself, so
+            // the old version rendered all seventeen biodatas at once — fine
+            // at four templates, an NFR-2 problem at seventeen. A SliverGrid
+            // builds only what is on screen.
+            body: CustomScrollView(
+              slivers: [
                 for (final category in TemplateCategory.values)
                   if (Templates.inCategory(category) case final templates
                       when templates.isNotEmpty) ...[
-                    Padding(
-                      padding: const EdgeInsets.only(bottom: AppSpacing.md),
-                      child: Text(
-                        _categoryName(l10n, category),
-                        style: Theme.of(context).textTheme.titleMedium,
+                    SliverPadding(
+                      padding: const EdgeInsets.fromLTRB(
+                        AppSpacing.lg,
+                        AppSpacing.lg,
+                        AppSpacing.lg,
+                        AppSpacing.md,
+                      ),
+                      sliver: SliverToBoxAdapter(
+                        child: Text(
+                          _categoryName(l10n, category),
+                          style: Theme.of(context).textTheme.titleMedium,
+                        ),
                       ),
                     ),
-                    GridView.count(
-                      shrinkWrap: true,
-                      physics: const NeverScrollableScrollPhysics(),
-                      crossAxisCount: 2,
-                      childAspectRatio: 0.62,
-                      mainAxisSpacing: AppSpacing.lg,
-                      crossAxisSpacing: AppSpacing.lg,
-                      children: [
-                        for (final template in templates)
-                          _TemplateCard(
+                    SliverPadding(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: AppSpacing.lg,
+                      ),
+                      sliver: SliverGrid.builder(
+                        gridDelegate:
+                            const SliverGridDelegateWithFixedCrossAxisCount(
+                              crossAxisCount: 2,
+                              childAspectRatio: 0.62,
+                              mainAxisSpacing: AppSpacing.lg,
+                              crossAxisSpacing: AppSpacing.lg,
+                            ),
+                        itemCount: templates.length,
+                        itemBuilder: (context, index) {
+                          final template = templates[index];
+                          return _TemplateCard(
                             template: template,
                             isSelected: template.id == selected,
                             usable: canUseTemplate(
@@ -172,19 +189,24 @@ class _TemplatePickerScreenState extends State<TemplatePickerScreen> {
                               maxWidth: 150,
                             ),
                             onTap: () => _select(template),
-                          ),
-                      ],
+                          );
+                        },
+                      ),
                     ),
-                    const SizedBox(height: AppSpacing.xl),
                   ],
 
                 // The way out of watching ads, where the locks are.
                 if (!isPremium)
-                  Center(
-                    child: TextButton.icon(
-                      onPressed: () => context.push(AppRoutes.premium),
-                      icon: const Icon(Icons.workspace_premium_outlined),
-                      label: Text(l10n.templateUnlockPremium),
+                  SliverPadding(
+                    padding: const EdgeInsets.all(AppSpacing.xl),
+                    sliver: SliverToBoxAdapter(
+                      child: Center(
+                        child: TextButton.icon(
+                          onPressed: () => context.push(AppRoutes.premium),
+                          icon: const Icon(Icons.workspace_premium_outlined),
+                          label: Text(l10n.templateUnlockPremium),
+                        ),
+                      ),
                     ),
                   ),
               ],
@@ -247,9 +269,12 @@ class _TemplateCard extends StatelessWidget {
               child: Stack(
                 alignment: Alignment.center,
                 children: [
+                  // RepaintBoundary: each preview is a fully laid-out A4
+                  // document, so without this a selection change repaints
+                  // every visible thumbnail rather than the two that altered.
                   // Never dimmed or blurred: the design is the thing being
                   // sold, so it has to be visible to be wanted.
-                  Center(child: preview),
+                  RepaintBoundary(child: Center(child: preview)),
                   if (!usable)
                     Positioned(
                       right: 0,
