@@ -366,5 +366,11 @@
   "templateCategoryGeometric": "ہندسی",
   "@templateCategoryGeometric": {},
   "templateCategoryReligious": "مذہبی",
-  "@templateCategoryReligious": {}
+  "@templateCategoryReligious": {},
+  "exportCopyText": "ٹیکسٹ کاپی کریں",
+  "@exportCopyText": {},
+  "exportShareText": "ٹیکسٹ بھیجیں",
+  "@exportShareText": {},
+  "exportTextCopied": "بائیوڈیٹا کاپی ہو گیا۔ جہاں چاہیں پیسٹ کر لیں۔",
+  "@exportTextCopied": {}
 }

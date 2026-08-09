@@ -585,5 +585,11 @@
   "templateCategoryGeometric": "Geometric",
   "@templateCategoryGeometric": {},
   "templateCategoryReligious": "Religious",
-  "@templateCategoryReligious": {}
+  "@templateCategoryReligious": {},
+  "exportCopyText": "Copy as text",
+  "@exportCopyText": {},
+  "exportShareText": "Share as text",
+  "@exportShareText": {},
+  "exportTextCopied": "Biodata copied. Paste it wherever you like.",
+  "@exportTextCopied": {}
 }

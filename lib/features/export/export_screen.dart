@@ -1,7 +1,7 @@
 import 'dart:async';
-import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
 import 'package:meribiodata/core/platform/platform_bridge.dart';
 import 'package:meribiodata/core/preferences/app_preferences.dart';
@@ -16,6 +16,7 @@ import 'package:meribiodata/domain/render/template.dart';
 import 'package:meribiodata/domain/render/templates.dart';
 import 'package:meribiodata/features/editor/profile_editor_controller.dart';
 import 'package:meribiodata/features/export/export_service.dart';
+import 'package:meribiodata/features/export/plain_text.dart';
 import 'package:meribiodata/features/export/widgets/document_preview.dart';
 import 'package:meribiodata/features/export/widgets/export_mode_selector.dart';
 import 'package:meribiodata/features/photo/photo_store.dart';
@@ -25,6 +26,7 @@ import 'package:meribiodata/features/templates/unlock_sheet.dart';
 import 'package:meribiodata/l10n/generated/app_localizations.dart';
 import 'package:meribiodata/l10n/language_descriptor.dart';
 import 'package:provider/provider.dart';
+import 'package:share_plus/share_plus.dart';
 
 /// §7.6 — Preview & Export.
 ///
@@ -130,6 +132,27 @@ class _ExportScreenState extends State<ExportScreen> {
     }
     return showTemplateUnlockSheet(context, template, expired: true);
   }
+
+  /// Puts the biodata on the clipboard as text (#35).
+  ///
+  /// Not routed through [_run]: nothing is rendered, nothing is written to
+  /// disk, and there is no file for a locked template to gate. The text is
+  /// built from the same document the preview shows, so Shareable masking is
+  /// already applied.
+  Future<void> _copyText(RenderedDocument document) async {
+    final l10n = AppL10n.of(context);
+    final messenger = ScaffoldMessenger.of(context);
+
+    await Clipboard.setData(
+      ClipboardData(text: documentAsPlainText(document)),
+    );
+    messenger.showSnackBar(SnackBar(content: Text(l10n.exportTextCopied)));
+  }
+
+  Future<void> _shareText(RenderedDocument document) =>
+      SharePlus.instance.share(
+        ShareParams(text: documentAsPlainText(document)),
+      );
 
   Future<void> _run(
     Future<ExportResult> Function() job, {
@@ -350,6 +373,32 @@ class _ExportScreenState extends State<ExportScreen> {
                           ? l10n.exportWhatsApp
                           : l10n.exportShare,
                     ),
+                  ),
+                  const SizedBox(height: AppSpacing.sm),
+
+                  // Text, not a file (#35). A biodata pasted into a chat can be
+                  // read without downloading anything, searched, and quoted —
+                  // and on a slow connection it arrives when a 2 MB image will
+                  // not. Built from the same rendered document as the PDF, so
+                  // Shareable masking applies identically.
+                  Row(
+                    children: [
+                      Expanded(
+                        child: OutlinedButton.icon(
+                          onPressed: _busy ? null : () => _copyText(document),
+                          icon: const Icon(Icons.copy_outlined),
+                          label: Text(l10n.exportCopyText),
+                        ),
+                      ),
+                      const SizedBox(width: AppSpacing.sm),
+                      Expanded(
+                        child: OutlinedButton.icon(
+                          onPressed: _busy ? null : () => _shareText(document),
+                          icon: const Icon(Icons.short_text),
+                          label: Text(l10n.exportShareText),
+                        ),
+                      ),
+                    ],
                   ),
                   if (_whatsAppAvailable) ...[
                     const SizedBox(height: AppSpacing.sm),
