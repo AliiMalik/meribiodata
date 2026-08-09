@@ -1,7 +1,9 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:meribiodata/core/preferences/app_preferences.dart';
+import 'package:meribiodata/core/router/app_routes.dart';
 import 'package:meribiodata/core/theme/app_colors.dart';
 import 'package:meribiodata/core/theme/app_spacing.dart';
 import 'package:meribiodata/data/bundled_labels.dart';
@@ -9,8 +11,12 @@ import 'package:meribiodata/data/profile_repository.dart';
 import 'package:meribiodata/domain/render/document_builder.dart';
 import 'package:meribiodata/domain/render/template.dart';
 import 'package:meribiodata/domain/render/templates.dart';
+import 'package:meribiodata/features/ads/rewarded_ads.dart';
 import 'package:meribiodata/features/editor/profile_editor_controller.dart';
 import 'package:meribiodata/features/export/widgets/document_preview.dart';
+import 'package:meribiodata/features/premium/entitlements.dart';
+import 'package:meribiodata/features/templates/template_unlocks.dart';
+import 'package:meribiodata/features/templates/unlock_sheet.dart';
 import 'package:meribiodata/l10n/generated/app_localizations.dart';
 import 'package:provider/provider.dart';
 
@@ -18,7 +24,8 @@ import 'package:provider/provider.dart';
 ///
 /// The thumbnails are the real renderer at a small scale rather than shipped
 /// images, so a template can never look different in the picker from how it
-/// exports.
+/// exports. Locked templates render at full fidelity too (D19): the user sees
+/// their own biodata in the design before deciding whether it is worth an ad.
 class TemplatePickerScreen extends StatefulWidget {
   const TemplatePickerScreen({required this.profileId, super.key});
 
@@ -38,6 +45,10 @@ class _TemplatePickerScreenState extends State<TemplatePickerScreen> {
   void initState() {
     super.initState();
     unawaited(_controller.load());
+    unawaited(context.read<TemplateUnlocks>().load());
+    // Fetched now rather than when the sheet opens, so tapping a locked
+    // template usually shows an ad immediately instead of a spinner.
+    context.read<RewardedAds>().warmUp();
   }
 
   @override
@@ -45,6 +56,23 @@ class _TemplatePickerScreenState extends State<TemplatePickerScreen> {
     unawaited(_controller.flush());
     _controller.dispose();
     super.dispose();
+  }
+
+  Future<void> _select(DocumentTemplate template) async {
+    final controller = context.read<ProfileEditorController>();
+    final unlocks = context.read<TemplateUnlocks>();
+    final isPremium = context.read<Entitlements>().isPremium;
+
+    if (canUseTemplate(template, isPremium: isPremium, unlocks: unlocks)) {
+      controller.setTemplate(template.id);
+      return;
+    }
+
+    final unlocked = await showTemplateUnlockSheet(context, template);
+    // Selecting only after a successful unlock. Selecting first and unlocking
+    // afterwards would leave the profile pointing at a template it cannot
+    // export if the ad is abandoned.
+    if (unlocked) controller.setTemplate(template.id);
   }
 
   @override
@@ -70,26 +98,94 @@ class _TemplatePickerScreenState extends State<TemplatePickerScreen> {
           ).build(profile);
           final selected = profile.templateId ?? Templates.defaultId;
 
+          // Watched, not read: buying Premium or finishing an ad must make the
+          // locks fall away without leaving and re-entering the screen.
+          final isPremium = context.watch<Entitlements>().isPremium;
+          final unlocks = context.watch<TemplateUnlocks>();
+
           return Scaffold(
             appBar: AppBar(title: Text(l10n.templatePickerTitle)),
-            body: GridView.count(
-              padding: const EdgeInsets.all(AppSpacing.lg),
-              crossAxisCount: 2,
-              childAspectRatio: 0.62,
-              mainAxisSpacing: AppSpacing.lg,
-              crossAxisSpacing: AppSpacing.lg,
-              children: [
-                for (final template in Templates.all)
-                  _TemplateCard(
-                    template: template,
-                    isSelected: template.id == selected,
-                    preview: DocumentPreview(
-                      document: document,
-                      template: template,
-                      page: PageSpec.a4,
-                      maxWidth: 150,
+            // The picker is now a step on the way to export rather than a
+            // detour off the editor (D19), so it needs a way onward of its own.
+            bottomNavigationBar: Material(
+              color: Theme.of(context).colorScheme.surface,
+              child: SafeArea(
+                top: false,
+                child: Padding(
+                  padding: const EdgeInsets.all(AppSpacing.lg),
+                  child: SizedBox(
+                    width: double.infinity,
+                    child: FilledButton.icon(
+                      onPressed: () async {
+                        await controller.flush();
+                        if (context.mounted) {
+                          await context.push(
+                            AppRoutes.exportFor(profile.id),
+                          );
+                        }
+                        await controller.load();
+                      },
+                      icon: const Icon(Icons.visibility_outlined),
+                      label: Text(l10n.exportTitle),
                     ),
-                    onTap: () => controller.setTemplate(template.id),
+                  ),
+                ),
+              ),
+            ),
+            body: ListView(
+              padding: const EdgeInsets.all(AppSpacing.lg),
+              children: [
+                for (final category in TemplateCategory.values)
+                  if (Templates.inCategory(category) case final templates
+                      when templates.isNotEmpty) ...[
+                    Padding(
+                      padding: const EdgeInsets.only(bottom: AppSpacing.md),
+                      child: Text(
+                        _categoryName(l10n, category),
+                        style: Theme.of(context).textTheme.titleMedium,
+                      ),
+                    ),
+                    GridView.count(
+                      shrinkWrap: true,
+                      physics: const NeverScrollableScrollPhysics(),
+                      crossAxisCount: 2,
+                      childAspectRatio: 0.62,
+                      mainAxisSpacing: AppSpacing.lg,
+                      crossAxisSpacing: AppSpacing.lg,
+                      children: [
+                        for (final template in templates)
+                          _TemplateCard(
+                            template: template,
+                            isSelected: template.id == selected,
+                            usable: canUseTemplate(
+                              template,
+                              isPremium: isPremium,
+                              unlocks: unlocks,
+                            ),
+                            hoursLeft: unlocks
+                                .remainingFor(template.id)
+                                ?.inHours,
+                            preview: DocumentPreview(
+                              document: document,
+                              template: template,
+                              page: PageSpec.a4,
+                              maxWidth: 150,
+                            ),
+                            onTap: () => _select(template),
+                          ),
+                      ],
+                    ),
+                    const SizedBox(height: AppSpacing.xl),
+                  ],
+
+                // The way out of watching ads, where the locks are.
+                if (!isPremium)
+                  Center(
+                    child: TextButton.icon(
+                      onPressed: () => context.push(AppRoutes.premium),
+                      icon: const Icon(Icons.workspace_premium_outlined),
+                      label: Text(l10n.templateUnlockPremium),
+                    ),
                   ),
               ],
             ),
@@ -98,24 +194,39 @@ class _TemplatePickerScreenState extends State<TemplatePickerScreen> {
       ),
     );
   }
+
+  static String _categoryName(AppL10n l10n, TemplateCategory category) =>
+      switch (category) {
+        TemplateCategory.standard => l10n.templateCategoryStandard,
+        TemplateCategory.classic => l10n.templateCategoryClassic,
+        TemplateCategory.creative => l10n.templateCategoryCreative,
+        TemplateCategory.thematic => l10n.templateCategoryThematic,
+        TemplateCategory.geometric => l10n.templateCategoryGeometric,
+        TemplateCategory.religious => l10n.templateCategoryReligious,
+      };
 }
 
 class _TemplateCard extends StatelessWidget {
   const _TemplateCard({
     required this.template,
     required this.isSelected,
+    required this.usable,
+    required this.hoursLeft,
     required this.preview,
     required this.onTap,
   });
 
   final DocumentTemplate template;
   final bool isSelected;
+  final bool usable;
+  final int? hoursLeft;
   final Widget preview;
   final VoidCallback onTap;
 
   @override
   Widget build(BuildContext context) {
     final l10n = AppL10n.of(context);
+    final text = Theme.of(context).textTheme;
 
     return InkWell(
       onTap: onTap,
@@ -132,7 +243,33 @@ class _TemplateCard extends StatelessWidget {
         ),
         child: Column(
           children: [
-            Expanded(child: Center(child: preview)),
+            Expanded(
+              child: Stack(
+                alignment: Alignment.center,
+                children: [
+                  // Never dimmed or blurred: the design is the thing being
+                  // sold, so it has to be visible to be wanted.
+                  Center(child: preview),
+                  if (!usable)
+                    Positioned(
+                      right: 0,
+                      bottom: 0,
+                      child: Container(
+                        padding: const EdgeInsets.all(AppSpacing.xs),
+                        decoration: const BoxDecoration(
+                          color: AppColors.accentGold,
+                          shape: BoxShape.circle,
+                        ),
+                        child: const Icon(
+                          Icons.lock,
+                          size: 16,
+                          color: AppColors.onAccentGold,
+                        ),
+                      ),
+                    ),
+                ],
+              ),
+            ),
             const SizedBox(height: AppSpacing.sm),
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
@@ -148,16 +285,30 @@ class _TemplateCard extends StatelessWidget {
                 Flexible(
                   child: Text(
                     template.name,
-                    style: Theme.of(context).textTheme.titleMedium,
+                    style: text.titleMedium,
                     textAlign: TextAlign.center,
                   ),
                 ),
               ],
             ),
-            if (template.isMonochrome)
+            if (!usable)
+              Text(
+                l10n.templateLocked,
+                style: text.bodySmall,
+                textAlign: TextAlign.center,
+              )
+            // Shown only for an ad-unlock, which runs out. Premium and free
+            // templates have nothing to count down.
+            else if (hoursLeft case final int hours)
+              Text(
+                l10n.templateUnlockedHoursLeft(hours),
+                style: text.bodySmall,
+                textAlign: TextAlign.center,
+              )
+            else if (template.isMonochrome)
               Text(
                 l10n.templateMonochrome,
-                style: Theme.of(context).textTheme.bodySmall,
+                style: text.bodySmall,
                 textAlign: TextAlign.center,
               ),
           ],

@@ -35,6 +35,9 @@ class ClassicTemplate extends DocumentTemplate {
   String get name => 'Classic';
 
   @override
+  TemplateCategory get category => TemplateCategory.classic;
+
+  @override
   TemplateStyle get style => const TemplateStyle(
     margin: 48,
     titleSize: 22,
@@ -66,6 +69,9 @@ class PrintShopTemplate extends DocumentTemplate {
   String get name => 'Print Shop (black & white)';
 
   @override
+  TemplateCategory get category => TemplateCategory.standard;
+
+  @override
   TemplateStyle get style => const TemplateStyle(
     margin: 40,
     titleSize: 20,
@@ -91,6 +97,18 @@ class ElegantTemplate extends DocumentTemplate {
 
   @override
   String get name => 'Elegant';
+
+  @override
+  TemplateCategory get category => TemplateCategory.creative;
+
+  /// The first locked template (D19).
+  ///
+  /// Provisional: it is the nicest of the four shipped layouts, so it is the
+  /// honest one to put behind the lock while the commissioned artwork is still
+  /// being made. Which templates are locked is data, and this flag is expected
+  /// to move once the decorated designs land.
+  @override
+  bool get isLocked => true;
 
   @override
   TemplateStyle get style => const TemplateStyle(
@@ -121,6 +139,9 @@ class CompactTemplate extends DocumentTemplate {
 
   @override
   String get name => 'Compact';
+
+  @override
+  TemplateCategory get category => TemplateCategory.standard;
 
   @override
   TemplateStyle get style => const TemplateStyle(
@@ -191,4 +212,15 @@ abstract final class Templates {
 
   static DocumentTemplate byId(String? id) =>
       all.firstWhere((t) => t.id == id, orElse: () => classic);
+
+  /// Everything a user can reach without watching an ad or paying.
+  ///
+  /// There must always be at least one, and it must always include the
+  /// default: an app whose core action is gated behind an ad is a different
+  /// and much worse app (D19).
+  static List<DocumentTemplate> get free =>
+      all.where((t) => !t.isLocked).toList();
+
+  static List<DocumentTemplate> inCategory(TemplateCategory category) =>
+      all.where((t) => t.category == category).toList();
 }

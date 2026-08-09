@@ -100,4 +100,12 @@ abstract final class AdConfig {
   /// rule is absolute: **an ad never prevents or delays making a biodata.** A
   /// slow network must cost the impression, not the user's action.
   static const interstitialLoadTimeout = Duration(milliseconds: 1500);
+
+  /// How long a *rewarded* ad may take to arrive.
+  ///
+  /// Much longer than the interstitial's budget, because the trade runs the
+  /// other way. An interstitial nobody asked for should be dropped rather than
+  /// waited on; a rewarded ad was requested by someone who wants the unlock,
+  /// and giving up after a second and a half would simply deny them it.
+  static const rewardedLoadTimeout = Duration(seconds: 10);
 }

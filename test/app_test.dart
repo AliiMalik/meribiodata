@@ -9,10 +9,12 @@ import 'package:meribiodata/data/bundled_roman_urdu.dart';
 import 'package:meribiodata/data/profile_repository.dart';
 import 'package:meribiodata/domain/text/roman_urdu.dart';
 import 'package:meribiodata/features/ads/consent_gate.dart';
+import 'package:meribiodata/features/ads/rewarded_ads.dart';
 import 'package:meribiodata/features/premium/premium_prompts.dart';
 import 'package:meribiodata/features/sync/backup_service.dart';
 import 'package:meribiodata/features/sync/sync_controller.dart';
 import 'package:meribiodata/features/sync/sync_service.dart';
+import 'package:meribiodata/features/templates/template_unlocks.dart';
 import 'package:meribiodata/l10n/generated/app_localizations.dart';
 import 'package:meribiodata/l10n/language_descriptor.dart';
 
@@ -74,6 +76,8 @@ void main() {
         interstitials: silentInterstitials(store, consent),
         entitlements: freeEntitlements(store),
         premiumPrompts: PremiumPrompts(store),
+        rewarded: RewardedAds(consent: consent),
+        templateUnlocks: TemplateUnlocks(store),
         romanUrdu: romanUrdu,
         sync: buildSync(store),
       ),
@@ -98,6 +102,8 @@ void main() {
         interstitials: silentInterstitials(store, consent),
         entitlements: freeEntitlements(store),
         premiumPrompts: PremiumPrompts(store),
+        rewarded: RewardedAds(consent: consent),
+        templateUnlocks: TemplateUnlocks(store),
         romanUrdu: romanUrdu,
         sync: buildSync(store),
       ),
@@ -124,6 +130,8 @@ void main() {
         interstitials: silentInterstitials(store, consent),
         entitlements: freeEntitlements(store),
         premiumPrompts: PremiumPrompts(store),
+        rewarded: RewardedAds(consent: consent),
+        templateUnlocks: TemplateUnlocks(store),
         romanUrdu: romanUrdu,
         sync: buildSync(store),
       ),
@@ -154,6 +162,8 @@ void main() {
         interstitials: silentInterstitials(store, consent),
         entitlements: freeEntitlements(store),
         premiumPrompts: PremiumPrompts(store),
+        rewarded: RewardedAds(consent: consent),
+        templateUnlocks: TemplateUnlocks(store),
         romanUrdu: romanUrdu,
         sync: buildSync(store),
       ),

@@ -4,6 +4,7 @@ import 'package:meribiodata/core/storage/local_store.dart';
 import 'package:meribiodata/features/ads/ad_pacing.dart';
 import 'package:meribiodata/features/ads/consent_gate.dart';
 import 'package:meribiodata/features/ads/interstitial_ads.dart';
+import 'package:meribiodata/features/ads/rewarded_ads.dart';
 import 'package:meribiodata/features/premium/billing.dart';
 import 'package:meribiodata/features/premium/entitlements.dart';
 import 'package:meribiodata/features/premium/premium_products.dart';
@@ -128,3 +129,35 @@ Entitlements freeEntitlements(LocalStore store) => Entitlements(
   store: store,
   verificationWindow: Duration.zero,
 );
+
+/// A rewarded loader that never touches Google's SDK.
+class FakeRewardedLoader implements RewardedLoader {
+  FakeRewardedLoader({this.hasFill = true, this.earnsReward = true});
+
+  bool hasFill;
+
+  /// False models the ordinary case of somebody closing the ad early — which
+  /// must never grant anything.
+  bool earnsReward;
+
+  int loadCount = 0;
+
+  @override
+  Future<RewardedHandle?> load(String unitId) async {
+    loadCount++;
+    return hasFill ? FakeRewardedHandle(earnsReward: earnsReward) : null;
+  }
+}
+
+class FakeRewardedHandle implements RewardedHandle {
+  FakeRewardedHandle({required this.earnsReward});
+
+  final bool earnsReward;
+  bool disposed = false;
+
+  @override
+  Future<bool> show() async => earnsReward;
+
+  @override
+  void dispose() => disposed = true;
+}

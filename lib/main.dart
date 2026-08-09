@@ -12,6 +12,7 @@ import 'package:meribiodata/domain/text/roman_urdu.dart';
 import 'package:meribiodata/features/ads/ad_pacing.dart';
 import 'package:meribiodata/features/ads/consent_gate.dart';
 import 'package:meribiodata/features/ads/interstitial_ads.dart';
+import 'package:meribiodata/features/ads/rewarded_ads.dart';
 import 'package:meribiodata/features/premium/billing.dart';
 import 'package:meribiodata/features/premium/entitlements.dart';
 import 'package:meribiodata/features/premium/premium_prompts.dart';
@@ -20,6 +21,7 @@ import 'package:meribiodata/features/sync/drive_auth.dart';
 import 'package:meribiodata/features/sync/sync_config.dart';
 import 'package:meribiodata/features/sync/sync_controller.dart';
 import 'package:meribiodata/features/sync/sync_service.dart';
+import 'package:meribiodata/features/templates/template_unlocks.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -80,6 +82,8 @@ Future<void> _start() async {
       interstitials: interstitials,
       entitlements: entitlements,
       premiumPrompts: PremiumPrompts(store),
+      rewarded: RewardedAds(consent: consent),
+      templateUnlocks: TemplateUnlocks(store),
       romanUrdu: RomanUrduTransliterator(
         await BundledRomanUrduDictionary.load(),
       ),

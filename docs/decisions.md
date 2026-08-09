@@ -469,6 +469,62 @@ a biodata saved when Letter was selectable opens on A4 with everything else inta
 
 ---
 
+## D19 — Locked templates, and a straight line from form to export
+
+**Date:** 2026-08-08 · **Decided by:** owner · **Milestone:** M6 (#32)
+
+**Two changes that turned out to be one.**
+
+### The flow
+
+The only route from the form to the export screen was an eye icon in the app
+bar, and nobody found it. It is replaced by a filled bar across the bottom of
+the editor — *Next: choose a template* — with the template picker now a step on
+the way rather than a detour. **Editor → Template → Export.**
+
+The bar sits **above** the ad banner, not beside it. The way forward through an
+app must never be something the user has to distinguish from an advertisement.
+That costs about 50dp of vertical space on small phones, and it was chosen with
+that cost understood.
+
+### The lock
+
+A template may be marked `isLocked`. Locked templates still render in the
+picker **at full fidelity, with the user's own data** — no blur, no dimming.
+Hiding the design would remove the only reason anyone would watch an ad for it.
+
+Tapping one opens a sheet with two doors: watch a rewarded ad, or buy Premium.
+Both are shown together, because seeing what it costs to stop watching ads is
+what makes Premium concrete.
+
+**One ad unlocks one template for 24 hours**, and on expiry it locks again
+everywhere — including for a biodata already using it, which the export screen
+enforces rather than trusting the picker to have done.
+
+I recommended against both halves of that: one ad unlocking *all* locked
+templates, and letting an already-chosen template keep working. The owner chose
+the stricter rule for revenue, and that is their call. The mitigation is that an
+expired template never dead-ends anybody — the export path offers the same two
+doors, so it is one tap rather than a wall.
+
+**The reward is granted from the SDK's reward callback alone**, never from "the
+ad closed", which also fires for somebody who skipped out after two seconds.
+
+**Free templates are never gated**, and the default is always among them. A test
+asserts both. An app whose core action needs an ad is a different, worse app.
+
+**Clock tampering is accepted.** Expiry is an absolute instant, so winding the
+phone clock back keeps an unlock alive longer in real time. Refusing to trust a
+moved clock would punish anyone crossing a timezone, and the prize for cheating
+is one skipped ad. What is *not* accepted is the UI advertising the fact, so the
+remaining-time display is clamped to 24 hours.
+
+**Artwork is still to come.** `Elegant` is marked locked provisionally so the
+whole path is exercised end to end; which templates are locked is data and is
+expected to change once the commissioned designs land.
+
+---
+
 ## Still open
 
 | # | Question | Blocks |

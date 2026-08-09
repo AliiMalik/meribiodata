@@ -20,6 +20,8 @@ import 'package:meribiodata/features/export/widgets/document_preview.dart';
 import 'package:meribiodata/features/export/widgets/export_mode_selector.dart';
 import 'package:meribiodata/features/photo/photo_store.dart';
 import 'package:meribiodata/features/premium/entitlements.dart';
+import 'package:meribiodata/features/templates/template_unlocks.dart';
+import 'package:meribiodata/features/templates/unlock_sheet.dart';
 import 'package:meribiodata/l10n/generated/app_localizations.dart';
 import 'package:meribiodata/l10n/language_descriptor.dart';
 import 'package:provider/provider.dart';
@@ -112,11 +114,33 @@ class _ExportScreenState extends State<ExportScreen> {
     super.dispose();
   }
 
+  /// Blocks an export whose template has locked again (D19).
+  ///
+  /// An ad unlock lasts 24 hours and then the template locks everywhere,
+  /// including for a biodata already using it. That rule is strict by choice,
+  /// so this is careful never to dead-end anyone: it offers the same two doors
+  /// the picker does, and returns true the moment either one opens.
+  Future<bool> _templateIsUsable() async {
+    final template = Templates.byId(_controller.profile?.templateId);
+    final unlocks = context.read<TemplateUnlocks>();
+    final isPremium = context.read<Entitlements>().isPremium;
+
+    if (canUseTemplate(template, isPremium: isPremium, unlocks: unlocks)) {
+      return true;
+    }
+    return showTemplateUnlockSheet(context, template, expired: true);
+  }
+
   Future<void> _run(
     Future<ExportResult> Function() job, {
     _ShareTarget share = _ShareTarget.none,
   }) async {
     if (_busy) return;
+    // Checked here rather than only on the buttons: this is the one path every
+    // export, share and WhatsApp send goes through.
+    if (!await _templateIsUsable()) return;
+    if (!mounted) return;
+
     setState(() => _busy = true);
 
     final l10n = AppL10n.of(context);

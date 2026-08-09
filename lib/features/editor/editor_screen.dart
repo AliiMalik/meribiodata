@@ -104,19 +104,6 @@ class _EditorBody extends StatelessWidget {
               onPressed: () =>
                   context.push(AppRoutes.schemaEditorFor(profile.id)),
             ),
-            IconButton(
-              tooltip: l10n.exportTitle,
-              icon: const Icon(Icons.visibility_outlined),
-              onPressed: () async {
-                // Flush first: the export reads the saved profile, so an
-                // unsaved keystroke would be missing from the document.
-                await controller.flush();
-                if (context.mounted) {
-                  await context.push(AppRoutes.exportFor(profile.id));
-                }
-                await controller.load();
-              },
-            ),
           ],
           bottom: PreferredSize(
             preferredSize: const Size.fromHeight(4),
@@ -127,9 +114,29 @@ class _EditorBody extends StatelessWidget {
             ),
           ),
         ),
+        // Two stacked bars. The next step sits above the ad, never beside it:
+        // the way forward through the app must not be something a user has to
+        // distinguish from an advertisement (D19).
+        //
         // Reserved space below the form, never over it (§8). The form scrolls
-        // above the banner rather than under it, so no field is ever covered.
-        bottomNavigationBar: const BannerSlot(screenId: 'editor'),
+        // above both rather than under them, so no field is ever covered.
+        bottomNavigationBar: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            _NextStepBar(
+              onNext: () async {
+                // Flushed first: the picker renders the saved profile, so an
+                // unsaved keystroke would be missing from every thumbnail.
+                await controller.flush();
+                if (context.mounted) {
+                  await context.push(AppRoutes.templatePickerFor(profile.id));
+                }
+                await controller.load();
+              },
+            ),
+            const BannerSlot(screenId: 'editor'),
+          ],
+        ),
         body: ListView(
           padding: const EdgeInsets.all(AppSpacing.lg),
           children: [
@@ -333,4 +340,44 @@ class _Problem extends StatelessWidget {
       ),
     ),
   );
+}
+
+/// The way out of the form (D19).
+///
+/// Replaces an eye icon in the app bar, which was the only route to the export
+/// screen and which nobody found — a filled bar at the bottom of the page is
+/// where a person who has just finished typing actually looks.
+class _NextStepBar extends StatelessWidget {
+  const _NextStepBar({required this.onNext});
+
+  final Future<void> Function() onNext;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppL10n.of(context);
+
+    return Material(
+      color: Theme.of(context).colorScheme.surface,
+      child: SafeArea(
+        top: false,
+        bottom: false,
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(
+            AppSpacing.lg,
+            AppSpacing.sm,
+            AppSpacing.lg,
+            AppSpacing.sm,
+          ),
+          child: SizedBox(
+            width: double.infinity,
+            child: FilledButton.icon(
+              onPressed: () => unawaited(onNext()),
+              icon: const Icon(Icons.arrow_forward),
+              label: Text(l10n.editorNextTemplate),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
 }

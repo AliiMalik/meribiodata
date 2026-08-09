@@ -71,6 +71,19 @@ class TemplateStyle {
   bool get isMonochrome => accent == null;
 }
 
+/// Picker headings, in display order.
+///
+/// Purely presentational grouping. Nothing about a category implies whether its
+/// templates are locked — that is per-template, so a category can hold both.
+enum TemplateCategory {
+  standard,
+  classic,
+  creative,
+  thematic,
+  geometric,
+  religious,
+}
+
 /// A template is layout, typography and ornament — never a fixed field list.
 ///
 /// It renders whatever schema exists (§6.4), so it must survive zero optional
@@ -85,6 +98,17 @@ abstract class DocumentTemplate {
   /// Shown in the picker. Not translated in M3 — template names are brand-ish
   /// and the picker shows a live thumbnail anyway.
   String get name;
+
+  /// Which heading the picker files this under.
+  TemplateCategory get category => TemplateCategory.standard;
+
+  /// Whether this one carries a lock in the picker (D19).
+  ///
+  /// A locked template is still rendered in the picker at full fidelity — the
+  /// user sees their own biodata in it before deciding. Hiding the design
+  /// behind a blur would remove the only reason anyone would watch an ad for
+  /// it.
+  bool get isLocked => false;
 
   /// True when the template prints without colour, for corner-shop printing.
   bool get isMonochrome => style.isMonochrome;
