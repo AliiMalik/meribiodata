@@ -101,10 +101,17 @@ class ProfileEditorController extends ChangeNotifier {
     _scheduleSave();
   }
 
+  /// Notifies, unlike the text setters above.
+  ///
+  /// They are driven by TextFields that already hold what the user typed, so
+  /// rebuilding on every keystroke would be pure cost. The template is the
+  /// opposite: the picker *displays* this value, and without a notification the
+  /// tick never moves and choosing a template looks like it did nothing.
   void setTemplate(String templateId) {
     final current = _profile;
     if (current == null || current.templateId == templateId) return;
     _profile = current.copyWith(templateId: templateId);
+    _notify();
     _scheduleSave();
   }
 

@@ -59,12 +59,17 @@ class _TemplatePickerScreenState extends State<TemplatePickerScreen> {
   }
 
   Future<void> _select(DocumentTemplate template) async {
-    final controller = context.read<ProfileEditorController>();
+    // `_controller` directly, never context.read<ProfileEditorController>().
+    // That provider is created inside this widget's own build(), so the State's
+    // context sits *above* it and the read throws ProviderNotFoundException —
+    // which, in an async callback in a release build, is swallowed with no
+    // visible effect. Every tap silently did nothing, and locked templates
+    // never reached the unlock sheet.
     final unlocks = context.read<TemplateUnlocks>();
     final isPremium = context.read<Entitlements>().isPremium;
 
     if (canUseTemplate(template, isPremium: isPremium, unlocks: unlocks)) {
-      controller.setTemplate(template.id);
+      _controller.setTemplate(template.id);
       return;
     }
 
@@ -72,7 +77,7 @@ class _TemplatePickerScreenState extends State<TemplatePickerScreen> {
     // Selecting only after a successful unlock. Selecting first and unlocking
     // afterwards would leave the profile pointing at a template it cannot
     // export if the ad is abandoned.
-    if (unlocked) controller.setTemplate(template.id);
+    if (unlocked) _controller.setTemplate(template.id);
   }
 
   @override
@@ -245,6 +250,13 @@ class _TemplateCard extends StatelessWidget {
   final Widget preview;
   final VoidCallback onTap;
 
+  /// Two lines of name plus one of subtitle, whether or not this card uses
+  /// them. Reserving the space is what keeps the row aligned.
+  ///
+  /// Measured, not guessed: 62 overflowed by exactly 2px on a two-line name
+  /// with a subtitle, which a widget test caught immediately.
+  static const _labelHeight = 68.0;
+
   @override
   Widget build(BuildContext context) {
     final l10n = AppL10n.of(context);
@@ -296,46 +308,62 @@ class _TemplateCard extends StatelessWidget {
               ),
             ),
             const SizedBox(height: AppSpacing.sm),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                if (isSelected) ...[
-                  const Icon(
-                    Icons.check_circle,
-                    size: 16,
-                    color: AppColors.primaryDark,
+            // Fixed height, so every thumbnail in a row starts at the same
+            // point. Without it the label block sets the size of the Expanded
+            // above, and a two-line name or a "Locked" subtitle pushes that
+            // card's preview visibly out of line with its neighbour's.
+            SizedBox(
+              height: _labelHeight,
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      if (isSelected) ...[
+                        const Icon(
+                          Icons.check_circle,
+                          size: 16,
+                          color: AppColors.primaryDark,
+                        ),
+                        const SizedBox(width: AppSpacing.xs),
+                      ],
+                      Flexible(
+                        child: Text(
+                          template.name,
+                          style: text.titleMedium,
+                          textAlign: TextAlign.center,
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
+                    ],
                   ),
-                  const SizedBox(width: AppSpacing.xs),
+                  if (!usable)
+                    Text(
+                      l10n.templateLocked,
+                      style: text.bodySmall,
+                      textAlign: TextAlign.center,
+                    )
+                  // Shown only for an ad-unlock, which runs out. Premium and
+                  // free templates have nothing to count down.
+                  else if (hoursLeft case final int hours)
+                    Text(
+                      l10n.templateUnlockedHoursLeft(hours),
+                      style: text.bodySmall,
+                      textAlign: TextAlign.center,
+                    )
+                  else if (template.isMonochrome)
+                    Text(
+                      l10n.templateMonochrome,
+                      style: text.bodySmall,
+                      textAlign: TextAlign.center,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
                 ],
-                Flexible(
-                  child: Text(
-                    template.name,
-                    style: text.titleMedium,
-                    textAlign: TextAlign.center,
-                  ),
-                ),
-              ],
-            ),
-            if (!usable)
-              Text(
-                l10n.templateLocked,
-                style: text.bodySmall,
-                textAlign: TextAlign.center,
-              )
-            // Shown only for an ad-unlock, which runs out. Premium and free
-            // templates have nothing to count down.
-            else if (hoursLeft case final int hours)
-              Text(
-                l10n.templateUnlockedHoursLeft(hours),
-                style: text.bodySmall,
-                textAlign: TextAlign.center,
-              )
-            else if (template.isMonochrome)
-              Text(
-                l10n.templateMonochrome,
-                style: text.bodySmall,
-                textAlign: TextAlign.center,
               ),
+            ),
           ],
         ),
       ),
