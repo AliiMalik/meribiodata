@@ -9,19 +9,16 @@ removes apps whose descriptions misrepresent them.
 ## App name (30 characters max)
 
 ```
-MeriBiodata
+Pakistani Biodata Maker
 ```
 
-Alternative if you want the keyword in the name, at 28 characters:
+23 characters. Chosen over the brand name `MeriBiodata` deliberately: a new app
+with no installs lives on search, Play weights the *start* of the name most, and
+nobody types a brand they have never heard of. It also matches the icon.
 
-```
-MeriBiodata — Rishta Biodata
-```
-
-Play's search weighs the app name heavily. The second version will be found by
-people searching "rishta biodata" who have never heard of you, which at launch
-is everybody. The first is cleaner. My recommendation is the second until the
-name means something to people, then switch.
+The package name `safarnamastudios.meribiodata.app` is permanent and unaffected,
+and `meribiodata.web.app` remains the policy URL. The privacy policy names both,
+so a reviewer comparing the listing to the policy sees one app rather than two.
 
 ---
 
@@ -41,7 +38,7 @@ and it is the single most-read piece of text in the listing.
 ```
 Make a marriage biodata your family will be proud to share.
 
-MeriBiodata helps you put together a complete rishta biodata in minutes — in
+This app helps you put together a complete rishta biodata in minutes — in
 Urdu, English, Sindhi, Pashto or Punjabi — and share it on WhatsApp or take it
 to a print shop. No account. No sign-up. Nothing leaves your phone unless you
 choose to send it.
