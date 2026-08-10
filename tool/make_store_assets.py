@@ -13,7 +13,7 @@ Writes into docs/brand/store/, which is not shipped in the app.
 
 import os
 
-from PIL import Image
+from PIL import Image, ImageFilter
 
 SOURCE = 'assets/images/meribiodata.png'
 OUT = 'docs/brand/store'
@@ -62,15 +62,28 @@ def main():
     # 1024x500. The artwork is square and the canvas is wide, so the icon is
     # placed rather than stretched — Play crops this graphic differently across
     # surfaces, and anything important near an edge gets cut.
-    feature = Image.new('RGB', (1024, 500), green)
-    # Nearly full height, centred, with green either side. Play crops this
-    # graphic differently across its surfaces, so the wordmark stays in the
-    # middle where no crop can reach it.
-    mark_height = 470
-    mark = flatten(source, green).resize(
-        (mark_height, mark_height), Image.LANCZOS
+    # A square mark cannot fill a 1024x500 canvas: scaling to fill crops the
+    # heads off and loses the wordmark entirely, and pasting it onto a flat
+    # green rectangle leaves a visible seam, because the artwork's green is
+    # faintly textured and no sampled flat colour matches it.
+    #
+    # So the backdrop is the artwork itself — scaled to fill, then blurred hard.
+    # It carries the same texture and the same green by construction, so there
+    # is nothing to mismatch. The whole mark then sits sharp on top of it.
+    flat = flatten(source, green)
+
+    fill = max(1024 / flat.width, 500 / flat.height)
+    backdrop = flat.resize(
+        (round(flat.width * fill), round(flat.height * fill)), Image.LANCZOS
     )
-    feature.paste(mark, ((1024 - mark_height) // 2, (500 - mark_height) // 2))
+    left = (backdrop.width - 1024) // 2
+    top = (backdrop.height - 500) // 2
+    feature = backdrop.crop((left, top, left + 1024, top + 500)).filter(
+        ImageFilter.GaussianBlur(60)
+    )
+
+    mark = flat.resize((500, 500), Image.LANCZOS)
+    feature.paste(mark, ((1024 - 500) // 2, 0))
     feature_path = os.path.join(OUT, 'play-feature-1024x500.png')
     feature.save(feature_path, 'PNG')
     print('wrote', feature_path, feature.size)
