@@ -103,6 +103,11 @@ class PhotoProcessor {
     final frame = await codec.getNextFrame();
     codec.dispose();
     descriptor.dispose();
+    // The buffer holds the *encoded* bytes in native memory and is not freed by
+    // disposing the descriptor. A camera JPEG is several megabytes, and this
+    // runs once per photo added, cropped or rotated — so leaking it is small
+    // each time and unbounded over a session.
+    buffer.dispose();
     return frame.image;
   }
 
