@@ -331,7 +331,11 @@ it, and at a tenth strength it does not compete with anything printed in front o
 Moving it out of the block stream has two side effects, both good: it now appears on *every* page
 rather than once, and the paginator no longer has to reserve space for it.
 
-**Still open:** the wording. "Made with MeriBiodata" remains the placeholder from M3 (open
+**Settled 2026-08-10:** the wording is "Made with Pakistani Biodata Maker", following the rename.
+It is longer than the placeholder, and the band scales text to a fixed width, so it renders smaller
+— still legible, and it fills the band better than the shorter string did.
+
+~~**Still open:** the wording. "Made with MeriBiodata" remains the placeholder from M3 (open
 question 5). Only the treatment is settled here.
 
 ---
@@ -618,7 +622,7 @@ naming the test units. A gate that has never been seen to fail is not known to w
 | 2 | **D7 ruling** — should a built-in field borrow another language's rename, or fall back to its shipped translation? Recommendation: option 2. | M3 (open) |
 | 3 | Native-reader sign-off on the Urdu/Sindhi/Pashto output — the last M0 exit criterion. | M0 (open) |
 | 4 | Real-device benchmark against NFR-2 (< 3 s on a 3 GB phone). | M0 / M6 |
-| 5 | Watermark **wording**. The treatment is settled by D14 (a translucent band across the lower third of every page); the words are still the M3 placeholder "Made with MeriBiodata". | M6 |
+| ~~5~~ | ~~Watermark **wording**.~~ **Settled: "Made with Pakistani Biodata Maker", following the rename.** | closed |
 | ~~6~~ | ~~Photos: included by default in templates, or opt-in?~~ **Answered by D12: opt-in per export, reset on every mode change.** | closed |
 | 7 | Backup password policy: enforce minimum strength, or warn only? **M5 ships a minimum of 8 characters and nothing more.** | M6 |
 | ~~8~~ | ~~The waitlist form URL itself, once you create the form.~~ **Moot: the waitlist is withdrawn (D17).** | closed |

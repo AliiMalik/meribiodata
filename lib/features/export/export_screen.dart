@@ -230,7 +230,7 @@ class _ExportScreenState extends State<ExportScreen> {
             // before they export.
             watermark: context.watch<Entitlements>().isPremium
                 ? null
-                : 'Made with MeriBiodata',
+                : 'Made with Pakistani Biodata Maker',
             // The single point at which a photo can enter a document. If this
             // is null the renderers have nothing to draw, so "excluded" is
             // structural rather than a flag someone has to remember to check.

@@ -55,6 +55,6 @@ abstract final class PremiumBenefits {
   /// No banner on Home or the editor, and no interstitial before the editor.
   static const removesAds = true;
 
-  /// Exports carry no "Made with MeriBiodata" band.
+  /// Exports carry no watermark band.
   static const removesWatermark = true;
 }

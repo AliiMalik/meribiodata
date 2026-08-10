@@ -115,7 +115,7 @@ RenderedDocument sampleDocument(
   String languageCode, {
   required BundledLabels labels,
   ExportMode mode = ExportMode.full,
-  String? watermark = 'Made with MeriBiodata',
+  String? watermark = 'Made with Pakistani Biodata Maker',
 }) => DocumentBuilder(
   labels: labels,
   stringsFor: labels.stringsFor,

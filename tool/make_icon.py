@@ -1,32 +1,38 @@
 # -*- coding: utf-8 -*-
 """Builds every launcher icon size from the master artwork.
 
-Source: assets/images/meribiodata.png — a couple in shalwar kameez and dupatta,
-black on the brand green, with the wordmark beneath.
+Source: assets/images/icon.png — a white Islamic interlace border with the app
+name inside it, on the brand green.
 
 Checked in and re-runnable so the master art stays the single source of truth.
 Replacing the icon later means dropping in a new PNG and running this again,
 not re-cutting nine files by hand.
 
-Two things this does that a plain resize would not:
-
 **It splits the art into adaptive layers.** Android 8+ — every device this app
 supports, minSdk 26 — composites a background and a foreground and then applies
 whatever mask the launcher chooses, clipping anything outside the inner 66% of
-the canvas. So the foreground gets the silhouette alone, scaled to survive that
-crop, and the background gets flat brand green.
+the canvas.
 
-**It drops the wordmark from the launcher icon.** The mask would eat it, and
-text is illegible at 48dp regardless. The wordmark survives on the Play Store
-asset, which is never masked.
+**The whole design stays visible**, at the owner's request. Rather than crop the
+border off, the entire white artwork is scaled down to sit inside the safe zone,
+so every launcher mask shows the complete frame and wording.
+
+**The white is lifted onto a transparent layer** rather than pasting the square
+artwork over a green square. Compositing white-on-nothing over flat green cannot
+show a seam; pasting one green over another can, and does, because no sampled
+flat colour ever quite matches the source.
+
+The wording is legible on the Play Store asset, which is never masked, and is a
+smudge at 48dp on a launcher. That is inherent to putting three lines of text in
+an app icon and was accepted knowingly.
 """
 
 import os
 
-from PIL import Image, ImageDraw
+from PIL import Image
 
 ROOT = os.path.join(os.path.dirname(__file__), '..')
-SOURCE = os.path.join(ROOT, 'assets', 'images', 'meribiodata.png')
+SOURCE = os.path.join(ROOT, 'assets', 'images', 'icon.png')
 RES = os.path.join(ROOT, 'android', 'app', 'src', 'main', 'res')
 BRAND = os.path.join(ROOT, 'docs', 'brand')
 
@@ -41,133 +47,101 @@ DENSITIES = [
 
 # Share of the 108dp canvas the artwork may occupy.
 #
-# A circular mask shows a 72dp disc of the 108dp canvas, so 0.667 is the
-# absolute ceiling. The figures are taller than they are wide, and it is their
-# *height* that would clip first, so this sits just under: 0.64 x 108 = 69dp.
-SAFE_FRACTION = 0.64
+# A circular mask shows a 72dp disc of the 108dp canvas, so 0.667 is the ceiling
+# for anything that must survive every launcher. The artwork is a square frame,
+# and a square inscribed in that disc is narrower still — hence 0.62 rather than
+# sitting on the limit.
+SAFE_FRACTION = 0.62
+
+# Measured from the artwork, not guessed. The green background sits at a
+# luminance around 100 and the white linework at 250+, so the ramp between 170
+# and 230 lifts the white cleanly and leaves the anti-aliased edges soft.
+SOLID, FADE = 230, 170
 
 
-def brand_green(img):
+def brand_green(image):
     """The background colour, taken from the art rather than hardcoded.
 
-    Sampled around the border and averaged, so a subtle vignette in the source
-    does not become a visible seam against the flat layer.
+    A corner, because the corner is background by construction. Counting the
+    most common pixel would elect white here, which covers 27% of the canvas.
     """
-    w, h = img.size
-    edge = []
-    for i in range(0, w, 7):
-        edge.append(img.getpixel((i, 2)))
-        edge.append(img.getpixel((i, h - 3)))
-    for i in range(0, h, 7):
-        edge.append(img.getpixel((2, i)))
-        edge.append(img.getpixel((w - 3, i)))
-    n = len(edge)
-    return tuple(round(sum(c[i] for c in edge) / n) for i in range(3))
+    rgb = image.convert('RGB')
+    side = max(1, rgb.width // 25)
+    pixels = list(rgb.crop((0, 0, side, side)).getdata())
+    return tuple(round(sum(c) / len(pixels)) for c in zip(*pixels))
 
 
-def silhouette(img):
-    """Lifts the figures off the background as a transparent-backed image.
+def linework(image):
+    """Lifts the white border and wording onto a transparent-backed image."""
+    rgb = image.convert('RGB')
+    lum = rgb.convert('L')
+    alpha = lum.point(
+        lambda v: 0 if v <= FADE
+        else 255 if v >= SOLID
+        else round(255 * (v - FADE) / (SOLID - FADE))
+    )
 
-    Keyed on darkness rather than an exact colour match. Measured on the master
-    art, the max-channel histogram is strongly bimodal: the silhouette sits at
-    0-20, the green background at 93-129, and the white wordmark above 250. The
-    thresholds below are placed in that empty middle, with five units of margin
-    under the darkest background pixel found (93).
-
-    Getting this wrong is not subtle — an earlier ceiling of 110 sat *above* the
-    green and selected the entire image.
-
-    The wordmark is white, so it falls out for free.
-    """
-    solid, fade = 25, 88
-    w, h = img.size
-    px = img.convert('RGB').load()
-
-    out = Image.new('RGBA', (w, h), (0, 0, 0, 0))
-    op = out.load()
-
-    for y in range(h):
-        for x in range(w):
-            peak = max(px[x, y])
-            if peak < solid:
-                op[x, y] = (12, 12, 12, 255)
-            elif peak < fade:
-                # The anti-aliased rim. Fading it rather than cutting at a hard
-                # threshold is what keeps edges smooth after downscaling.
-                op[x, y] = (12, 12, 12, round(255 * (fade - peak) / (fade - solid)))
-
-    return out.crop(out.getbbox())
+    white = Image.new('RGBA', rgb.size, (255, 255, 255, 0))
+    white.putalpha(alpha)
+    return white.crop(white.getbbox() or (0, 0, rgb.width, rgb.height))
 
 
-def foreground(figures, size):
-    """The adaptive foreground layer: figures centred inside the safe zone."""
+def foreground(art, size):
+    """The adaptive foreground: the whole design, inside the safe zone."""
     canvas = Image.new('RGBA', (size, size), (0, 0, 0, 0))
 
     limit = size * SAFE_FRACTION
-    scale = min(limit / figures.width, limit / figures.height)
-    art = figures.resize(
-        (max(1, round(figures.width * scale)),
-         max(1, round(figures.height * scale))),
+    scale = min(limit / art.width, limit / art.height)
+    scaled = art.resize(
+        (max(1, round(art.width * scale)), max(1, round(art.height * scale))),
         Image.LANCZOS,
     )
-
-    canvas.paste(art, ((size - art.width) // 2, (size - art.height) // 2), art)
+    canvas.paste(
+        scaled,
+        ((size - scaled.width) // 2, (size - scaled.height) // 2),
+        scaled,
+    )
     return canvas
 
 
-def rounded(img, radius_ratio=0.22):
-    size = img.size[0]
-    mask = Image.new('L', (size, size), 0)
-    ImageDraw.Draw(mask).rounded_rectangle(
-        [0, 0, size - 1, size - 1], radius=round(size * radius_ratio), fill=255)
-    out = Image.new('RGBA', (size, size), (0, 0, 0, 0))
-    out.paste(img, (0, 0), mask)
-    return out
+def background(colour, size):
+    return Image.new('RGB', (size, size), colour)
 
 
-def circle(img):
-    size = img.size[0]
-    mask = Image.new('L', (size, size), 0)
-    ImageDraw.Draw(mask).ellipse([0, 0, size - 1, size - 1], fill=255)
-    out = Image.new('RGBA', (size, size), (0, 0, 0, 0))
-    out.paste(img, (0, 0), mask)
-    return out
+def legacy(art, colour, size):
+    """The square/round icon for launchers that ignore adaptive layers."""
+    icon = background(colour, size).convert('RGBA')
+    icon.alpha_composite(foreground(art, size))
+    return icon.convert('RGB')
 
 
 def main():
-    master = Image.open(SOURCE).convert('RGB')
+    master = Image.open(SOURCE)
     green = brand_green(master)
-    figures = silhouette(master)
-    print('brand green {}, figures {}x{}'.format(
-        green, figures.width, figures.height))
-
-    os.makedirs(BRAND, exist_ok=True)
+    art = linework(master)
+    print('brand green %s, linework %dx%d' % (green, art.width, art.height))
 
     for density, px in DENSITIES:
         out = os.path.join(RES, 'mipmap-' + density)
         os.makedirs(out, exist_ok=True)
 
-        Image.new('RGB', (px, px), green).save(
+        background(green, px).save(
             os.path.join(out, 'ic_launcher_background.png'))
-        foreground(figures, px).save(
+        foreground(art, px).save(
             os.path.join(out, 'ic_launcher_foreground.png'))
+        # Pre-Oreo launchers, and anything asking for the round variant, get a
+        # flattened copy. minSdk is 26 so these are a fallback, not the norm.
+        flat = legacy(art, green, px)
+        flat.save(os.path.join(out, 'ic_launcher.png'))
+        flat.save(os.path.join(out, 'ic_launcher_round.png'))
+        print('  mipmap-%-8s %dpx' % (density, px))
 
-        # Legacy layers, for launchers that ignore adaptive icons. The whole
-        # composition, wordmark included, since nothing masks these.
-        legacy = master.resize((px, px), Image.LANCZOS)
-        rounded(legacy).save(os.path.join(out, 'ic_launcher.png'))
-        circle(legacy).save(os.path.join(out, 'ic_launcher_round.png'))
-
-    master.resize((512, 512), Image.LANCZOS).save(
-        os.path.join(BRAND, 'play-store-icon-512.png'))
-
-    # What the home screen actually shows, for review.
-    preview = Image.new('RGB', (432, 432), green)
-    layer = foreground(figures, 432)
-    preview.paste(layer, (0, 0), layer)
-    circle(preview).save(os.path.join(BRAND, 'launcher-preview-round.png'))
-
-    print('icons written')
+    os.makedirs(BRAND, exist_ok=True)
+    # The Play listing icon is never masked, so it is the artwork whole, at the
+    # size Play demands, with no alpha — an icon with transparency is rejected.
+    master.convert('RGB').resize((512, 512), Image.LANCZOS).save(
+        os.path.join(BRAND, 'store', 'play-icon-512.png'))
+    print('  play-icon-512.png')
 
 
 if __name__ == '__main__':

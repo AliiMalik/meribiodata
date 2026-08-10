@@ -40,7 +40,14 @@ class DriveClient {
 
   /// The name shown in the user's Drive. They chose a visible scope, so this
   /// is a thing a real person will see and should be able to recognise.
-  static const fileName = 'MeriBiodata-backup.mbd';
+  /// What the user sees sitting in their own Drive, so it is written the way a
+  /// person would read it rather than as an identifier.
+  ///
+  /// Safe to rename only because nothing has shipped: the app is not published
+  /// and Drive sync has never run against a real account, so no file exists
+  /// anywhere under the old name. Renaming after release would orphan every
+  /// backup, since lookup is by exact name.
+  static const fileName = 'Pakistani Biodata Maker backup.mbd';
 
   final DriveIdentity _identity;
   final http.Client? _httpClient;

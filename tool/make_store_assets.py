@@ -15,7 +15,7 @@ import os
 
 from PIL import Image, ImageFilter
 
-SOURCE = 'assets/images/meribiodata.png'
+SOURCE = 'assets/images/icon.png'
 OUT = 'docs/brand/store'
 
 # Sampled from the source rather than typed in, so the feature graphic cannot
@@ -53,11 +53,8 @@ def main():
     green = background_colour(source)
     print('sampled background:', green)
 
-    # 512x512, no alpha.
-    icon = flatten(source, green).resize((512, 512), Image.LANCZOS)
-    icon_path = os.path.join(OUT, 'play-icon-512.png')
-    icon.save(icon_path, 'PNG')
-    print('wrote', icon_path, icon.size)
+    # The 512 listing icon is written by make_icon.py, from the same master.
+    # Two tools writing one file is how they drift apart.
 
     # 1024x500. The artwork is square and the canvas is wide, so the icon is
     # placed rather than stretched — Play crops this graphic differently across
