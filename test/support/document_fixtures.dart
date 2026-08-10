@@ -55,6 +55,15 @@ const _samples = <String, Map<String, Object>>{
     BuiltInKeys.fatherName: 'Muhammad Aslam Malik',
     BuiltInKeys.address: 'House 12, Gulberg, Lahore',
     BuiltInKeys.phone: '+92 300 1234567',
+    BuiltInKeys.bloodGroup: 'O+',
+    BuiltInKeys.maslak: 'Hanafi',
+    BuiltInKeys.fatherOccupation: 'Retired, WAPDA',
+    BuiltInKeys.motherName: 'Fatima Bibi',
+    BuiltInKeys.motherOccupation: 'Housewife',
+    BuiltInKeys.maternalFamily: 'Sheikh family, Sialkot',
+    BuiltInKeys.additionalInfo:
+        'Practising family. Looking for a well-mannered, educated girl '
+        'from a respectable family. Rishta within Lahore preferred.',
   },
   'ur': {
     BuiltInKeys.name: 'محمد علی ملک',
@@ -64,6 +73,15 @@ const _samples = <String, Map<String, Object>>{
     BuiltInKeys.fatherName: 'محمد اسلم ملک',
     BuiltInKeys.address: 'مکان نمبر 12، گلبرگ، لاہور',
     BuiltInKeys.phone: '+92 300 1234567',
+    BuiltInKeys.bloodGroup: 'O+',
+    BuiltInKeys.maslak: 'حنفی',
+    BuiltInKeys.fatherOccupation: 'ریٹائرڈ، واپڈا',
+    BuiltInKeys.motherName: 'فاطمہ بی بی',
+    BuiltInKeys.motherOccupation: 'خاتونِ خانہ',
+    BuiltInKeys.maternalFamily: 'شیخ خاندان، سیالکوٹ',
+    BuiltInKeys.additionalInfo:
+        'دیندار گھرانہ۔ باادب، تعلیم یافتہ لڑکی کی تلاش ہے۔ '
+        'رشتہ لاہور میں ترجیح۔',
   },
   'sd': {
     BuiltInKeys.name: 'محمد علي سومرو',
@@ -73,6 +91,14 @@ const _samples = <String, Map<String, Object>>{
     BuiltInKeys.fatherName: 'عبدالرحمان سومرو',
     BuiltInKeys.address: 'ڪراچي',
     BuiltInKeys.phone: '+92 300 1234567',
+    BuiltInKeys.bloodGroup: 'B+',
+    BuiltInKeys.maslak: 'حنفي',
+    BuiltInKeys.fatherOccupation: 'زميندار',
+    BuiltInKeys.motherName: 'زينب',
+    BuiltInKeys.motherOccupation: 'گهر ڀاتي',
+    BuiltInKeys.maternalFamily: 'ميمڻ خاندان، حيدرآباد',
+    BuiltInKeys.additionalInfo:
+        'مذهبي گهراڻو. سٺي اخلاق واري ۽ پڙهيل ڳڙهيل ڇوڪري جي تلاش آهي.',
   },
   'ps': {
     BuiltInKeys.name: 'محمد علي خان',
@@ -82,6 +108,14 @@ const _samples = <String, Map<String, Object>>{
     BuiltInKeys.fatherName: 'عبدالله خان',
     BuiltInKeys.address: 'پېښور',
     BuiltInKeys.phone: '+92 300 1234567',
+    BuiltInKeys.bloodGroup: 'A+',
+    BuiltInKeys.maslak: 'حنفي',
+    BuiltInKeys.fatherOccupation: 'سوداګر',
+    BuiltInKeys.motherName: 'زرغونه',
+    BuiltInKeys.motherOccupation: 'کورودانه',
+    BuiltInKeys.maternalFamily: 'اپريدي کورنۍ، پېښور',
+    BuiltInKeys.additionalInfo:
+        'دیني کورنۍ. د ښه اخلاقو او زده کړې لرونکې انجلۍ په لټه کې یو.',
   },
 };
 
@@ -103,6 +137,13 @@ BiodataProfile sampleProfile(String languageCode) {
         HeightValue.fromFeetInches(5, 9).toJson(),
     profile.schema.fieldByBuiltInKey(BuiltInKeys.brothers)!.id:
         const RepeatableGroupValue(total: 2, marriedCount: 1).toJson(),
+    profile.schema.fieldByBuiltInKey(BuiltInKeys.sisters)!.id:
+        const RepeatableGroupValue(total: 1, marriedCount: 0).toJson(),
+    profile.schema.fieldByBuiltInKey(BuiltInKeys.weight)!.id: const WeightValue(
+      kilograms: 72,
+    ).toJson(),
+    profile.schema.fieldByBuiltInKey(BuiltInKeys.income)!.id:
+        const CurrencyValue(amount: 250000).toJson(),
   };
 
   return profile.copyWith(values: values);
