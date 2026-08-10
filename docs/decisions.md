@@ -580,6 +580,36 @@ only as a placeholder while there was no real artwork to put behind the ad.
 
 ---
 
+## D21 — The release bundle is verified before upload, not trusted
+
+**Date:** 2026-08-10 · **Decided by:** owner · **Milestone:** M6
+
+**Decision.** `tool/verify_release.py` reads a built `.aab` and refuses it unless the ad unit IDs
+are real, the AdMob App ID is present, Play Billing is declared, it is signed with the upload key,
+all 13 template backgrounds are bundled, and the version code is high enough. Running it is part of
+the documented release command.
+
+**Why a check on the artefact rather than in code.** Ad unit IDs are compile-time constants
+(`String.fromEnvironment`), so a bundle built without `--dart-define-from-file=admob.json` ships
+Google's test units. That build runs perfectly, shows every real user an ad labelled "Test Ad", and
+earns nothing. Play does not warn you. AdMob does not warn you. It is indistinguishable from a
+correct build by eye, and it would be discovered only by noticing that revenue was zero.
+
+`AdConfig.isUsingTestUnits` was written to catch exactly this and **cannot**: a Dart test runs with
+no dart-defines, so it always reports test units. CI cannot catch it either — building a release
+bundle needs the keystore and `admob.json`, both of which are gitignored and must stay that way.
+The only place the truth exists is the built artefact.
+
+**How this was nearly shipped.** At the time the script was written, the only artefact on disk was
+an APK built with test IDs for an emulator smoke test; the correctly-configured bundle had been
+overwritten by it, and predated a fix that made the template picker work at all. Both facts were
+invisible without opening the file.
+
+**The negative test is the point.** The script is run against the test-ID APK first, and must fail,
+naming the test units. A gate that has never been seen to fail is not known to work.
+
+---
+
 ## Still open
 
 | # | Question | Blocks |

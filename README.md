@@ -52,12 +52,21 @@ Release builds supply the real AdMob IDs, which are never committed. Copy
 
 ```bash
 flutter build appbundle --release --dart-define-from-file=admob.json -PadmobAppId=ca-app-pub-XXXX~YYYY
+python tool/verify_release.py build/app/outputs/bundle/release/app-release.aab
 ```
 
+**Always run the verifier, and never upload a bundle that fails it.** Omit the flags and the build
+falls back to Google's test units: it runs perfectly, shows every real user an ad labelled "Test
+Ad", and earns nothing. Neither Play nor AdMob warns you, and it is indistinguishable from a correct
+build by eye. `AdConfig.isUsingTestUnits` cannot catch it either — a Dart test runs with no
+dart-defines, so it always reports test units. The only place the truth exists is the built
+artefact, which is what `verify_release.py` reads.
+
+`flutter build apk` (used for device testing) deliberately omits the defines, so it will always fail
+the check. That is correct, not a bug.
+
 The App ID needs its own Gradle flag rather than a Dart define because it is read from
-`AndroidManifest.xml` by the Play services SDK before any Dart runs. Omit the flags and the build
-falls back to Google's test units, which show a "Test Ad" label and can never earn money —
-`AdConfig.isUsingTestUnits` exposes that so a release built without them is catchable.
+`AndroidManifest.xml` by the Play services SDK before any Dart runs.
 
 `app-ads.txt` is served from `docs/privacy/` alongside the privacy policy, at
 <https://meribiodata.web.app/app-ads.txt>. Google only crawls it once the Play listing names that
