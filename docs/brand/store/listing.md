@@ -1,20 +1,46 @@
 # Play Store listing copy
 
-Draft for approval. Nothing here claims a feature the app does not have — a
-listing that oversells is the fastest route to one-star reviews, and Play
-removes apps whose descriptions misrepresent them.
+ASO-tuned against the actual category, August 2026. Nothing here claims a
+feature the app does not have — a listing that oversells is the fastest route to
+one-star reviews, and Play removes apps whose descriptions misrepresent them.
+
+---
+
+## What the competition is doing
+
+Read from live listings for `com.aquaappstudio.biodatamakerglobal`,
+`com.yooashu.shaadiprofile`, `com.additive.mbiodata`, `matrimonybiodata.com`,
+`com.iw.biodatamakerhindi` and `com.radhikatech.biodata`.
+
+**Keywords every one of them uses:** marriage biodata · biodata format ·
+shaadi biodata · rishta · matrimonial profile · biodata PDF · share on WhatsApp ·
+print-ready · templates / formats · free · offline · no sign-up ·
+partner preferences · family background.
+
+**Their two standard boasts** are a format count ("140+ biodata formats",
+"24+ beautifully designed formats") and a language list (10–13 languages).
+
+**The gap, and the whole reason the name is right.** Every serious app in this
+category is built for India. They advertise "all Indian communities", offer
+Hindu / Sikh / Jain / Christian formats, carry kundli and horoscope fields, and
+lead with Hindi, Marathi, Gujarati and Tamil. Urdu appears eleventh in a list.
+Nobody owns *Pakistan* — not the word, not zaat/biradari, not maslak, not
+Nastaliq. That is the position this listing takes, and it is defensible because
+the app genuinely is built that way.
+
+**Deliberately not copied:** no inflated format count (we have 17 and say 17),
+no claim of languages whose labels are still unreviewed.
 
 ---
 
 ## App name (30 characters max)
 
 ```
-Pakistani Biodata Maker
+Pak Marriage Biodata Maker
 ```
 
-23 characters. Chosen over the brand name `MeriBiodata` deliberately: a new app
-with no installs lives on search, Play weights the *start* of the name most, and
-nobody types a brand they have never heard of. It also matches the icon.
+26 characters. Leads with the market nobody else claims, then the two highest-
+volume terms in the category. Play weights the *start* of the name most.
 
 The package name `safarnamastudios.meribiodata.app` is permanent and unaffected,
 and `meribiodata.web.app` remains the policy URL. The privacy policy names both,
@@ -25,93 +51,95 @@ so a reviewer comparing the listing to the policy sees one app rather than two.
 ## Short description (80 characters max)
 
 ```
-Make a beautiful rishta biodata in Urdu or English. Private, offline, free.
+Shadi & rishta biodata maker in Urdu. Free marriage biodata PDF formats.
 ```
 
-74 characters. This is the line that appears under the icon in search results,
-and it is the single most-read piece of text in the listing.
+72 characters. Carries six of the category's highest-volume terms — shadi,
+rishta, biodata maker, Urdu, marriage biodata, PDF — in the single most-read
+line of the listing.
 
 ---
 
 ## Full description (4000 characters max)
 
 ```
-Make a marriage biodata your family will be proud to share.
+Pak Marriage Biodata Maker — make a shadi biodata your family is proud to send.
 
-This app helps you put together a complete rishta biodata in minutes — in
-Urdu, English, Sindhi, Pashto or Punjabi — and share it on WhatsApp or take it
-to a print shop. No account. No sign-up. Nothing leaves your phone unless you
-choose to send it.
+Fill in a simple form and get a clean, print-ready marriage biodata as a PDF or an image, then send it straight to WhatsApp. Built in Pakistan, for Pakistani families — not an Indian biodata app with Urdu bolted on.
 
-WRITTEN THE WAY WE WRITE
-Urdu and Punjabi are set in proper Nastaliq, Sindhi and Pashto in Naskh — not
-squeezed into a font that was made for English. Names, dates and numbers sit
-the right way round, whichever script you use.
+FREE MARRIAGE BIODATA MAKER
+• 17 biodata templates and formats — classic, elegant, decorative, and plain black-and-white for the print shop
+• Export a print-ready biodata PDF, or a JPG image for WhatsApp
+• Copy your whole biodata as text and paste it into any chat
+• No sign-up, no account, no email verification
 
-EVERY FIELD IS YOURS
-Rename anything. Add a field nobody thought of. Hide one that does not apply.
-Move sections around. The form bends to your family, instead of the other way
-about.
+WRITTEN IN PROPER URDU
+Urdu is set in real Nastaliq, not squeezed into a font made for English. Names, dates, height and numbers all sit the right way round. Prefer English? The whole biodata switches over.
 
-TWO VERSIONS OF EVERY BIODATA
-This is the part we care about most. "Wide sharing" leaves out your phone
-number and exact address — the version for a WhatsApp group or a marriage
-bureau. "One family" includes everything, for people you have already decided
-to trust. The app always starts on the safe one, and you choose the other
-deliberately, every time.
+Typing Urdu is easy: type "naveed malik" in Roman and the app offers نوید ملک.
 
-A biodata that goes into a group chat cannot be taken back. We built the app so
-that mistake takes a second, conscious tap.
+EVERYTHING A RISHTA BIODATA NEEDS
+Name, age, date of birth, zaat / biradari, maslak, height, weight, blood group, education, occupation and income. Father's and mother's name and occupation, brothers, sisters and nanihal. Address and contact. Add a photo if you want one.
+
+Missing a field? Add it. Don't need one? Hide it. Rename anything. The form bends to your family, instead of the other way about.
+
+TWO VERSIONS OF EVERY BIODATA — THE PART THAT MATTERS
+"Wide sharing" leaves out your phone number and exact address. That is the copy for a WhatsApp group, a rishta aunty or a marriage bureau. "One family" includes everything, for people you have already decided to trust.
+
+The app always starts on the safe one. A biodata that goes into a group chat cannot be taken back, so choosing the full version takes a second, deliberate tap.
 
 PHOTOS, HANDLED CAREFULLY
-Add a photo and the app removes the hidden information inside it first — most
-people never learn that a photo taken at home usually carries the exact
-location of that home, invisibly, in the file. Yours will not. And the photo
-goes into an export only when you switch it on for that export.
+Add a photo and the app strips the hidden information out of it first. Most people never learn that a photo taken at home carries the exact location of that home, invisibly, inside the file. Yours will not.
 
-SHARE IT ANYWHERE
-Save as PDF for the print shop, or as an image for WhatsApp. One tap to send
-straight to WhatsApp.
+YOUR BIODATA STAYS ON YOUR PHONE
+We run no server. There is nowhere for your details to be sent to us, even in principle. No matching, no profile browsing, nobody looking at your daughter's information. Works completely offline.
 
-BACK IT UP, IF YOU WANT TO
-Turn on Google Drive backup and one encrypted file is kept in your own Drive,
-locked with a password only you know. Google stores it but cannot read it, and
-neither can we. Lose your phone, keep your biodata. It is off until you switch
-it on.
-
-YOUR INFORMATION STAYS ON YOUR PHONE
-We run no server. There is nowhere for your biodata to be sent to us, even in
-principle. No account, no profile, no matching, nobody browsing your daughter's
-details. Uninstall the app and every trace of it is gone from your phone.
+Optional: turn on Google Drive backup and one encrypted file is kept in your own Drive, locked with a password only you know. Google stores it but cannot read it.
 
 FREE, PROPERLY FREE
-Every feature works without paying. Premium is optional and does exactly two
-things: it removes the ads, and it removes the small watermark on your exports.
-Nothing is locked behind it.
+Every feature works without paying. Premium is optional and does two things: removes the ads, and removes the small watermark on your exports. Nothing is locked behind it.
 
-Made in Pakistan, for Pakistani families.
+Perfect for shadi proposals, rishta, nikah, wedding and matrimonial profiles. Made in Pakistan.
 ```
 
-Roughly 2,300 characters, comfortably inside the limit.
+2,690 characters of 4,000.
 
-### Why it is written like this
+### Keyword density
 
-- **The privacy section is the differentiator**, not a legal footnote. Every
-  competing app in this category uploads biodatas to a server. Say the thing
-  they cannot say.
-- **Shareable vs Full gets its own section** because it is the app's best idea
-  and users will not discover it on their own (9.4).
-- **The EXIF paragraph teaches something.** Most readers will not know it, and
-  learning it from your listing is the moment they trust you.
-- **No feature is claimed that does not exist.** No matching, no matchmaker
-  tools, no CRM.
-- **Keywords appear naturally** — rishta, biodata, marriage, Urdu, Nastaliq,
-  WhatsApp, PDF — without a keyword-stuffed block, which Play penalises.
+biodata ×15 · Urdu ×5 · marriage ×5 · free ×4 · rishta ×4 · photo ×4 ·
+PDF ×3 · WhatsApp ×3 · shadi ×3 · Pakistan ×3 · print ×3 · format ×2 ·
+image ×2 · template, Nastaliq, zaat, biradari, maslak, nikah, wedding,
+matrimonial, proposal, offline ×1 each.
+
+Placed in prose rather than a keyword block — Play penalises stuffing, and the
+first two lines are what a reader actually sees before tapping "more".
 
 ### Before publishing, check
 
-- [ ] Sindhi, Pashto and Punjabi labels are still marked `draft` and awaiting a
-      native reviewer. If they have not been reviewed by launch, **remove those
-      three from the description** rather than promising output nobody has
-      checked.
-- [ ] The Premium paragraph matches your final prices and product setup.
+- [ ] Sindhi, Pashto and Punjabi are **not claimed** anywhere in this copy. Their
+      labels are still marked `draft` and unreviewed. Add them only once a native
+      reader has signed them off.
+- [ ] "17 biodata templates" matches `Templates.all.length`.
+- [ ] The Premium paragraph matches the final prices and product setup.
+
+---
+
+## Screenshots
+
+`screenshots/phone/`, 1080×1920, upload in this order:
+
+1. `1-designs.png` — the template picker showing border artwork
+2. `2-preview.png` — a complete biodata in English
+3. `6-urdu.png` — the same biodata in Urdu, the differentiator
+4. `3-templates.png` — choosing a template
+5. `4-form.png` — the form
+6. `5-library.png` — saved biodatas
+
+`7-sindhi.png` and `8-pashto.png` exist but are held back for the same reason
+the copy does not claim those languages.
+
+Regenerate the rendered ones after any change to the watermark or fixture:
+
+```bash
+flutter test --tags store test/render/store_screenshots_test.dart
+```
