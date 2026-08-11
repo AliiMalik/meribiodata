@@ -48,6 +48,36 @@ abstract final class BidiText {
     );
   }
 
+  /// Perso-Arabic **letters** — the scripts this app sets right-to-left.
+  ///
+  /// Written as escapes rather than literal characters: the ranges are
+  /// invisible in an editor and a stray one would be impossible to spot.
+  ///
+  /// The two digit blocks are deliberately excluded — U+0660–0669 Arabic-Indic
+  /// and U+06F0–06F9 Extended Arabic-Indic, the latter being what this app
+  /// renders when a user picks Urdu digits. They are numbers, not prose. Were
+  /// they counted, a phone number written `+۹۲ ۳۰۰ ۱۲۳۴۵۶۷` would be mistaken
+  /// for text and lose the isolation that keeps its groups in order — the exact
+  /// M0 bug this file exists to prevent.
+  static final _strongRtl = RegExp(
+    '[\u0620-\u065F' // Arabic letters and marks
+    '\u066E-\u06EF' // letters; skips Arabic-Indic digits 0660-0669
+    '\u06FA-\u06FF' // extended letters; skips Urdu digits 06F0-06F9
+    '\u0750-\u077F' // Arabic Supplement
+    '\uFB50-\uFDFF' // Presentation Forms-A
+    '\uFE70-\uFEFF' // Presentation Forms-B
+    ']',
+  );
+
+  /// Whether [value] contains right-to-left letters, and is therefore prose
+  /// rather than a bare number.
+  ///
+  /// This is the question that decides how a value may be isolated. A formatted
+  /// height in Urdu — `6 فٹ 1 انچ` — is *text* with numbers in it, even though
+  /// it came from a numeric field, because the unit words were substituted in
+  /// before this point.
+  static bool hasStrongRtl(String value) => _strongRtl.hasMatch(value);
+
   /// Removes isolate characters. Golden tests and any future text extraction
   /// compare against clean strings.
   static String strip(String value) =>

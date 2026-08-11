@@ -218,11 +218,29 @@ class DocumentBuilder {
   /// Numbers are isolated so multi-group values do not reverse in an RTL
   /// document; free text has only its numeric runs isolated, so an Urdu
   /// sentence stays a single right-to-left flow.
+  ///
+  /// The decision is made on the **formatted string**, not on the field type,
+  /// and that distinction is the whole point. By the time a value reaches here
+  /// its localised unit words have already been substituted in: a height is not
+  /// `6 1` but `6 فٹ 1 انچ`. Wrapping that in a left-to-right isolate — which
+  /// is exactly right for `+92 300 1234567` — lays its runs out left to right
+  /// and reverses the word/number pairs, so 6 feet 1 inch reads back as 1 foot
+  /// 6 inches.
+  ///
+  /// Height showed it first because it is the only value with *two* number-word
+  /// pairs. Weight, currency and dates carried the same flaw invisibly, having
+  /// only one number for the reversal to act on.
   String _isolate(String text, FieldType type, LanguageDescriptor language) {
     if (!language.isRtl) return text;
-    return type.needsBidiIsolation || type == FieldType.date
-        ? BidiText.isolate(text)
-        : BidiText.isolateNumericRuns(text);
+
+    final numericType = type.needsBidiIsolation || type == FieldType.date;
+    if (numericType && !BidiText.hasStrongRtl(text)) {
+      // A bare number or date: force the whole run left-to-right.
+      return BidiText.isolate(text);
+    }
+    // Prose, or a number that now carries RTL words. Isolate the digit groups
+    // and let the bidi algorithm order the rest, which it does correctly.
+    return BidiText.isolateNumericRuns(text);
   }
 
   String? _format(

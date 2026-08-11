@@ -29,7 +29,7 @@ class AppPreferences extends ChangeNotifier {
   DigitStyle _digitStyle = DigitStyle.western;
   bool _onboardingComplete = false;
   bool _exportModesExplained = false;
-  bool _romanInputDefault = false;
+  bool _romanInputDefault = true;
   LengthUnit _heightUnit = LengthUnit.feetInches;
   MassUnit _weightUnit = MassUnit.kilograms;
   ThemeMode _themeMode = ThemeMode.system;
@@ -54,8 +54,17 @@ class AppPreferences extends ChangeNotifier {
 
   /// Whether Roman typing starts switched on for Urdu-script fields (9.2).
   ///
-  /// Off by default: a user who already has an Urdu keyboard should never be
-  /// pushed through a transliterator. Once they turn it on, it is remembered.
+  /// **On** by default, reversing the original choice. That choice — don't push
+  /// a transliterator on someone with an Urdu keyboard — was sound in the
+  /// abstract and wrong in practice: a user made an Urdu biodata and every free
+  /// text field came out in English, because the one feature that would have
+  /// helped was a toggle buried in Settings that nobody finds.
+  ///
+  /// Nothing is forced. The field only ever *offers* a conversion for the word
+  /// behind the caret, and only when the user taps it, so hand-typed Urdu is
+  /// untouched. It appears solely on Perso-Arabic document languages
+  /// (`RomanUrduField.isOfferedFor`), so an English biodata never sees it. And
+  /// turning it off is still remembered.
   bool get romanInputDefault => _romanInputDefault;
 
   /// Feet-and-inches by default, because that is how height is spoken about in
@@ -87,7 +96,7 @@ class AppPreferences extends ChangeNotifier {
     }
     _onboardingComplete = values[_keyOnboardingComplete] as bool? ?? false;
     _exportModesExplained = values[_keyExportModesExplained] as bool? ?? false;
-    _romanInputDefault = values[_keyRomanInput] as bool? ?? false;
+    _romanInputDefault = values[_keyRomanInput] as bool? ?? true;
 
     if (values[_keyHeightUnit] case final String wire) {
       _heightUnit = LengthUnit.values.firstWhere(
