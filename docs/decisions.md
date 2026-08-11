@@ -616,6 +616,46 @@ no dart-defines, so it always reports test units. CI cannot catch it either — 
 bundle needs the keystore and `admob.json`, both of which are gitignored and must stay that way.
 The only place the truth exists is the built artefact.
 
+---
+
+## D22 — Saving is verified on a device, and rolls back what it cannot finish
+
+**Date:** 2026-08-11 · **Decided by:** Claude · **Milestone:** M6
+
+The MediaStore publish added in `ab24d22` had never executed. `test/features/export_publish_test.dart`
+drives a *mocked* method channel, so it proved the Dart rules and not one line of `MainActivity.kt`.
+`integration_test/` now exists so that code runs on real Android.
+
+**It found a defect on its first run.** `publish` already refused to call a partial save a save — a
+five-page biodata that published three pages returns false and the export screen says it failed. But
+those three pages stayed in the user's gallery. The app said "couldn't save it there" while a
+fragment of the document sat in Pictures: pages the user was told they did not have, of a biodata
+they never got, to find and delete themselves. `saveToGallery` now returns the row's content URI
+instead of its display name — nothing consumed the name, and a URI is the only handle a delete takes
+— and `publish` removes what it already published before returning false.
+
+**Verified on the phone the bug was found on:** before, `probe-partial-1.jpg` was still in MediaStore
+after the failed save; after, the row is gone and every successful save is untouched. Also confirmed
+there: files land in Downloads and Pictures by mime type, all pages of a multi-page save arrive,
+`is_pending` is 0 on every finished row, and a source that cannot be read creates no row at all.
+
+**What these tests deliberately do not render.** `DocumentExporter.renderPages` mounts the page in an
+off-screen `Overlay` and waits for it to paint, and the test binding does not drive frames while an
+`await` is outstanding — so the raster path *hangs* rather than fails under `integration_test`, with
+or without `runAsync`. Feeding `publish` plain files tests the Kotlin more directly anyway: the bytes
+are irrelevant to it. One test still exports a real biodata end to end, in English, which takes the
+vector path.
+
+**Still not verified on a device**, and worth being exact about: Perso-Arabic *output*. The risk is
+lower than for native code, because Flutter shapes text itself with the bundled font files rather
+than delegating to Android's text stack, so the host goldens should hold. That is an argument, not a
+measurement, and it does not replace open item 3 — a native reader looking at a real export.
+
+Open item 4, the NFR-2 benchmark, also remains open: launch timing needs the screen on and the phone
+unlocked, which is the owner's to do. For reference, a full A4 export with border artwork took
+**1.6–2.0 s** on an OPPO CPH2001 (Android 11, 7.8 GB) — but that is a 7.8 GB phone, not the 3 GB one
+NFR-2 names, so it is a data point and not a pass.
+
 **How this was nearly shipped.** At the time the script was written, the only artefact on disk was
 an APK built with test IDs for an emulator smoke test; the correctly-configured bundle had been
 overwritten by it, and predated a fix that made the template picker work at all. Both facts were
@@ -633,7 +673,7 @@ naming the test units. A gate that has never been seen to fail is not known to w
 | 1 | Who reviews Sindhi / Pashto / Punjabi translations? **Now blocking:** draft labels ship in `assets/i18n/field_labels.json` marked `draft`, and the export screen warns when an unreviewed language is selected. | M3 (open) |
 | ~~2~~ | ~~**D7 ruling** — should a built-in field borrow another language's rename, or fall back to its shipped translation?~~ **Settled: option 2, ruled by owner 2026-08-11. Implemented in `LabelResolver`.** | closed |
 | 3 | Native-reader sign-off on the Urdu/Sindhi/Pashto output — the last M0 exit criterion. | M0 (open) |
-| 4 | Real-device benchmark against NFR-2 (< 3 s on a 3 GB phone). | M0 / M6 |
+| 4 | Real-device benchmark against NFR-2 (< 3 s on a 3 GB phone). **Partial:** a full A4 export with border artwork ran in 1.6–2.0 s on an OPPO CPH2001 (Android 11, 7.8 GB) — see D22. Still needs a 3 GB phone, and launch timing needs the screen unlocked. | M0 / M6 |
 | ~~5~~ | ~~Watermark **wording**.~~ **Settled: "Made with Pakistani Biodata Maker", following the rename.** | closed |
 | ~~6~~ | ~~Photos: included by default in templates, or opt-in?~~ **Answered by D12: opt-in per export, reset on every mode change.** | closed |
 | 7 | Backup password policy: enforce minimum strength, or warn only? **M5 ships a minimum of 8 characters and nothing more.** | M6 |
