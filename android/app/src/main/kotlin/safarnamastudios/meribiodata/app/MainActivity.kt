@@ -4,6 +4,7 @@ import android.content.ActivityNotFoundException
 import android.content.ContentValues
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.net.Uri
 import android.os.Build
 import android.os.Environment
 import android.provider.MediaStore
@@ -60,6 +61,10 @@ class MainActivity : FlutterActivity() {
                         val mimeType = call.argument<String>("mimeType") ?: "*/*"
                         result.success(publish(path, mimeType))
                     }
+                    "removeFromGallery" -> {
+                        val uri = call.argument<String>("uri")
+                        result.success(unpublish(uri))
+                    }
                     else -> result.notImplemented()
                 }
             }
@@ -69,9 +74,10 @@ class MainActivity : FlutterActivity() {
     /**
      * Copies [path] into the user's own Downloads or Pictures collection.
      *
-     * Returns the public display name on success and null on any failure, so
+     * Returns the new row's content URI on success and null on any failure, so
      * the Dart side can tell the user plainly rather than claiming a save that
-     * did not happen.
+     * did not happen — and so it can undo this one if a later page of the same
+     * biodata fails. See [unpublish].
      *
      * Only on API 29+. Below that, publishing to a public collection needs
      * WRITE_EXTERNAL_STORAGE — a runtime permission prompt asking for access to
@@ -114,11 +120,33 @@ class MainActivity : FlutterActivity() {
             values.clear()
             values.put(MediaStore.MediaColumns.IS_PENDING, 0)
             resolver.update(uri, values, null, null)
-            source.name
+            uri.toString()
         } catch (e: Exception) {
             // Leave nothing half-written behind for the gallery to trip over.
             resolver.delete(uri, null, null)
             null
+        }
+    }
+
+    /**
+     * Removes a row [publish] created, identified by the URI it returned.
+     *
+     * Saving a biodata is all-or-nothing: a five-page export that published
+     * three pages is not saved, and the app says so. Without this, those three
+     * pages would still be sitting in the user's gallery contradicting the
+     * message — pages they never got a complete document from, and would have
+     * to find and delete themselves.
+     *
+     * Only rows this app created are reachable: MediaStore denies an app
+     * deletion of another app's media without a user consent prompt, which is
+     * exactly the boundary wanted here.
+     */
+    private fun unpublish(uri: String?): Boolean {
+        if (uri == null || Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) return false
+        return try {
+            contentResolver.delete(Uri.parse(uri), null, null) > 0
+        } catch (e: Exception) {
+            false
         }
     }
 

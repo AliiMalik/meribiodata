@@ -17,17 +17,25 @@ void main() {
   late Directory temp;
   late List<Map<String, String>> calls;
 
+  /// URIs the fake platform was asked to delete again.
+  late List<String> removed;
+
   /// What the platform will answer with, one reply per call.
   late List<String?> replies;
 
   setUp(() async {
     temp = await Directory.systemTemp.createTemp('publish');
     calls = [];
+    removed = [];
     replies = [];
 
     messenger.setMockMethodCallHandler(channel, (call) async {
-      if (call.method != 'saveToGallery') return null;
       final args = (call.arguments as Map).cast<String, Object?>();
+      if (call.method == 'removeFromGallery') {
+        removed.add(args['uri']! as String);
+        return true;
+      }
+      if (call.method != 'saveToGallery') return null;
       calls.add({
         'path': args['path']! as String,
         'mimeType': args['mimeType']! as String,
@@ -57,7 +65,7 @@ void main() {
   const service = ExportService();
 
   test('a single file that publishes reports success', () async {
-    replies = ['biodata.pdf'];
+    replies = ['content://media/1'];
 
     final published = await service.publish(
       resultWith(1),
@@ -69,7 +77,7 @@ void main() {
   });
 
   test('the mime type decides Downloads or Pictures', () async {
-    replies = ['biodata.jpg'];
+    replies = ['content://media/1'];
 
     await service.publish(resultWith(1), mimeType: 'image/jpeg');
 
@@ -79,7 +87,7 @@ void main() {
   });
 
   test('every page of a multi-page biodata is published', () async {
-    replies = ['p0.jpg', 'p1.jpg', 'p2.jpg'];
+    replies = ['content://media/1', 'content://media/2', 'content://media/3'];
 
     final published = await service.publish(
       resultWith(3),
@@ -92,7 +100,7 @@ void main() {
 
   test('a partial save is not reported as a save', () async {
     // Three pages, and the second one fails.
-    replies = ['p0.jpg', null, 'p2.jpg'];
+    replies = ['content://media/1', null, 'content://media/3'];
 
     final published = await service.publish(
       resultWith(3),
@@ -103,6 +111,40 @@ void main() {
     // three arrived is worse than telling them it failed — they would find out
     // when they went to send it.
     expect(published, isFalse);
+  });
+
+  test('a partial save takes back the pages that did land', () async {
+    replies = ['content://media/1', null];
+
+    await service.publish(resultWith(3), mimeType: 'image/jpeg');
+
+    // Found on a real phone: publish() correctly returned false while page one
+    // stayed in the gallery, so the user was told the save failed and had a
+    // stray page of a biodata they were told they did not have.
+    expect(removed, ['content://media/1']);
+  });
+
+  test(
+    'a save that fails on the first page has nothing to take back',
+    () async {
+      replies = [null];
+
+      await service.publish(resultWith(2), mimeType: 'image/jpeg');
+
+      expect(removed, isEmpty);
+    },
+  );
+
+  test('a save that fully succeeds removes nothing', () async {
+    replies = ['content://media/1', 'content://media/2'];
+
+    final published = await service.publish(
+      resultWith(2),
+      mimeType: 'image/jpeg',
+    );
+
+    expect(published, isTrue);
+    expect(removed, isEmpty);
   });
 
   test('a platform with no such channel fails rather than lying', () async {

@@ -70,13 +70,15 @@ void main() {
       );
     });
 
-    test('the shipped label for the requested language, with no renames at all',
-        () {
-      expect(
-        resolver.fieldLabel(schema.fieldById(casteId)!, 'ur'),
-        'ذات / برادری',
-      );
-    });
+    test(
+      'the shipped label for the requested language, with no renames at all',
+      () {
+        expect(
+          resolver.fieldLabel(schema.fieldById(casteId)!, 'ur'),
+          'ذات / برادری',
+        );
+      },
+    );
 
     test('4. the shipped English label when the language has none', () {
       final bloodGroup = schema.fieldByBuiltInKey(BuiltInKeys.bloodGroup)!;

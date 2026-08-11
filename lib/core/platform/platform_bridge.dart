@@ -49,12 +49,14 @@ class PlatformBridge {
 
   /// Copies [file] into the user's Downloads (documents) or Pictures (images).
   ///
-  /// Returns the visible file name on success, or null when the copy could not
-  /// be made — which callers must treat as "not saved" rather than glossing
+  /// Returns the new item's content URI on success, or null when the copy could
+  /// not be made — which callers must treat as "not saved" rather than glossing
   /// over it. Null is also what Android 9 and older return: publishing to a
   /// public folder there needs a permission to read and write *all* the user's
   /// files, which is an absurd thing for this app to ask for, so those versions
   /// are pointed at the share sheet instead.
+  ///
+  /// Keep the URI: it is the only handle [removeFromGallery] accepts.
   Future<String?> saveToGallery({
     required File file,
     required String mimeType,
@@ -62,6 +64,14 @@ class PlatformBridge {
     'path': file.path,
     'mimeType': mimeType,
   });
+
+  /// Removes an item [saveToGallery] created, by the URI it returned.
+  ///
+  /// Used to undo a partial save. A save that could not finish must not leave
+  /// the pages that did land sitting in the user's gallery, contradicting the
+  /// message telling them it failed.
+  Future<bool> removeFromGallery(String uri) async =>
+      await _invoke<bool>('removeFromGallery', {'uri': uri}) ?? false;
 
   Future<T?> _invoke<T>(String method, [Object? arguments]) async {
     try {

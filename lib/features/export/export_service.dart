@@ -134,18 +134,28 @@ class ExportService {
   /// Returns true only if *all* of them landed. A multi-page biodata that
   /// published three pages of five is not "saved", and telling the user it was
   /// would be worse than telling them it failed.
+  ///
+  /// When one page fails, the pages already published are removed again. An
+  /// on-device run proved this was needed: the app reported the save had failed
+  /// while page one sat in the gallery regardless, leaving the user with a
+  /// fragment of a document they were told they did not have.
   Future<bool> publish(
     ExportResult result, {
     required String mimeType,
     PlatformBridge platform = const PlatformBridge(),
   }) async {
     if (result.files.isEmpty) return false;
+
+    final published = <String>[];
     for (final file in result.files) {
-      final saved = await platform.saveToGallery(
-        file: file,
-        mimeType: mimeType,
-      );
-      if (saved == null) return false;
+      final uri = await platform.saveToGallery(file: file, mimeType: mimeType);
+      if (uri == null) {
+        for (final done in published) {
+          await platform.removeFromGallery(done);
+        }
+        return false;
+      }
+      published.add(uri);
     }
     return true;
   }
