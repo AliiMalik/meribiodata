@@ -31,21 +31,47 @@ void main() {
       );
     });
 
-    test('2. an override in another language is used before the shipped '
-        'label, because the user has said something about this field', () {
+    test('2. the shipped label for the requested language outranks a rename '
+        'made in another language (D7)', () {
       final edited = schema.renameField(
         casteId,
         label: 'ذات / برادری / قوم',
         localeCode: 'ur',
       );
 
+      // The D7 ruling. An Urdu rename must not put Urdu words into the English
+      // document when English has a correct shipped label of its own — that
+      // blemish ends up in the exported PDF.
       expect(
         resolver.fieldLabel(edited.fieldById(casteId)!, 'en'),
-        'ذات / برادری / قوم',
+        'Caste / Biradari',
       );
     });
 
-    test('3. the shipped label for the requested language', () {
+    test('3. a rename in another language, when this one has no shipped '
+        'label — a custom field', () {
+      final withCustom = schema.addField(
+        sectionId: schema.sections.first.id,
+        type: FieldType.text,
+        label: 'Hobbies',
+        localeCode: 'en',
+        newId: () => 'custom-1',
+      );
+
+      // No shipped label exists for a custom field in any language, so
+      // borrowing is the only alternative to showing a raw id.
+      expect(
+        resolver.fieldLabel(withCustom.fieldById('custom-1')!, 'ur'),
+        'Hobbies',
+      );
+      expect(
+        resolver.isFieldLabelBorrowed(withCustom.fieldById('custom-1')!, 'ur'),
+        isTrue,
+      );
+    });
+
+    test('the shipped label for the requested language, with no renames at all',
+        () {
       expect(
         resolver.fieldLabel(schema.fieldById(casteId)!, 'ur'),
         'ذات / برادری',
@@ -96,6 +122,22 @@ void main() {
     });
 
     test('a borrowed label is flagged so the UI can explain itself', () {
+      // Only a custom field can borrow now, so only a custom field is flagged.
+      final edited = schema.addField(
+        sectionId: schema.sections.first.id,
+        type: FieldType.text,
+        label: 'Hobbies',
+        localeCode: 'en',
+        newId: () => 'custom-1',
+      );
+      final field = edited.fieldById('custom-1')!;
+
+      expect(resolver.isFieldLabelBorrowed(field, 'ur'), isTrue);
+      expect(resolver.isFieldLabelBorrowed(field, 'en'), isFalse);
+    });
+
+    test('a built-in field showing its own shipped label is never flagged '
+        'as borrowed (D7)', () {
       final edited = schema.renameField(
         casteId,
         label: 'قوم',
@@ -103,14 +145,26 @@ void main() {
       );
       final field = edited.fieldById(casteId)!;
 
-      expect(
-        resolver.isBorrowedFromAnotherLanguage(field.labels, 'en'),
-        isTrue,
+      // English resolves to its shipped label, so the chip would be a lie.
+      expect(resolver.fieldLabel(field, 'en'), 'Caste / Biradari');
+      expect(resolver.isFieldLabelBorrowed(field, 'en'), isFalse);
+      expect(resolver.isFieldLabelBorrowed(field, 'ur'), isFalse);
+    });
+
+    test('a built-in field with no shipped label for this language still '
+        'borrows, and is flagged', () {
+      final bloodGroupId = schema.fieldByBuiltInKey(BuiltInKeys.bloodGroup)!.id;
+      final edited = schema.renameField(
+        bloodGroupId,
+        label: 'Blood Type',
+        localeCode: 'en',
       );
-      expect(
-        resolver.isBorrowedFromAnotherLanguage(field.labels, 'ur'),
-        isFalse,
-      );
+      final field = edited.fieldById(bloodGroupId)!;
+
+      // No Urdu translation ships for this one, so the English rename is the
+      // best available — better than the untouched English shipped label.
+      expect(resolver.fieldLabel(field, 'ur'), 'Blood Type');
+      expect(resolver.isFieldLabelBorrowed(field, 'ur'), isTrue);
     });
   });
 
@@ -136,13 +190,13 @@ void main() {
         .sectionById(personal.id)!;
     expect(resolver.sectionTitle(renamed, 'en'), 'About Him');
 
-    // Step 2 of §6.1 outranks the shipped label, so an English rename shows
-    // through in Urdu too — flagged as borrowed rather than silently applied.
-    // See the "renaming across languages" note in docs/decisions.md D7.
-    expect(resolver.sectionTitle(renamed, 'ur'), 'About Him');
-    expect(
-      resolver.isBorrowedFromAnotherLanguage(renamed.titles, 'ur'),
-      isTrue,
-    );
+    // D7: the shipped Urdu title outranks the English rename, so an Urdu
+    // document keeps its reviewed heading and nothing is flagged.
+    expect(resolver.sectionTitle(renamed, 'ur'), 'ذاتی معلومات');
+    expect(resolver.isSectionTitleBorrowed(renamed, 'ur'), isFalse);
+
+    // A section with no shipped title for the language still borrows.
+    expect(resolver.sectionTitle(renamed, 'sd'), 'About Him');
+    expect(resolver.isSectionTitleBorrowed(renamed, 'sd'), isTrue);
   });
 }

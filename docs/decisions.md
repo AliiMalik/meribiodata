@@ -143,9 +143,21 @@ profile is created. "Reset to defaults" in the Schema Editor re-seeds that one p
 
 ---
 
-## D7 — Cross-language label fallback: following §6.1's order, with a caveat
+## D7 — Cross-language label fallback: a shipped translation outranks a foreign rename
 
-**Date:** 2026-08-04 · **Decided by:** Claude, **wants your ruling** · **Milestone:** M2
+**Date:** 2026-08-04, **ruled 2026-08-11** · **Decided by:** owner · **Milestone:** M2
+
+> **Ruling: option 2.** A built-in field with a shipped translation for the document's language uses
+> that translation. Only a field with no shipped label for that language — every custom field, and a
+> built-in one in a language whose translation is missing — falls through to another language's
+> rename. Renames stay stored per language; one still never overwrites another.
+>
+> Implemented in `LabelResolver`: steps 2 and 3 of the order below are now swapped, and
+> `isBorrowedFromAnotherLanguage` is replaced by `isFieldLabelBorrowed` / `isSectionTitleBorrowed`,
+> which ask the same questions in the same order so the UI chip cannot claim a borrow that did not
+> happen. Covered by `test/domain/label_resolver_test.dart`.
+>
+> The original text of the decision follows, unchanged.
 
 §6.1 contains two rules that pull against each other:
 
@@ -619,7 +631,7 @@ naming the test units. A gate that has never been seen to fail is not known to w
 | # | Question | Blocks |
 |---|---|---|
 | 1 | Who reviews Sindhi / Pashto / Punjabi translations? **Now blocking:** draft labels ship in `assets/i18n/field_labels.json` marked `draft`, and the export screen warns when an unreviewed language is selected. | M3 (open) |
-| 2 | **D7 ruling** — should a built-in field borrow another language's rename, or fall back to its shipped translation? Recommendation: option 2. | M3 (open) |
+| ~~2~~ | ~~**D7 ruling** — should a built-in field borrow another language's rename, or fall back to its shipped translation?~~ **Settled: option 2, ruled by owner 2026-08-11. Implemented in `LabelResolver`.** | closed |
 | 3 | Native-reader sign-off on the Urdu/Sindhi/Pashto output — the last M0 exit criterion. | M0 (open) |
 | 4 | Real-device benchmark against NFR-2 (< 3 s on a 3 GB phone). | M0 / M6 |
 | ~~5~~ | ~~Watermark **wording**.~~ **Settled: "Made with Pakistani Biodata Maker", following the rename.** | closed |
@@ -627,5 +639,5 @@ naming the test units. A gate that has never been seen to fail is not known to w
 | 7 | Backup password policy: enforce minimum strength, or warn only? **M5 ships a minimum of 8 characters and nothing more.** | M6 |
 | ~~8~~ | ~~The waitlist form URL itself, once you create the form.~~ **Moot: the waitlist is withdrawn (D17).** | closed |
 | ~~9~~ | ~~Play Console account (needed only for the M6 upload).~~ **Registered, fee paid, on alihmalik49@gmail.com. The AdMob account is on the same address.** | closed |
-| 10 | 9.6 Boy/Girl biodata presets — build or not? | M2 (deferred) |
+| ~~10~~ | ~~9.6 Boy/Girl biodata presets — build or not?~~ **Settled: not building them, ruled by owner 2026-08-11. The schema editor already lets a user add, remove and rename any field, so a preset would be a shortcut to something already reachable — and two starting schemas would double what every template and golden has to cover.** | closed |
 | 11 | 9.7 Accessibility for older users — build or not? (strongly recommended) | M5.5 |

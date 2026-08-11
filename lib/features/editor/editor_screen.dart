@@ -174,8 +174,8 @@ class _EditorBody extends StatelessWidget {
                   field: field,
                   label: resolver.fieldLabel(field, language),
                   value: profile.valueOf(field.id),
-                  isLabelBorrowed: resolver.isBorrowedFromAnotherLanguage(
-                    field.labels,
+                  isLabelBorrowed: resolver.isFieldLabelBorrowed(
+                    field,
                     language,
                   ),
                   documentLanguage: AppLanguages.byCode(language),

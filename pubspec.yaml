@@ -46,6 +46,10 @@ dev_dependencies:
   build_runner: ^2.15.1
   flutter_test:
     sdk: flutter
+  # On-device tests. The MediaStore save and the Perso-Arabic shaping are both
+  # native paths that a host-side test cannot reach — see integration_test/.
+  integration_test:
+    sdk: flutter
   # Pinned: 3.2.6-dev.1 is a prerelease and 3.2.5 is the newest stable that
   # resolves against this analyzer version.
   freezed: 3.2.5
