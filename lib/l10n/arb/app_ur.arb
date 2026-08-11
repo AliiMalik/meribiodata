@@ -133,14 +133,6 @@
   "exportPdf": "پی ڈی ایف بنائیں",
   "exportImage": "تصویر محفوظ کریں",
   "exportShare": "بھیجیں",
-  "exportSaved": "{location} میں محفوظ ہو گیا",
-  "@exportSaved": {
-    "placeholders": {
-      "location": {
-        "type": "String"
-      }
-    }
-  },
   "exportFailed": "دستاویز تیار نہیں ہو سکی۔",
   "exportDraftLanguageWarning": "اس زبان کے عنوانات کا ابھی مقامی ماہرین جائزہ لے رہے ہیں۔",
   "exportMode": "یہ کس کے لیے ہے؟",
@@ -359,5 +351,11 @@
   "exportTextSizeLarge": "بڑا",
   "@exportTextSizeLarge": {},
   "exportTextSizeLargest": "سب سے بڑا",
-  "@exportTextSizeLargest": {}
+  "@exportTextSizeLargest": {},
+  "exportSavedDownloads": "آپ کے ڈاؤن لوڈز فولڈر میں محفوظ ہو گیا۔",
+  "@exportSavedDownloads": {},
+  "exportSavedPictures": "تصاویر میں محفوظ ہو گیا — گیلری میں دیکھیں۔",
+  "@exportSavedPictures": {},
+  "exportSaveElsewhere": "یہ فون وہاں محفوظ نہیں کر سکتا۔ جگہ خود منتخب کریں۔",
+  "@exportSaveElsewhere": {}
 }

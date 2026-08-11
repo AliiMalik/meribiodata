@@ -129,6 +129,27 @@ class ExportService {
     );
   }
 
+  /// Copies every file of [result] into the user's own Downloads or Pictures.
+  ///
+  /// Returns true only if *all* of them landed. A multi-page biodata that
+  /// published three pages of five is not "saved", and telling the user it was
+  /// would be worse than telling them it failed.
+  Future<bool> publish(
+    ExportResult result, {
+    required String mimeType,
+    PlatformBridge platform = const PlatformBridge(),
+  }) async {
+    if (result.files.isEmpty) return false;
+    for (final file in result.files) {
+      final saved = await platform.saveToGallery(
+        file: file,
+        mimeType: mimeType,
+      );
+      if (saved == null) return false;
+    }
+    return true;
+  }
+
   Future<void> share(ExportResult result, {String? text}) async {
     await SharePlus.instance.share(
       ShareParams(

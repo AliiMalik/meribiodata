@@ -228,14 +228,6 @@
   "@exportImage": {},
   "exportShare": "Share",
   "@exportShare": {},
-  "exportSaved": "Saved to {location}",
-  "@exportSaved": {
-    "placeholders": {
-      "location": {
-        "type": "String"
-      }
-    }
-  },
   "exportFailed": "The export could not be created.",
   "@exportFailed": {},
   "exportDraftLanguageWarning": "The labels for this language are still being reviewed by native speakers.",
@@ -564,5 +556,11 @@
   "exportTextSizeLarge": "Larger",
   "@exportTextSizeLarge": {},
   "exportTextSizeLargest": "Largest",
-  "@exportTextSizeLargest": {}
+  "@exportTextSizeLargest": {},
+  "exportSavedDownloads": "Saved to your Downloads folder.",
+  "@exportSavedDownloads": {},
+  "exportSavedPictures": "Saved to your Pictures — look in your gallery.",
+  "@exportSavedPictures": {},
+  "exportSaveElsewhere": "This phone cannot save it there. Choose where to keep it.",
+  "@exportSaveElsewhere": {}
 }

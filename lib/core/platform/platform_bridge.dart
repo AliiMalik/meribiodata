@@ -3,10 +3,15 @@ import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 
-/// The one thing this app asks the Android platform for directly (9.1).
+/// What this app asks the Android platform for directly.
 ///
-/// It exists because `share_plus` cannot target a specific app, and a biodata
-/// in Pakistan travels on WhatsApp more than by any other route.
+/// **WhatsApp share (9.1)**, because `share_plus` cannot target a specific app
+/// and a biodata in Pakistan travels on WhatsApp more than by any other route.
+///
+/// **Publishing an export**, because a file written to app-private storage can
+/// be handed to another app through a FileProvider grant but can never be
+/// found by the person who saved it, and disappears when the app is
+/// uninstalled.
 ///
 /// A document picker used to live here too, for choosing a `.mbd` backup file.
 /// Drive sync replaced that flow, so it went with it rather than staying as
@@ -41,6 +46,22 @@ class PlatformBridge {
         }) ??
         false;
   }
+
+  /// Copies [file] into the user's Downloads (documents) or Pictures (images).
+  ///
+  /// Returns the visible file name on success, or null when the copy could not
+  /// be made — which callers must treat as "not saved" rather than glossing
+  /// over it. Null is also what Android 9 and older return: publishing to a
+  /// public folder there needs a permission to read and write *all* the user's
+  /// files, which is an absurd thing for this app to ask for, so those versions
+  /// are pointed at the share sheet instead.
+  Future<String?> saveToGallery({
+    required File file,
+    required String mimeType,
+  }) => _invoke<String>('saveToGallery', {
+    'path': file.path,
+    'mimeType': mimeType,
+  });
 
   Future<T?> _invoke<T>(String method, [Object? arguments]) async {
     try {

@@ -157,6 +157,7 @@ class _ExportScreenState extends State<ExportScreen> {
   Future<void> _run(
     Future<ExportResult> Function() job, {
     _ShareTarget share = _ShareTarget.none,
+    String saveMimeType = 'application/pdf',
   }) async {
     if (_busy) return;
     // Checked here rather than only on the buttons: this is the one path every
@@ -172,9 +173,32 @@ class _ExportScreenState extends State<ExportScreen> {
       final result = await job();
       switch (share) {
         case _ShareTarget.none:
-          messenger.showSnackBar(
-            SnackBar(content: Text(l10n.exportSaved(result.files.first.path))),
+          // Rendering writes to app-private storage, which the user can never
+          // browse to and which uninstalling erases. "Save" therefore has to
+          // publish a copy somewhere they can actually find it.
+          final published = await _service.publish(
+            result,
+            mimeType: saveMimeType,
           );
+          if (published) {
+            messenger.showSnackBar(
+              SnackBar(
+                content: Text(
+                  saveMimeType.startsWith('image/')
+                      ? l10n.exportSavedPictures
+                      : l10n.exportSavedDownloads,
+                ),
+              ),
+            );
+          } else {
+            // Android 9 and older, or MediaStore refused. Rather than claim a
+            // save that did not happen, hand it to the share sheet so the user
+            // still chooses somewhere to keep it.
+            messenger.showSnackBar(
+              SnackBar(content: Text(l10n.exportSaveElsewhere)),
+            );
+            await _service.share(result);
+          }
         case _ShareTarget.sheet:
           await _service.share(result);
         case _ShareTarget.whatsApp:
@@ -399,6 +423,7 @@ class _ExportScreenState extends State<ExportScreen> {
                         page: page,
                         fileName: fileName,
                       ),
+                      saveMimeType: 'image/jpeg',
                     ),
                     icon: const Icon(Icons.image_outlined),
                     label: Text(l10n.exportImage),

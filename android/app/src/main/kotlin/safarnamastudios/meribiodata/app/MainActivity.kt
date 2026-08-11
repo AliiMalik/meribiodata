@@ -1,8 +1,12 @@
 package safarnamastudios.meribiodata.app
 
 import android.content.ActivityNotFoundException
+import android.content.ContentValues
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.os.Build
+import android.os.Environment
+import android.provider.MediaStore
 import androidx.core.content.FileProvider
 import io.flutter.embedding.android.FlutterActivity
 import io.flutter.embedding.engine.FlutterEngine
@@ -15,6 +19,13 @@ import java.io.File
  * **WhatsApp share (9.1).** share_plus cannot target a specific app, and a
  * biodata in Pakistan circulates on WhatsApp far more than by any other route,
  * so burying it in a generic chooser is the wrong default.
+ *
+ * **Saving an export where the user can find it.** Exports are rendered into
+ * app-private storage, which the share sheet can hand out through a
+ * FileProvider grant but which the user can never browse to — and which is
+ * erased on uninstall. "Save" therefore publishes a copy through MediaStore,
+ * so a PDF lands in Downloads and an image in Pictures, visible in Files and
+ * the gallery like anything else they downloaded.
  *
  * A Storage Access Framework document picker used to live here too, for
  * choosing a `.mbd` backup file to restore. Google Drive sync replaced that
@@ -44,9 +55,70 @@ class MainActivity : FlutterActivity() {
                         val text = call.argument<String>("text")
                         result.success(share(paths, mimeType, text))
                     }
+                    "saveToGallery" -> {
+                        val path = call.argument<String>("path")
+                        val mimeType = call.argument<String>("mimeType") ?: "*/*"
+                        result.success(publish(path, mimeType))
+                    }
                     else -> result.notImplemented()
                 }
             }
+        }
+    }
+
+    /**
+     * Copies [path] into the user's own Downloads or Pictures collection.
+     *
+     * Returns the public display name on success and null on any failure, so
+     * the Dart side can tell the user plainly rather than claiming a save that
+     * did not happen.
+     *
+     * Only on API 29+. Below that, publishing to a public collection needs
+     * WRITE_EXTERNAL_STORAGE — a runtime permission prompt asking for access to
+     * *all* the user's files, in an app whose entire pitch is that it touches
+     * nothing. That is a bad trade for a shrinking slice of devices, so older
+     * versions fall back to the share sheet, which reaches the same Files app
+     * without any permission at all.
+     */
+    private fun publish(path: String?, mimeType: String): String? {
+        if (path == null || Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) return null
+
+        val source = File(path)
+        if (!source.exists()) return null
+
+        val images = mimeType.startsWith("image/")
+        val collection = if (images) {
+            MediaStore.Images.Media.getContentUri(MediaStore.VOLUME_EXTERNAL_PRIMARY)
+        } else {
+            MediaStore.Downloads.getContentUri(MediaStore.VOLUME_EXTERNAL_PRIMARY)
+        }
+        val folder = if (images) Environment.DIRECTORY_PICTURES else Environment.DIRECTORY_DOWNLOADS
+
+        val values = ContentValues().apply {
+            put(MediaStore.MediaColumns.DISPLAY_NAME, source.name)
+            put(MediaStore.MediaColumns.MIME_TYPE, mimeType)
+            put(MediaStore.MediaColumns.RELATIVE_PATH, folder)
+            // Hides the row until the bytes are written. Without it a gallery
+            // can index a half-copied file and show a broken thumbnail.
+            put(MediaStore.MediaColumns.IS_PENDING, 1)
+        }
+
+        val resolver = contentResolver
+        val uri = resolver.insert(collection, values) ?: return null
+
+        return try {
+            resolver.openOutputStream(uri).use { out ->
+                if (out == null) throw java.io.IOException("no output stream")
+                source.inputStream().use { it.copyTo(out) }
+            }
+            values.clear()
+            values.put(MediaStore.MediaColumns.IS_PENDING, 0)
+            resolver.update(uri, values, null, null)
+            source.name
+        } catch (e: Exception) {
+            // Leave nothing half-written behind for the gallery to trip over.
+            resolver.delete(uri, null, null)
+            null
         }
     }
 
