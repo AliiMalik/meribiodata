@@ -1,8 +1,8 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:meribiodata/core/theme/app_colors.dart';
 import 'package:meribiodata/core/theme/app_spacing.dart';
+import 'package:meribiodata/core/theme/app_theme.dart';
 import 'package:meribiodata/core/widgets/text_prompt_dialog.dart';
 import 'package:meribiodata/data/bundled_labels.dart';
 import 'package:meribiodata/data/profile_repository.dart';
@@ -176,11 +176,11 @@ class _SectionPanel extends StatelessWidget {
               children: [
                 ReorderableDragStartListener(
                   index: section.order,
-                  child: const Padding(
-                    padding: EdgeInsets.only(right: AppSpacing.sm),
+                  child: Padding(
+                    padding: const EdgeInsets.only(right: AppSpacing.sm),
                     child: Icon(
                       Icons.drag_handle,
-                      color: AppColors.textSecondary,
+                      color: context.colors.onSurfaceVariant,
                     ),
                   ),
                 ),
@@ -233,7 +233,7 @@ class _SectionPanel extends StatelessWidget {
                   fields[i].isVisible
                       ? Icons.check_box_outlined
                       : Icons.check_box_outline_blank,
-                  color: AppColors.textSecondary,
+                  color: context.colors.onSurfaceVariant,
                 ),
                 title: Text(resolver.fieldLabel(fields[i], language)),
                 subtitle: fields[i].isSensitive

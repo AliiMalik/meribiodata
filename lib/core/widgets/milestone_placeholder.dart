@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:meribiodata/core/theme/app_colors.dart';
 import 'package:meribiodata/core/theme/app_spacing.dart';
+import 'package:meribiodata/core/theme/app_theme.dart';
 
 /// Stands in for a screen that a later milestone will build.
 ///
@@ -39,13 +39,13 @@ class MilestonePlaceholder extends StatelessWidget {
                   vertical: AppSpacing.xs,
                 ),
                 decoration: BoxDecoration(
-                  color: AppColors.lightGreen,
+                  color: context.colors.primaryContainer,
                   borderRadius: BorderRadius.circular(AppSpacing.radiusSm),
                 ),
                 child: Text(
                   '$milestone — not built yet',
                   style: text.labelLarge?.copyWith(
-                    color: AppColors.onLightGreen,
+                    color: context.colors.onPrimaryContainer,
                   ),
                 ),
               ),

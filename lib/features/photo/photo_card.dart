@@ -3,8 +3,8 @@ import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:meribiodata/core/theme/app_colors.dart';
 import 'package:meribiodata/core/theme/app_spacing.dart';
+import 'package:meribiodata/core/theme/app_theme.dart';
 import 'package:meribiodata/core/widgets/text_prompt_dialog.dart';
 import 'package:meribiodata/features/photo/photo_crop_screen.dart';
 import 'package:meribiodata/features/photo/photo_processor.dart';
@@ -194,7 +194,7 @@ class _PhotoCardState extends State<PhotoCard> {
                       Text(
                         l10n.photoPrivacy,
                         style: text.bodySmall?.copyWith(
-                          color: AppColors.textSecondary,
+                          color: context.colors.onSurfaceVariant,
                         ),
                       ),
                       const SizedBox(height: AppSpacing.sm),
@@ -231,7 +231,7 @@ class _PhotoCardState extends State<PhotoCard> {
                 subtitle: Text(
                   l10n.photoSeparatePageHint,
                   style: text.bodySmall?.copyWith(
-                    color: AppColors.textSecondary,
+                    color: context.colors.onSurfaceVariant,
                   ),
                 ),
                 value: widget.onSeparatePage,
@@ -272,7 +272,7 @@ class _Thumbnail extends StatelessWidget {
         // a square crop the document cannot deliver.
         height: _width / PhotoProcessor.aspectRatio,
         decoration: BoxDecoration(
-          color: AppColors.divider,
+          color: context.colors.outlineVariant,
           borderRadius: BorderRadius.circular(AppSpacing.radiusSm),
         ),
         clipBehavior: Clip.antiAlias,
@@ -298,11 +298,11 @@ class _Thumbnail extends StatelessWidget {
               ),
             ),
           ),
-          _ => const Center(
+          _ => Center(
             child: Icon(
               Icons.person_outline,
               size: 32,
-              color: AppColors.textSecondary,
+              color: context.colors.onSurfaceVariant,
             ),
           ),
         },

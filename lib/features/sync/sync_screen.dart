@@ -1,8 +1,8 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:meribiodata/core/theme/app_colors.dart';
 import 'package:meribiodata/core/theme/app_spacing.dart';
+import 'package:meribiodata/core/theme/app_theme.dart';
 import 'package:meribiodata/core/widgets/text_prompt_dialog.dart';
 import 'package:meribiodata/features/sync/backup_service.dart';
 import 'package:meribiodata/features/sync/sync_controller.dart';
@@ -227,7 +227,9 @@ class _SyncScreenState extends State<SyncScreen> {
           const SizedBox(height: AppSpacing.xl),
           Text(
             l10n.backupNoRecovery,
-            style: text.bodySmall?.copyWith(color: AppColors.textSecondary),
+            style: text.bodySmall?.copyWith(
+              color: context.colors.onSurfaceVariant,
+            ),
           ),
         ],
       ),
@@ -284,7 +286,7 @@ class _StatusCard extends StatelessWidget {
                     Text(
                       email,
                       style: text.bodySmall?.copyWith(
-                        color: AppColors.textSecondary,
+                        color: context.colors.onSurfaceVariant,
                       ),
                     ),
                   ],

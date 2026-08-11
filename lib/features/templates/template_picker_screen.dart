@@ -4,8 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:meribiodata/core/preferences/app_preferences.dart';
 import 'package:meribiodata/core/router/app_routes.dart';
-import 'package:meribiodata/core/theme/app_colors.dart';
 import 'package:meribiodata/core/theme/app_spacing.dart';
+import 'package:meribiodata/core/theme/app_theme.dart';
 import 'package:meribiodata/data/bundled_labels.dart';
 import 'package:meribiodata/data/profile_repository.dart';
 import 'package:meribiodata/domain/render/document_builder.dart';
@@ -270,10 +270,12 @@ class _TemplateCard extends StatelessWidget {
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
           border: Border.all(
-            color: isSelected ? AppColors.primaryDark : AppColors.divider,
+            color: isSelected
+                ? context.colors.primary
+                : context.colors.outlineVariant,
             width: isSelected ? 2 : 1,
           ),
-          color: isSelected ? AppColors.lightGreen : null,
+          color: isSelected ? context.colors.primaryContainer : null,
         ),
         child: Column(
           children: [
@@ -293,14 +295,14 @@ class _TemplateCard extends StatelessWidget {
                       bottom: 0,
                       child: Container(
                         padding: const EdgeInsets.all(AppSpacing.xs),
-                        decoration: const BoxDecoration(
-                          color: AppColors.accentGold,
+                        decoration: BoxDecoration(
+                          color: context.semantics.badge,
                           shape: BoxShape.circle,
                         ),
-                        child: const Icon(
+                        child: Icon(
                           Icons.lock,
                           size: 16,
-                          color: AppColors.onAccentGold,
+                          color: context.semantics.onBadge,
                         ),
                       ),
                     ),
@@ -321,17 +323,24 @@ class _TemplateCard extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       if (isSelected) ...[
-                        const Icon(
+                        Icon(
                           Icons.check_circle,
                           size: 16,
-                          color: AppColors.primaryDark,
+                          color: context.colors.onPrimaryContainer,
                         ),
                         const SizedBox(width: AppSpacing.xs),
                       ],
                       Flexible(
+                        // A selected card is filled, so its label takes the
+                        // fill's "on" colour; an unselected one sits on the
+                        // page and keeps the ordinary body colour.
                         child: Text(
                           template.name,
-                          style: text.titleMedium,
+                          style: text.titleMedium?.copyWith(
+                            color: isSelected
+                                ? context.colors.onPrimaryContainer
+                                : null,
+                          ),
                           textAlign: TextAlign.center,
                           maxLines: 2,
                           overflow: TextOverflow.ellipsis,
@@ -342,7 +351,11 @@ class _TemplateCard extends StatelessWidget {
                   if (!usable)
                     Text(
                       l10n.templateLocked,
-                      style: text.bodySmall,
+                      style: text.bodySmall?.copyWith(
+                        color: isSelected
+                            ? context.colors.onPrimaryContainer
+                            : null,
+                      ),
                       textAlign: TextAlign.center,
                     )
                   // Shown only for an ad-unlock, which runs out. Premium and
@@ -350,13 +363,21 @@ class _TemplateCard extends StatelessWidget {
                   else if (hoursLeft case final int hours)
                     Text(
                       l10n.templateUnlockedHoursLeft(hours),
-                      style: text.bodySmall,
+                      style: text.bodySmall?.copyWith(
+                        color: isSelected
+                            ? context.colors.onPrimaryContainer
+                            : null,
+                      ),
                       textAlign: TextAlign.center,
                     )
                   else if (template.isMonochrome)
                     Text(
                       l10n.templateMonochrome,
-                      style: text.bodySmall,
+                      style: text.bodySmall?.copyWith(
+                        color: isSelected
+                            ? context.colors.onPrimaryContainer
+                            : null,
+                      ),
                       textAlign: TextAlign.center,
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,

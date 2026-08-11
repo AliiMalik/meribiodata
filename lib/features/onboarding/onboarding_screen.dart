@@ -4,8 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:meribiodata/core/preferences/app_preferences.dart';
 import 'package:meribiodata/core/router/app_routes.dart';
-import 'package:meribiodata/core/theme/app_colors.dart';
 import 'package:meribiodata/core/theme/app_spacing.dart';
+import 'package:meribiodata/core/theme/app_theme.dart';
 import 'package:meribiodata/core/widgets/language_option_tile.dart';
 import 'package:meribiodata/l10n/generated/app_localizations.dart';
 import 'package:meribiodata/l10n/language_descriptor.dart';
@@ -126,7 +126,7 @@ class _Panel extends StatelessWidget {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(icon, size: 64, color: AppColors.primaryGreen),
+          Icon(icon, size: 64, color: context.colors.primary),
           const SizedBox(height: AppSpacing.xl),
           Text(title, style: text.headlineMedium, textAlign: TextAlign.center),
           const SizedBox(height: AppSpacing.md),
@@ -185,7 +185,9 @@ class _Dots extends StatelessWidget {
           margin: const EdgeInsets.symmetric(horizontal: AppSpacing.xs),
           decoration: BoxDecoration(
             shape: BoxShape.circle,
-            color: i == active ? AppColors.primaryGreen : AppColors.divider,
+            color: i == active
+                ? context.colors.primary
+                : context.colors.outlineVariant,
           ),
         ),
     ],
@@ -206,10 +208,10 @@ class _PremiumPanel extends StatelessWidget {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          const Icon(
+          Icon(
             Icons.workspace_premium_outlined,
             size: 64,
-            color: AppColors.primaryGreen,
+            color: context.colors.primary,
           ),
           const SizedBox(height: AppSpacing.xl),
           Text(

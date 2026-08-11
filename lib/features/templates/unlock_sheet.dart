@@ -3,8 +3,8 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:meribiodata/core/router/app_routes.dart';
-import 'package:meribiodata/core/theme/app_colors.dart';
 import 'package:meribiodata/core/theme/app_spacing.dart';
+import 'package:meribiodata/core/theme/app_theme.dart';
 import 'package:meribiodata/domain/render/template.dart';
 import 'package:meribiodata/features/ads/rewarded_ads.dart';
 import 'package:meribiodata/features/templates/template_unlocks.dart';
@@ -97,7 +97,7 @@ class _UnlockSheetState extends State<_UnlockSheet> {
           children: [
             Row(
               children: [
-                const Icon(Icons.lock_outline, color: AppColors.primaryGreen),
+                Icon(Icons.lock_outline, color: context.colors.primary),
                 const SizedBox(width: AppSpacing.md),
                 Expanded(
                   child: Text(

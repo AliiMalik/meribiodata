@@ -6,8 +6,8 @@ import 'package:go_router/go_router.dart';
 import 'package:meribiodata/core/platform/platform_bridge.dart';
 import 'package:meribiodata/core/preferences/app_preferences.dart';
 import 'package:meribiodata/core/router/app_routes.dart';
-import 'package:meribiodata/core/theme/app_colors.dart';
 import 'package:meribiodata/core/theme/app_spacing.dart';
+import 'package:meribiodata/core/theme/app_theme.dart';
 import 'package:meribiodata/data/bundled_labels.dart';
 import 'package:meribiodata/data/profile_repository.dart';
 import 'package:meribiodata/domain/render/document_builder.dart';
@@ -518,15 +518,26 @@ class _Notice extends StatelessWidget {
     margin: const EdgeInsets.only(bottom: AppSpacing.lg),
     padding: const EdgeInsets.all(AppSpacing.md),
     decoration: BoxDecoration(
-      color: AppColors.lightGreen,
+      color: context.colors.primaryContainer,
       borderRadius: BorderRadius.circular(AppSpacing.radiusSm),
     ),
     child: Row(
       children: [
-        const Icon(Icons.info_outline, size: 18, color: AppColors.primaryDark),
+        Icon(
+          Icons.info_outline,
+          size: 18,
+          color: context.colors.onPrimaryContainer,
+        ),
         const SizedBox(width: AppSpacing.sm),
         Expanded(
-          child: Text(text, style: Theme.of(context).textTheme.bodySmall),
+          // The container's own "on" colour, not the page's body colour: the
+          // latter is near-white and this panel is near-white at night.
+          child: Text(
+            text,
+            style: Theme.of(context).textTheme.bodySmall?.copyWith(
+              color: context.colors.onPrimaryContainer,
+            ),
+          ),
         ),
       ],
     ),

@@ -4,8 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:meribiodata/core/preferences/app_preferences.dart';
 import 'package:meribiodata/core/router/app_routes.dart';
-import 'package:meribiodata/core/theme/app_colors.dart';
 import 'package:meribiodata/core/theme/app_spacing.dart';
+import 'package:meribiodata/core/theme/app_theme.dart';
 import 'package:meribiodata/core/widgets/text_prompt_dialog.dart';
 import 'package:meribiodata/data/profile_repository.dart';
 import 'package:meribiodata/domain/biodata/biodata_profile.dart';
@@ -233,7 +233,7 @@ class _ProfileCard extends StatelessWidget {
                       child: LinearProgressIndicator(
                         value: profile.completion,
                         minHeight: 4,
-                        backgroundColor: AppColors.divider,
+                        backgroundColor: context.colors.outlineVariant,
                       ),
                     ),
                   ],
@@ -302,10 +302,10 @@ class _EmptyState extends StatelessWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const Icon(
+            Icon(
               Icons.folder_open_outlined,
               size: 64,
-              color: AppColors.secondaryGreen,
+              color: context.colors.primary,
             ),
             const SizedBox(height: AppSpacing.lg),
             Text(
@@ -358,7 +358,7 @@ class _PremiumCard extends StatelessWidget {
         0,
       ),
       child: Card(
-        color: AppColors.secondaryGreen.withValues(alpha: 0.10),
+        color: context.colors.primary.withValues(alpha: 0.10),
         child: InkWell(
           borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
           onTap: () => context.push(AppRoutes.premium),
@@ -366,9 +366,9 @@ class _PremiumCard extends StatelessWidget {
             padding: const EdgeInsets.all(AppSpacing.lg),
             child: Row(
               children: [
-                const Icon(
+                Icon(
                   Icons.workspace_premium_outlined,
-                  color: AppColors.primaryGreen,
+                  color: context.colors.primary,
                 ),
                 const SizedBox(width: AppSpacing.md),
                 Expanded(

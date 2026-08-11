@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:meribiodata/core/theme/app_colors.dart';
 import 'package:meribiodata/core/theme/app_spacing.dart';
+import 'package:meribiodata/core/theme/app_theme.dart';
 import 'package:meribiodata/domain/biodata/field_descriptor.dart';
 import 'package:meribiodata/features/editor/widgets/field_input.dart';
 import 'package:meribiodata/l10n/generated/app_localizations.dart';
@@ -71,7 +71,7 @@ class FieldCard extends StatelessWidget {
                       Text(
                         '*',
                         style: text.titleMedium?.copyWith(
-                          color: AppColors.error,
+                          color: context.colors.error,
                         ),
                       ),
                     // The lock is the at-a-glance signal 9.4 asks for.
@@ -164,20 +164,23 @@ class _Chip extends StatelessWidget {
       vertical: 2,
     ),
     decoration: BoxDecoration(
-      color: AppColors.surface,
+      color: context.colors.surfaceContainerHighest,
       borderRadius: BorderRadius.circular(AppSpacing.radiusSm),
-      border: Border.all(color: AppColors.divider),
+      border: Border.all(color: context.colors.outlineVariant),
     ),
     child: Row(
       mainAxisSize: MainAxisSize.min,
       children: [
-        Icon(icon, size: 14, color: AppColors.textSecondary),
+        Icon(icon, size: 14, color: context.colors.onSurfaceVariant),
         const SizedBox(width: AppSpacing.xs),
         Text(
           label,
-          style: Theme.of(
-            context,
-          ).textTheme.bodySmall?.copyWith(color: AppColors.textSecondary),
+          style:
+              Theme.of(
+                context,
+              ).textTheme.bodySmall?.copyWith(
+                color: context.colors.onSurfaceVariant,
+              ),
         ),
       ],
     ),

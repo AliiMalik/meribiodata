@@ -71,6 +71,10 @@ void main() {
         AppColors.primaryDark,
         AppColors.lightGreen,
       ),
+      'onWarningContainer on warningContainer': (
+        AppColors.onWarningContainer,
+        AppColors.warningContainer,
+      ),
     };
 
     for (final entry in pairs.entries) {
@@ -137,6 +141,10 @@ void main() {
       'onDarkPrimaryContainer on darkPrimaryContainer': (
         AppColors.onDarkPrimaryContainer,
         AppColors.darkPrimaryContainer,
+      ),
+      'darkOnWarningContainer on darkWarningContainer': (
+        AppColors.darkOnWarningContainer,
+        AppColors.darkWarningContainer,
       ),
       'darkError on darkBackground': (
         AppColors.darkError,

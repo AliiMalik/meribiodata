@@ -1,8 +1,8 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:meribiodata/core/theme/app_colors.dart';
 import 'package:meribiodata/core/theme/app_spacing.dart';
+import 'package:meribiodata/core/theme/app_theme.dart';
 import 'package:meribiodata/features/premium/billing.dart';
 import 'package:meribiodata/features/premium/entitlements.dart';
 import 'package:meribiodata/features/premium/premium_products.dart';
@@ -216,13 +216,13 @@ class _OfferCard extends StatelessWidget {
                       vertical: 2,
                     ),
                     decoration: BoxDecoration(
-                      color: AppColors.accentGold,
+                      color: context.semantics.badge,
                       borderRadius: BorderRadius.circular(AppSpacing.radiusSm),
                     ),
                     child: Text(
                       l10n.premiumBestValue,
                       style: text.labelSmall?.copyWith(
-                        color: AppColors.onAccentGold,
+                        color: context.semantics.onBadge,
                       ),
                     ),
                   ),
@@ -263,7 +263,7 @@ class _AlreadyPremium extends StatelessWidget {
           children: [
             Row(
               children: [
-                const Icon(Icons.check_circle, color: AppColors.secondaryGreen),
+                Icon(Icons.check_circle, color: context.colors.primary),
                 const SizedBox(width: AppSpacing.md),
                 Expanded(
                   child: Text(
@@ -311,7 +311,7 @@ class _Benefit extends StatelessWidget {
     child: Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Icon(icon, size: 20, color: AppColors.secondaryGreen),
+        Icon(icon, size: 20, color: context.colors.primary),
         const SizedBox(width: AppSpacing.md),
         Expanded(
           child: Text(text, style: Theme.of(context).textTheme.bodyMedium),

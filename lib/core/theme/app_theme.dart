@@ -3,6 +3,79 @@ import 'package:meribiodata/core/theme/app_colors.dart';
 import 'package:meribiodata/core/theme/app_spacing.dart';
 import 'package:meribiodata/l10n/language_descriptor.dart';
 
+/// Roles the app needs that Material's [ColorScheme] has no slot for.
+///
+/// Reached with `Theme.of(context).extension<AppSemantics>()!`, or more simply
+/// through `context.semantics`. It exists so a call site never has to name a
+/// palette constant to get a warning panel: naming one picks a single theme's
+/// colour, and the other theme is then wrong by construction.
+@immutable
+class AppSemantics extends ThemeExtension<AppSemantics> {
+  const AppSemantics({
+    required this.warningContainer,
+    required this.onWarningContainer,
+    required this.badge,
+    required this.onBadge,
+  });
+
+  /// The fill behind a caution message — the "this version carries your phone
+  /// number" panel on the export screen.
+  final Color warningContainer;
+
+  /// Text and icons drawn on [warningContainer].
+  final Color onWarningContainer;
+
+  /// The gold used for the Premium and Locked badges.
+  ///
+  /// Deliberately the *same* colour in both themes, unlike everything else
+  /// here: it is a brand mark rather than a surface, it is bright enough to
+  /// carry dark ink against either background, and a badge that changed colour
+  /// at night would stop reading as the same thing.
+  final Color badge;
+
+  /// Ink on [badge]. Dark in both themes — white on gold is 2.27:1.
+  final Color onBadge;
+
+  @override
+  AppSemantics copyWith({
+    Color? warningContainer,
+    Color? onWarningContainer,
+    Color? badge,
+    Color? onBadge,
+  }) => AppSemantics(
+    warningContainer: warningContainer ?? this.warningContainer,
+    onWarningContainer: onWarningContainer ?? this.onWarningContainer,
+    badge: badge ?? this.badge,
+    onBadge: onBadge ?? this.onBadge,
+  );
+
+  @override
+  AppSemantics lerp(ThemeExtension<AppSemantics>? other, double t) {
+    if (other is! AppSemantics) return this;
+    return AppSemantics(
+      warningContainer: Color.lerp(
+        warningContainer,
+        other.warningContainer,
+        t,
+      )!,
+      onWarningContainer: Color.lerp(
+        onWarningContainer,
+        other.onWarningContainer,
+        t,
+      )!,
+      badge: Color.lerp(badge, other.badge, t)!,
+      onBadge: Color.lerp(onBadge, other.onBadge, t)!,
+    );
+  }
+}
+
+/// Shorthand for the two theme lookups every widget needs.
+extension AppThemeContext on BuildContext {
+  ColorScheme get colors => Theme.of(this).colorScheme;
+
+  AppSemantics get semantics => Theme.of(this).extension<AppSemantics>()!;
+}
+
 /// The tokens that differ between light and dark, so everything else — spacing,
 /// shapes, line heights, the whole component tree below — is written once.
 ///
@@ -33,6 +106,8 @@ enum _Palette {
     focusRing: AppColors.primaryGreen,
     snackBackground: AppColors.textPrimary,
     snackForeground: AppColors.white,
+    warningContainer: AppColors.warningContainer,
+    onWarningContainer: AppColors.onWarningContainer,
   ),
 
   dark(
@@ -59,6 +134,8 @@ enum _Palette {
     focusRing: AppColors.darkPrimary,
     snackBackground: AppColors.darkSurfaceHigh,
     snackForeground: AppColors.darkTextPrimary,
+    warningContainer: AppColors.darkWarningContainer,
+    onWarningContainer: AppColors.darkOnWarningContainer,
   );
 
   const _Palette({
@@ -82,6 +159,8 @@ enum _Palette {
     required this.focusRing,
     required this.snackBackground,
     required this.snackForeground,
+    required this.warningContainer,
+    required this.onWarningContainer,
   });
 
   final Color primary;
@@ -104,6 +183,8 @@ enum _Palette {
   final Color focusRing;
   final Color snackBackground;
   final Color snackForeground;
+  final Color warningContainer;
+  final Color onWarningContainer;
 }
 
 /// The app's single source of visual truth.
@@ -229,6 +310,14 @@ abstract final class AppTheme {
         contentTextStyle: TextStyle(color: p.snackForeground),
         behavior: SnackBarBehavior.floating,
       ),
+      extensions: [
+        AppSemantics(
+          warningContainer: p.warningContainer,
+          onWarningContainer: p.onWarningContainer,
+          badge: AppColors.accentGold,
+          onBadge: AppColors.onAccentGold,
+        ),
+      ],
     );
   }
 

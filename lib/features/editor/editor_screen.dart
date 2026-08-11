@@ -3,8 +3,8 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:meribiodata/core/router/app_routes.dart';
-import 'package:meribiodata/core/theme/app_colors.dart';
 import 'package:meribiodata/core/theme/app_spacing.dart';
+import 'package:meribiodata/core/theme/app_theme.dart';
 import 'package:meribiodata/core/widgets/text_prompt_dialog.dart';
 import 'package:meribiodata/data/bundled_labels.dart';
 import 'package:meribiodata/data/profile_repository.dart';
@@ -110,7 +110,7 @@ class _EditorBody extends StatelessWidget {
             child: LinearProgressIndicator(
               value: profile.completion,
               minHeight: 4,
-              backgroundColor: AppColors.divider,
+              backgroundColor: context.colors.outlineVariant,
             ),
           ),
         ),
@@ -270,10 +270,10 @@ class _SectionHeading extends StatelessWidget {
           child: Text(title, style: Theme.of(context).textTheme.titleLarge),
         ),
         if (!isVisible)
-          const Icon(
+          Icon(
             Icons.visibility_off_outlined,
             size: 18,
-            color: AppColors.textSecondary,
+            color: context.colors.onSurfaceVariant,
           ),
       ],
     ),

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:meribiodata/core/theme/app_colors.dart';
 import 'package:meribiodata/core/theme/app_spacing.dart';
+import 'package:meribiodata/core/theme/app_theme.dart';
 import 'package:meribiodata/domain/render/rendered_document.dart';
 import 'package:meribiodata/l10n/generated/app_localizations.dart';
 
@@ -31,6 +31,16 @@ class ExportModeSelector extends StatelessWidget {
     final text = Theme.of(context).textTheme;
     final isShareable = mode == ExportMode.shareable;
 
+    // Shareable reads as safe; Full is the one that needs a second look, so it
+    // gets the warning treatment rather than the calm one. Both pairs come from
+    // the theme, so the panel is legible in either brightness.
+    final container = isShareable
+        ? context.colors.primaryContainer
+        : context.semantics.warningContainer;
+    final onContainer = isShareable
+        ? context.colors.onPrimaryContainer
+        : context.semantics.onWarningContainer;
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
@@ -57,9 +67,7 @@ class ExportModeSelector extends StatelessWidget {
         Container(
           padding: const EdgeInsets.all(AppSpacing.md),
           decoration: BoxDecoration(
-            // Shareable reads as safe; Full is the one that needs a second
-            // look, so it gets the warning treatment rather than the calm one.
-            color: isShareable ? AppColors.lightGreen : const Color(0xFFFEF3C7),
+            color: container,
             borderRadius: BorderRadius.circular(AppSpacing.radiusSm),
           ),
           child: Row(
@@ -68,24 +76,27 @@ class ExportModeSelector extends StatelessWidget {
               Icon(
                 isShareable ? Icons.shield_outlined : Icons.warning_amber,
                 size: 18,
-                color: AppColors.textPrimary,
+                color: onContainer,
               ),
               const SizedBox(width: AppSpacing.sm),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
+                    // Both lines take the container's own "on" colour. The
+                    // theme's body colours are for the page background, and on
+                    // this panel they are near-white on near-white at night.
                     Text(
                       isShareable
                           ? l10n.exportModeShareableHint
                           : l10n.exportModeFullHint,
-                      style: text.bodyMedium,
+                      style: text.bodyMedium?.copyWith(color: onContainer),
                     ),
                     if (isShareable && maskedFieldCount > 0) ...[
                       const SizedBox(height: AppSpacing.xs),
                       Text(
                         l10n.exportModeHiddenCount(maskedFieldCount),
-                        style: text.bodySmall,
+                        style: text.bodySmall?.copyWith(color: onContainer),
                       ),
                     ],
                   ],

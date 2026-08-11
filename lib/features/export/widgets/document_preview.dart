@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:meribiodata/core/theme/app_colors.dart';
+import 'package:meribiodata/core/theme/app_theme.dart';
 import 'package:meribiodata/domain/render/rendered_document.dart';
 import 'package:meribiodata/domain/render/template.dart';
 import 'package:meribiodata/features/export/render/block_widgets.dart';
@@ -30,7 +30,7 @@ class DocumentPreview extends StatelessWidget {
 
     return DecoratedBox(
       decoration: BoxDecoration(
-        border: Border.all(color: AppColors.divider),
+        border: Border.all(color: context.colors.outlineVariant),
         boxShadow: const [
           BoxShadow(
             color: Color(0x14000000),

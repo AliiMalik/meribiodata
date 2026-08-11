@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:meribiodata/core/theme/app_colors.dart';
 import 'package:meribiodata/core/theme/app_spacing.dart';
+import 'package:meribiodata/core/theme/app_theme.dart';
 import 'package:meribiodata/domain/text/roman_urdu.dart';
 import 'package:meribiodata/l10n/generated/app_localizations.dart';
 import 'package:meribiodata/l10n/language_descriptor.dart';
@@ -149,9 +149,9 @@ class _RomanUrduFieldState extends State<RomanUrduField> {
               tooltip: widget.enabled ? l10n.romanInputOn : l10n.romanInputOff,
               isSelected: widget.enabled,
               icon: const Icon(Icons.keyboard_outlined),
-              selectedIcon: const Icon(
+              selectedIcon: Icon(
                 Icons.translate,
-                color: AppColors.primaryDark,
+                color: context.colors.primary,
               ),
               onPressed: () {
                 widget.onEnabledChanged(!widget.enabled);

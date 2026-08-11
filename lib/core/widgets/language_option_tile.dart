@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:meribiodata/core/theme/app_colors.dart';
 import 'package:meribiodata/core/theme/app_spacing.dart';
+import 'package:meribiodata/core/theme/app_theme.dart';
 import 'package:meribiodata/l10n/language_descriptor.dart';
 
 /// A selectable language row.
@@ -30,7 +30,10 @@ class LanguageOptionTile extends StatelessWidget {
         borderRadius: BorderRadius.circular(AppSpacing.radiusSm),
       ),
       selected: selected,
-      selectedTileColor: AppColors.lightGreen,
+      selectedTileColor: context.colors.primaryContainer,
+      // Without this the selected row's text takes `colorScheme.primary`, which
+      // in dark mode is a light green sitting on the light green fill.
+      selectedColor: context.colors.onPrimaryContainer,
       // The name is rendered in its own script but aligned to the *list's*
       // direction, so every row lines up. Bidi shapes an RTL word correctly
       // inside an LTR paragraph; only alignment would differ, and a ragged
@@ -41,13 +44,24 @@ class LanguageOptionTile extends StatelessWidget {
           fontFamily: language.uiFontFamily,
           fontFamilyFallback: language.uiFontFallback,
           height: language.uiLineHeight,
+          // Both lines carry a colour from the text theme, which overrides
+          // `selectedColor`, so the selected fill has to be answered here.
+          color: selected ? context.colors.onPrimaryContainer : null,
         ),
       ),
       subtitle: language.nativeName == language.englishName
           ? null
-          : Text(language.englishName, style: text.bodySmall),
+          : Text(
+              language.englishName,
+              style: text.bodySmall?.copyWith(
+                color: selected ? context.colors.onPrimaryContainer : null,
+              ),
+            ),
       trailing: selected
-          ? const Icon(Icons.check_circle, color: AppColors.primaryDark)
+          ? Icon(
+              Icons.check_circle,
+              color: context.colors.onPrimaryContainer,
+            )
           : null,
     );
   }

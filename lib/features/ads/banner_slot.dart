@@ -2,7 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
-import 'package:meribiodata/core/theme/app_colors.dart';
+import 'package:meribiodata/core/theme/app_theme.dart';
 import 'package:meribiodata/features/ads/ad_config.dart';
 import 'package:meribiodata/features/ads/consent_gate.dart';
 import 'package:meribiodata/features/premium/entitlements.dart';
@@ -118,8 +118,8 @@ class _BannerSlotState extends State<BannerSlot> {
         width: ad.size.width.toDouble(),
         height: ad.size.height.toDouble(),
         alignment: Alignment.center,
-        decoration: const BoxDecoration(
-          border: Border(top: BorderSide(color: AppColors.divider)),
+        decoration: BoxDecoration(
+          border: Border(top: BorderSide(color: context.colors.outlineVariant)),
         ),
         child: AdWidget(ad: ad),
       ),

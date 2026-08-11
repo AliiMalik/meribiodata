@@ -106,4 +106,23 @@ abstract final class AppColors {
 
   /// Light ink on the deep green container.
   static const onDarkPrimaryContainer = Color(0xFFDCFCE7);
+
+  // --- Warning container -----------------------------------------------
+  //
+  // The "this version carries private details" panel on the export screen.
+  // `ColorScheme` has no warning role, so this pair travels as an
+  // `AppSemantics` theme extension rather than as a literal at the call site —
+  // which is what it used to be, and why that panel was unreadable at night.
+
+  /// Amber-100. Carries [onWarningContainer].
+  static const warningContainer = Color(0xFFFEF3C7);
+
+  static const Color onWarningContainer = textPrimary;
+
+  /// Amber-950. The same panel at night: deep enough to sit on
+  /// [darkBackground] without glowing, warm enough to still read as a caution.
+  static const darkWarningContainer = Color(0xFF422006);
+
+  /// Amber-200 on the deep amber.
+  static const darkOnWarningContainer = Color(0xFFFDE68A);
 }
