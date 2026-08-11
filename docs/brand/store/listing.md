@@ -70,13 +70,20 @@ Fill in a simple form and get a clean, print-ready marriage biodata as a PDF or 
 FREE MARRIAGE BIODATA MAKER
 • 17 biodata templates and formats — classic, elegant, decorative, and plain black-and-white for the print shop
 • Export a print-ready biodata PDF, or a JPG image for WhatsApp
-• Copy your whole biodata as text and paste it into any chat
-• No sign-up, no account, no email verification
+• Save straight to your phone — it lands in Downloads or your gallery like any other file
+• Copy the whole biodata as text and paste it into any chat
+• A clean A4 marriage biodata format, ready for the print shop
+• No sign-up, no account, no email, no phone number
+
+A shaadi biodata is usually the first thing a rishta family sees, long before any meeting. It should look like it was made with care.
+
+FOR A BOY OR FOR A GIRL
+The same biodata maker makes a groom biodata or a bride biodata. Fill in what applies, hide what does not, and the format follows.
 
 WRITTEN IN PROPER URDU
 Urdu is set in real Nastaliq, not squeezed into a font made for English. Names, dates, height and numbers all sit the right way round. Prefer English? The whole biodata switches over.
 
-Typing Urdu is easy: type "naveed malik" in Roman and the app offers نوید ملک.
+Typing Urdu is easy: type "naveed malik" in Roman and the app offers نوید ملک. Numbers in English (123) or Urdu (۱۲۳), height in feet and inches or centimetres, weight in kilograms or pounds.
 
 EVERYTHING A RISHTA BIODATA NEEDS
 Name, age, date of birth, zaat / biradari, maslak, height, weight, blood group, education, occupation and income. Father's and mother's name and occupation, brothers, sisters and nanihal. Address and contact. Add a photo if you want one.
@@ -92,24 +99,28 @@ PHOTOS, HANDLED CAREFULLY
 Add a photo and the app strips the hidden information out of it first. Most people never learn that a photo taken at home carries the exact location of that home, invisibly, inside the file. Yours will not.
 
 YOUR BIODATA STAYS ON YOUR PHONE
-We run no server. There is nowhere for your details to be sent to us, even in principle. No matching, no profile browsing, nobody looking at your daughter's information. Works completely offline.
+We run no server. There is nowhere for your details to be sent to us, even in principle. No matching, no profile browsing, nobody looking at your daughter's information. This is an offline biodata maker and it works with no connection at all.
 
-Optional: turn on Google Drive backup and one encrypted file is kept in your own Drive, locked with a password only you know. Google stores it but cannot read it.
+Optional: switch on Google Drive backup and one encrypted file is kept in your own Drive, locked with a password only you know. Google stores it but cannot read it.
+
+BUILT FOR THE WHOLE FAMILY
+Keep as many biodatas as you like — one for each son, daughter, brother or cousin — and search them by name. Duplicate one to start the next. Make the text bigger for anyone who prefers larger type, and the app follows your phone's light or dark theme.
 
 FREE, PROPERLY FREE
-Every feature works without paying. Premium is optional and does two things: removes the ads, and removes the small watermark on your exports. Nothing is locked behind it.
+Every feature works without paying. Thirteen of the seventeen designs are open from the start; four decorative ones unlock by watching a short ad and then stay open for a day. Premium is optional and does two things: it removes the ads, and it removes the small watermark on your exports.
 
-Perfect for shadi proposals, rishta, nikah, wedding and matrimonial profiles. Made in Pakistan.
+Perfect for shadi proposals, rishta, nikah, mangni, wedding and matrimonial profiles — a marriage biodata format for Pakistani families, in Urdu or in English. Made in Pakistan.
 ```
 
-2,690 characters of 4,000.
+3,744 characters of 4,000.
 
 ### Keyword density
 
-biodata ×15 · Urdu ×5 · marriage ×5 · free ×4 · rishta ×4 · photo ×4 ·
-PDF ×3 · WhatsApp ×3 · shadi ×3 · Pakistan ×3 · print ×3 · format ×2 ·
-image ×2 · template, Nastaliq, zaat, biradari, maslak, nikah, wedding,
-matrimonial, proposal, offline ×1 each.
+biodata ×21 · Urdu ×6 · marriage ×6 · app ×5 · maker ×4 · print ×4 · rishta ×4 ·
+free ×3 · format(s) ×4 · photo ×3 · WhatsApp ×3 · shadi ×2 · PDF ×2 ·
+Pakistan/Pakistani ×4 · image ×2 · shaadi, groom, bride, boy, girl, template,
+Nastaliq, zaat, biradari, maslak, nikah, mangni, wedding, matrimonial,
+proposal, offline, A4, print shop ×1 each.
 
 Placed in prose rather than a keyword block — Play penalises stuffing, and the
 first two lines are what a reader actually sees before tapping "more".
@@ -119,8 +130,23 @@ first two lines are what a reader actually sees before tapping "more".
 - [ ] Sindhi, Pashto and Punjabi are **not claimed** anywhere in this copy. Their
       labels are still marked `draft` and unreviewed. Add them only once a native
       reader has signed them off.
-- [ ] "17 biodata templates" matches `Templates.all.length`.
+- [x] "17 biodata templates" matches `Templates.all.length` — 4 base plus 13
+      decorated, checked 2026-08-12.
+- [x] "Thirteen of the seventeen … four decorative ones unlock by watching a
+      short ad" matches the four `isLocked: true` entries in
+      `decorated_templates.dart` and the 24-hour window in `TemplateUnlocks`.
 - [ ] The Premium paragraph matches the final prices and product setup.
+- [ ] Everything claimed under BUILT FOR THE WHOLE FAMILY still exists: multiple
+      biodatas, search, duplicate, the three text sizes, and light/dark.
+
+### Why the earlier "nothing is locked behind it" line is gone
+
+It was not true. Four of the seventeen designs *are* locked until the user
+watches an ad or buys Premium, and a reader who hits that lock after being told
+nothing is locked writes a one-star review about being misled — which costs more
+than the sentence ever earned. The replacement says what actually happens and
+still reads as generous, because it is: the ad path is free and permanent
+Premium is not required.
 
 ---
 
