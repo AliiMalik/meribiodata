@@ -110,8 +110,8 @@ class DriveClient {
         drive.File()
           ..name = fileName
           ..description =
-              'Encrypted MeriBiodata backup. Only the MeriBiodata app, with '
-              'your password, can read this.',
+              'Encrypted Pak Marriage Biodata Maker backup. Only that app, '
+              'with your password, can read this.',
         uploadMedia: media,
         $fields: 'id, modifiedTime, size',
       );

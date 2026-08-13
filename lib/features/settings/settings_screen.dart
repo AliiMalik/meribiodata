@@ -179,7 +179,10 @@ class SettingsScreen extends StatelessWidget {
           ListTile(
             leading: const Icon(Icons.info_outline),
             title: Text(l10n.settingsAbout),
-            subtitle: Text('MeriBiodata 1.0.0', style: text.bodySmall),
+            subtitle: Text(
+              'Pak Marriage Biodata Maker 1.0.0',
+              style: text.bodySmall,
+            ),
           ),
         ],
       ),

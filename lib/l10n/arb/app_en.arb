@@ -20,7 +20,7 @@
   "@onboardingPrivacyTitle": {
     "description": "Privacy promise screen headline. Must read plainly, not as legal text."
   },
-  "onboardingPrivacyBody": "MeriBiodata has no account and no server. Everything you type is stored only on this device, and nothing is ever uploaded.",
+  "onboardingPrivacyBody": "This app has no account and no server. Everything you type is stored only on this device, and nothing is ever uploaded.",
   "@onboardingPrivacyBody": {},
   "onboardingLanguageTitle": "Choose your language",
   "@onboardingLanguageTitle": {},
@@ -439,7 +439,7 @@
     "description": "Shown when Google sign-in or the Drive scope grant fails outright."
   },
   "@syncErrorUnreadable": {},
-  "premiumTitle": "MeriBiodata Premium",
+  "premiumTitle": "Premium",
   "@premiumTitle": {},
   "premiumHeadline": "No ads. No watermark.",
   "@premiumHeadline": {},

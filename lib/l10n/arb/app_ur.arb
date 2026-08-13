@@ -234,7 +234,7 @@
   "@syncErrorConnectFailed": {
     "description": "Shown when Google sign-in or the Drive scope grant fails outright."
   },
-  "premiumTitle": "میری بائیوڈیٹا پریمیم",
+  "premiumTitle": "پریمیم",
   "@premiumTitle": {},
   "premiumHeadline": "نہ اشتہار، نہ واٹر مارک۔",
   "@premiumHeadline": {},
