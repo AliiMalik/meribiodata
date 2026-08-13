@@ -374,38 +374,43 @@ class _NewPasswordDialogState extends State<_NewPasswordDialog> {
 
     return AlertDialog(
       title: Text(l10n.syncPasswordTitle),
-      content: Column(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            l10n.syncPasswordExplain,
-            style: Theme.of(context).textTheme.bodySmall,
-          ),
-          const SizedBox(height: AppSpacing.sm),
-          Text(
-            l10n.backupNoRecovery,
-            style: Theme.of(context).textTheme.bodySmall,
-          ),
-          const SizedBox(height: AppSpacing.lg),
-          TextField(
-            controller: _password,
-            autofocus: true,
-            obscureText: true,
-            decoration: InputDecoration(labelText: l10n.backupPasswordLabel),
-          ),
-          const SizedBox(height: AppSpacing.md),
-          TextField(
-            controller: _confirmation,
-            obscureText: true,
-            textInputAction: TextInputAction.done,
-            onSubmitted: (_) => _submit(),
-            decoration: InputDecoration(
-              labelText: l10n.backupPasswordConfirm,
-              errorText: _error,
+      // Scrollable: two explanatory paragraphs plus two fields do not fit
+      // beside a keyboard on a short screen, and an AlertDialog does not
+      // scroll its content for you. It overflowed by 23px on a 6.4in phone.
+      content: SingleChildScrollView(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              l10n.syncPasswordExplain,
+              style: Theme.of(context).textTheme.bodySmall,
             ),
-          ),
-        ],
+            const SizedBox(height: AppSpacing.sm),
+            Text(
+              l10n.backupNoRecovery,
+              style: Theme.of(context).textTheme.bodySmall,
+            ),
+            const SizedBox(height: AppSpacing.lg),
+            TextField(
+              controller: _password,
+              autofocus: true,
+              obscureText: true,
+              decoration: InputDecoration(labelText: l10n.backupPasswordLabel),
+            ),
+            const SizedBox(height: AppSpacing.md),
+            TextField(
+              controller: _confirmation,
+              obscureText: true,
+              textInputAction: TextInputAction.done,
+              onSubmitted: (_) => _submit(),
+              decoration: InputDecoration(
+                labelText: l10n.backupPasswordConfirm,
+                errorText: _error,
+              ),
+            ),
+          ],
+        ),
       ),
       actions: [
         TextButton(

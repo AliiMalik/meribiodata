@@ -350,7 +350,18 @@ class _CurrencyInput extends StatelessWidget {
         ),
         const SizedBox(width: AppSpacing.sm),
         Expanded(
+          // Even split, and compact labels. "Monthly" and "Yearly" were being
+          // squeezed into a third of the row at full label size, which wrapped
+          // and read as oversized next to the amount box.
+          flex: 2,
           child: SegmentedButton<IncomePeriod>(
+            style: SegmentedButton.styleFrom(
+              textStyle: Theme.of(context).textTheme.labelMedium,
+              padding: const EdgeInsets.symmetric(
+                horizontal: AppSpacing.xs,
+              ),
+              visualDensity: VisualDensity.compact,
+            ),
             segments: [
               ButtonSegment(
                 value: IncomePeriod.perMonth,
