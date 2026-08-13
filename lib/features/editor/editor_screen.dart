@@ -120,22 +120,30 @@ class _EditorBody extends StatelessWidget {
         //
         // Reserved space below the form, never over it (§8). The form scrolls
         // above both rather than under them, so no field is ever covered.
-        bottomNavigationBar: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            _NextStepBar(
-              onNext: () async {
-                // Flushed first: the picker renders the saved profile, so an
-                // unsaved keystroke would be missing from every thumbnail.
-                await controller.flush();
-                if (context.mounted) {
-                  await context.push(AppRoutes.templatePickerFor(profile.id));
-                }
-                await controller.load();
-              },
-            ),
-            const BannerSlot(screenId: 'editor'),
-          ],
+        // SafeArea here, not on the bar itself. The bottom inset used to come
+        // from BannerSlot's own SafeArea, so when no ad loaded the slot
+        // collapsed to nothing and took the inset with it — leaving the Next
+        // button sitting under the system navigation bar. Reported from a
+        // release build, where ads had not started filling yet.
+        bottomNavigationBar: SafeArea(
+          top: false,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              _NextStepBar(
+                onNext: () async {
+                  // Flushed first: the picker renders the saved profile, so an
+                  // unsaved keystroke would be missing from every thumbnail.
+                  await controller.flush();
+                  if (context.mounted) {
+                    await context.push(AppRoutes.templatePickerFor(profile.id));
+                  }
+                  await controller.load();
+                },
+              ),
+              const BannerSlot(screenId: 'editor'),
+            ],
+          ),
         ),
         body: ListView(
           padding: const EdgeInsets.all(AppSpacing.lg),

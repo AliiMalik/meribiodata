@@ -300,6 +300,31 @@ abstract final class AppTheme {
           borderSide: BorderSide(color: p.focusRing, width: 2),
         ),
       ),
+      // Selected segments used `secondaryContainer`, which Material derives
+      // from the teal accent — so a settings screen showed three different
+      // greens: teal segments, a dark-green selected row, and a bright-green
+      // switch. Pinned to the same primary-container pair the selected
+      // language row uses, so one idea reads as one colour.
+      segmentedButtonTheme: SegmentedButtonThemeData(
+        style: ButtonStyle(
+          backgroundColor: WidgetStateProperty.resolveWith(
+            (states) => states.contains(WidgetState.selected)
+                ? p.primaryContainer
+                : Colors.transparent,
+          ),
+          foregroundColor: WidgetStateProperty.resolveWith(
+            (states) => states.contains(WidgetState.selected)
+                ? p.onPrimaryContainer
+                : p.textPrimary,
+          ),
+          iconColor: WidgetStateProperty.resolveWith(
+            (states) => states.contains(WidgetState.selected)
+                ? p.onPrimaryContainer
+                : p.textPrimary,
+          ),
+          side: WidgetStatePropertyAll(BorderSide(color: p.primary)),
+        ),
+      ),
       listTileTheme: ListTileThemeData(
         iconColor: p.accent,
         textColor: p.textPrimary,
