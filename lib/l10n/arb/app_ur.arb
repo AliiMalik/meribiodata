@@ -230,6 +230,10 @@
   "syncErrorDriveUnavailable": "گوگل ڈرائیو تک رسائی نہ ہو سکی۔ دوبارہ خود کوشش ہوگی۔",
   "syncErrorWrongPassword": "یہ پاس ورڈ اس بیک اپ کو نہیں کھولتا۔",
   "syncErrorUnreadable": "یہ بیک اپ پڑھا نہیں جا سکا۔ ممکن ہے خراب ہو یا ایپ کے نئے ورژن سے بنا ہو۔",
+  "syncErrorConnectFailed": "گوگل ڈرائیو سے رابطہ نہیں ہو سکا۔ دوبارہ کوشش کریں۔",
+  "@syncErrorConnectFailed": {
+    "description": "Shown when Google sign-in or the Drive scope grant fails outright."
+  },
   "premiumTitle": "میری بائیوڈیٹا پریمیم",
   "@premiumTitle": {},
   "premiumHeadline": "نہ اشتہار، نہ واٹر مارک۔",

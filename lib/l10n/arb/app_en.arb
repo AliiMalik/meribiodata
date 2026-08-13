@@ -434,6 +434,10 @@
   "syncErrorWrongPassword": "That password does not open this backup.",
   "@syncErrorWrongPassword": {},
   "syncErrorUnreadable": "That backup could not be read. It may be damaged, or made by a newer version of the app.",
+  "syncErrorConnectFailed": "Could not connect to Google Drive. Please try again.",
+  "@syncErrorConnectFailed": {
+    "description": "Shown when Google sign-in or the Drive scope grant fails outright."
+  },
   "@syncErrorUnreadable": {},
   "premiumTitle": "MeriBiodata Premium",
   "@premiumTitle": {},

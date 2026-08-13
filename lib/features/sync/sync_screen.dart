@@ -27,11 +27,28 @@ class SyncScreen extends StatefulWidget {
 class _SyncScreenState extends State<SyncScreen> {
   bool _busy = false;
 
+  /// Runs [action], and — this is the part that was missing — says something
+  /// when it throws.
+  ///
+  /// There was no catch here at all. A failed Google sign-in threw, the
+  /// exception went nowhere a user could see, the screen rebuilt unchanged, and
+  /// the Connect button simply reappeared. Reported as "connect, my account
+  /// comes up, then Connect again", which is exactly what silence looks like
+  /// from the outside. A failure the user cannot see is worse than an ugly
+  /// message, and it also left us with nothing to diagnose from.
   Future<void> _guard(Future<void> Function() action) async {
     if (_busy) return;
     setState(() => _busy = true);
     try {
       await action();
+    } on Object catch (error, stack) {
+      debugPrint('Drive action failed: $error');
+      debugPrint('$stack');
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(AppL10n.of(context).syncErrorConnectFailed)),
+        );
+      }
     } finally {
       if (mounted) setState(() => _busy = false);
     }
