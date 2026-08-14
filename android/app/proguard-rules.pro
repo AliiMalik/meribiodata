@@ -22,3 +22,30 @@
 
 # MainActivity is named in AndroidManifest.xml, so it must survive by name.
 -keep class safarnamastudios.meribiodata.app.MainActivity { *; }
+
+# Google Sign-In, and the Drive authorisation it grants.
+#
+# Same failure as the Room case above, in a different library, and it cost a day
+# to find because the symptom pointed somewhere else entirely: sign-in worked on
+# a debug build and failed on the Play build, which looks exactly like a signing
+# certificate mismatch. It was not. Debug builds are not minified; release
+# builds are, and R8 was stripping the auth path.
+#
+# google_sign_in 7.x on Android goes through Credential Manager and Google
+# Identity Services, both of which resolve classes reflectively and read generic
+# signatures off them. R8 removes what it cannot see referenced, the account
+# chooser still appears because that is a system UI, and only the token and
+# scope grant fail — so the app gets an account and no authorisation, and shows
+# the Connect button again.
+-keep class com.google.android.gms.auth.** { *; }
+-keep class com.google.android.gms.common.** { *; }
+-keep class com.google.android.gms.tasks.** { *; }
+-keep class com.google.android.libraries.identity.googleid.** { *; }
+-keep class androidx.credentials.** { *; }
+-dontwarn com.google.android.gms.**
+-dontwarn androidx.credentials.**
+
+# Reflection over generics and annotations needs these kept globally; without
+# Signature in particular, parameterised types come back as raw and the
+# identity libraries fail to deserialise their own responses.
+-keepattributes Signature, *Annotation*, InnerClasses, EnclosingMethod
