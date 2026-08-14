@@ -681,3 +681,50 @@ naming the test units. A gate that has never been seen to fail is not known to w
 | ~~9~~ | ~~Play Console account (needed only for the M6 upload).~~ **Registered, fee paid, on alihmalik49@gmail.com. The AdMob account is on the same address.** | closed |
 | ~~10~~ | ~~9.6 Boy/Girl biodata presets — build or not?~~ **Settled: not building them, ruled by owner 2026-08-11. The schema editor already lets a user add, remove and rename any field, so a preset would be a shortcut to something already reachable — and two starting schemas would double what every template and golden has to cover.** | closed |
 | 11 | 9.7 Accessibility for older users — build or not? (strongly recommended) | M5.5 |
+
+---
+
+## D23 — R8 keep rules are required for every library that reflects, not just the ones that have already broken
+
+**Date:** 2026-08-14 · **Decided by:** Claude · **Milestone:** M6
+
+Google Drive sign-in worked on a debug build and failed on the Play build. That
+is the exact signature of a signing-certificate mismatch, so that is what was
+chased: the app-signing certificate was registered as an Android OAuth client,
+then the post-quantum certificate when the first did not help. Neither was the
+cause, and a day went to it.
+
+The cause was **R8**. Debug builds are not minified, release builds are.
+`proguard-rules.pro` protected the Ads SDK, UMP, WorkManager and MainActivity,
+and nothing else. `google_sign_in` 7.x on Android goes through Credential
+Manager and Google Identity Services, both of which resolve classes reflectively
+and read generic signatures off them. R8 removes what it cannot see referenced.
+
+**Why the symptom pointed the wrong way.** The account chooser is system UI,
+drawn outside the app's process, so it appeared normally. Only the token and
+scope grant failed — inside the stripped code. The app therefore obtained an
+account with no authorisation and rendered the Connect button again, which reads
+as "sign-in was rejected" rather than "half of sign-in is missing from the
+binary".
+
+**This is the second occurrence of the same failure class in this project.** The
+rules file already documented WorkManager and Room being deleted, described
+there as "invisible at build time and total at run time". The lesson had been
+written down and still did not generalise, because the rules were written for
+the libraries that had already broken rather than for the property they share.
+
+**The rule going forward:** any dependency that resolves classes by name, reads
+annotations, or inspects generic types needs an explicit keep rule *before* it
+ships, not after it breaks. `-keepattributes Signature, *Annotation*,
+InnerClasses, EnclosingMethod` is now global for the same reason.
+
+**What would have caught it sooner.** Nothing in the Dart layer or the 527-test
+suite can: R8 runs after all of it, and the tests never execute the minified
+artefact. The cheap check is to install a **release** build — not a debug one —
+whenever a native or platform-channel dependency is added. Debug-only testing
+cannot see any of this, which is precisely how it shipped twice.
+
+Verified in the R8 mapping of a real minified build: 269 `gms.auth` classes and
+773 `androidx.credentials` classes now map to themselves instead of being
+renamed, and Drive sign-in, scope grant and upload all complete on a minified,
+release-signed build on a physical device.

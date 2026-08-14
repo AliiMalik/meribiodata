@@ -152,29 +152,57 @@ def main():
           '%d of %d bundled' % (len(templates), EXPECTED_TEMPLATES))
 
     # --- version code ------------------------------------------------------
-    # Read from pubspec rather than the artefact: a bundle stores its manifest
-    # as protobuf, and decoding an int out of it is far more fragile than
-    # reading the value the build was given.
+    # Read from the artefact, not from pubspec.
+    #
+    # It used to read pubspec, on the reasoning that decoding an int out of a
+    # protobuf manifest was more fragile than reading the value the build was
+    # given. That was wrong, and it defeated the point of the tool: pubspec
+    # describes what the *next* build would contain, not what this file does.
+    # It passed a bundle that was hours stale and carried a different version
+    # code, which is exactly the mistake this script exists to catch.
+    #
+    # The encoding is stable and simple: in base/manifest/AndroidManifest.xml
+    # the attribute name is followed by a length-delimited string holding the
+    # value, so `versionCode` is followed by 0x1a, a length, and the digits.
     version_code = None
+    try:
+        manifest = archive.read(layout.manifest)
+        at = manifest.find(b'versionCode')
+        if at != -1:
+            cursor = at + len(b'versionCode')
+            if manifest[cursor] == 0x1A:
+                size = manifest[cursor + 1]
+                raw = manifest[cursor + 2:cursor + 2 + size]
+                version_code = int(raw.decode('ascii'))
+    except Exception:
+        version_code = None
+
+    # Cross-checked against pubspec so a stale artefact is caught by name.
+    declared = None
     try:
         with open('pubspec.yaml', encoding='utf-8') as handle:
             for line in handle:
                 if line.startswith('version:') and '+' in line:
-                    version_code = int(line.split('+')[1].strip())
+                    declared = int(line.split('+')[1].strip())
                     break
     except OSError:
         pass
 
     if version_code is None:
         check(results, False, 'version code',
-              'could not read it from pubspec.yaml')
+              'could not read it out of the bundle manifest')
+    elif declared is not None and declared != version_code:
+        check(results, False, 'version code',
+              'bundle says %d but pubspec says %d - this artefact is stale, '
+              'rebuild before uploading' % (version_code, declared))
     elif args.min_version_code is not None:
         check(results, version_code >= args.min_version_code, 'version code',
-              '%d (needs >= %d; bump the +N in pubspec.yaml)'
+              '%d in the bundle (needs >= %d)'
               % (version_code, args.min_version_code))
     else:
         check(results, True, 'version code',
-              '%d - must be higher than any previously uploaded' % version_code)
+              '%d in the bundle - must be higher than any previously uploaded'
+              % version_code)
 
     # --- report ------------------------------------------------------------
     print('\n%s\n' % args.artefact)
